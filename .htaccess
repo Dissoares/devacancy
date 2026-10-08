@@ -1,0 +1,8 @@
+# Só a pasta public/ é acessível pela web. Todo o resto (src, views, .env, storage) fica protegido.
+Options -Indexes
+RewriteEngine On
+
+RewriteRule ^(\.env|\.git|composer\.(json|lock)|vendor|src|views|config|routes|database|storage)(/|$) - [F,L]
+
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ public/$1 [L]

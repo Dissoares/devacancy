@@ -1,0 +1,6 @@
+/vendor/
+.env
+/armazenamento/curriculos/*
+!/armazenamento/curriculos/.gitkeep
+/armazenamento/logs/*
+!/armazenamento/logs/.gitkeep

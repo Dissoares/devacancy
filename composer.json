@@ -1,0 +1,23 @@
+{
+    "name": "devacancy/plataforma",
+    "description": "Devacancy — plataforma de candidaturas para desenvolvedores",
+    "type": "project",
+    "require": {
+        "php": ">=8.3",
+        "ext-pdo": "*",
+        "ext-curl": "*",
+        "ext-mbstring": "*",
+        "ext-fileinfo": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        },
+        "files": [
+            "src/Core/funcoes.php"
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}

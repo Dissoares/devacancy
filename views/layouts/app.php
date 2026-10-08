@@ -1,0 +1,50 @@
+<?php /** @var \App\Entities\Usuario $usuario */ ?>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <?= parcial('partials/head', ['titulo' => $titulo ?? null, 'estilos' => ['paginas/painel.css', 'paginas/assinatura.css']]) ?>
+  <?php if ($usuario->ehAdmin()): ?>
+    <script src="<?= asset('js/paginas/admin.js') ?>" defer></script>
+  <?php else: ?>
+    <script src="<?= asset('js/paginas/assinatura.js') ?>" defer></script>
+  <?php endif; ?>
+</head>
+<body class="pagina-app">
+  <?= parcial('partials/icones') ?>
+
+  <header class="barra-app">
+    <div class="container-app barra-app-interno">
+      <?= parcial('partials/marca') ?>
+
+      <?php if ($usuario->ehAdmin()): ?>
+        <nav class="barra-app-navegacao" aria-label="Administração">
+          <a class="<?= ativo('/admin') ?>" href="/admin"><?= icone('usuarios', 'icone icone-sm') ?> Cadastros</a>
+          <a class="<?= ativo('/admin/vagas') ?>" href="/admin/vagas"><?= icone('maleta', 'icone icone-sm') ?> Vagas</a>
+        </nav>
+      <?php endif; ?>
+
+      <div class="menu-usuario">
+        <span class="avatar">
+          <?php if ($usuario->avatarUrl): ?>
+            <img src="<?= e($usuario->avatarUrl) ?>" alt="" referrerpolicy="no-referrer">
+          <?php else: ?>
+            <?= e(iniciais($usuario->nome)) ?>
+          <?php endif; ?>
+        </span>
+        <span class="menu-usuario-nome">
+          <strong><?= e($usuario->nome) ?></strong>
+          <small><?= e($usuario->tipo->rotulo()) ?></small>
+        </span>
+        <form method="post" action="/sair">
+          <?= csrf_campo() ?>
+          <button class="botao botao-fantasma botao-pequeno" type="submit" title="Sair"><?= icone('sair', 'icone icone-sm') ?><span class="ocultar-movel">Sair</span></button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <main class="container-app conteudo-app">
+    <?= $conteudo ?>
+  </main>
+</body>
+</html>
