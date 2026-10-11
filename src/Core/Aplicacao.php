@@ -32,6 +32,7 @@ final class Aplicacao
         Sessao::iniciar();
         $requisicao = Requisicao::capturar();
         Idioma::detectar($requisicao);
+        Indicacao::capturar($requisicao);
 
         try {
             $resposta = $this->protegerContraCsrf($requisicao) ?? $this->roteador->despachar($requisicao);
