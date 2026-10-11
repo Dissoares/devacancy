@@ -1034,3 +1034,57 @@
   gap: 8px;
   margin-left: auto;
 }
+
+/* Vaga "próxima do perfil" (reserva): selo azul em vez do verde de "compatível", sem percentual baixo. */
+.compatibilidade-proxima,
+.feed-item-proxima {
+  background: var(--primaria-suave);
+  color: var(--primaria-forte);
+}
+
+.resumo-plano-nota {
+  display: block;
+  color: var(--texto-suave);
+  font-size: .78rem;
+}
+
+.resumo-plano-nota:empty {
+  display: none;
+}
+
+/* Celular: cada plano numa linha (nome e condição à esquerda, preço à direita), pra o botão de pagar subir. */
+@media (max-width: 600px) {
+  .opcoes-plano {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .opcao-plano-corpo {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "nome preco" "nota preco";
+    align-items: center;
+    gap: 2px 12px;
+    padding: 14px 16px;
+  }
+
+  .opcao-plano-nome { grid-area: nome; }
+  .opcao-plano-corpo > small { grid-area: nota; }
+
+  .opcao-plano-preco {
+    grid-area: preco;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .opcao-plano-preco strong {
+    font-size: 1.35rem;
+  }
+
+  .cabecalho-planos {
+    margin-bottom: 18px;
+  }
+
+  .cabecalho-planos h1 {
+    font-size: 1.7rem;
+  }
+}

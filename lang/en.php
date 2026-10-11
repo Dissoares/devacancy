@@ -214,7 +214,7 @@ return [
     'funil.p_ultima' => 'What was your most recent salary?',
     'funil.por_mes' => 'Gross amount per month',
     'funil.por_ano' => 'Gross amount per year',
-    'funil.a_partir_de' => ':valor or more',
+    'funil.a_partir_de' => ':valor+',
     'funil.prefiro_nao_informar' => "I'd rather not say",
     'funil.voltar' => 'Back',
     'funil.continuar' => 'Continue',
@@ -273,6 +273,7 @@ return [
 
     // ---------- Jobs ----------
     'vaga.compatibilidade' => ':n% match',
+    'vaga.proxima_do_perfil' => 'Close to your profile',
     'vaga.nova' => 'New',
     'vaga.empresa_confidencial' => 'Confidential company',
     'vaga.empresa_assinantes' => 'Company visible to subscribers',
@@ -354,6 +355,8 @@ return [
     'planos.cobrado_semana' => 'Billed weekly',
     'planos.cobrado_mes' => 'Billed monthly',
     'planos.cobrado_a_cada' => ':valor every :n months',
+    'planos.periodo_n_meses' => ':n months',
+    'planos.equivale_mes' => 'that is :valor per month',
     'planos.metodo_pix' => 'PIX',
     'planos.metodo_paypal' => 'PayPal or card',
     'planos.paypal_nota' => 'Recurring payment through PayPal. Cancel anytime in your PayPal account.',

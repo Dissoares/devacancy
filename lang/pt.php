@@ -214,7 +214,7 @@ return [
     'funil.p_ultima' => 'Qual foi a sua última remuneração?',
     'funil.por_mes' => 'Valor bruto por mês',
     'funil.por_ano' => 'Valor bruto por ano',
-    'funil.a_partir_de' => 'A partir de :valor',
+    'funil.a_partir_de' => ':valor+',
     'funil.prefiro_nao_informar' => 'Prefiro não informar',
     'funil.voltar' => 'Voltar',
     'funil.continuar' => 'Continuar',
@@ -273,6 +273,7 @@ return [
 
     // ---------- Vagas ----------
     'vaga.compatibilidade' => ':n% compatível',
+    'vaga.proxima_do_perfil' => 'Próxima do seu perfil',
     'vaga.nova' => 'Nova',
     'vaga.empresa_confidencial' => 'Empresa confidencial',
     'vaga.empresa_assinantes' => 'Empresa visível para assinantes',
@@ -354,6 +355,8 @@ return [
     'planos.cobrado_semana' => 'Cobrado por semana',
     'planos.cobrado_mes' => 'Cobrado por mês',
     'planos.cobrado_a_cada' => ':valor a cada :n meses',
+    'planos.periodo_n_meses' => ':n meses',
+    'planos.equivale_mes' => 'equivale a :valor por mês',
     'planos.metodo_pix' => 'PIX',
     'planos.metodo_paypal' => 'PayPal ou cartão',
     'planos.paypal_nota' => 'Pagamento recorrente pelo PayPal. Cancele quando quiser na sua conta PayPal.',

@@ -12,10 +12,12 @@ $escolhido = $valores['plano'] ?? 'trimestral';
 $resumoPlanos = [];
 foreach ($planos as $chave => $plano) {
     $precoBruto = $plano['precos'][$moeda];
+    // O resumo mostra o valor COBRADO (ex.: R$ 119,70 a cada 3 meses); o equivalente por mês vai como nota.
     $resumoPlanos[$chave] = [
         'nome' => t('plano.' . $chave),
-        'preco' => moeda($precoBruto / $plano['divisor'], $moeda),
-        'periodo' => t('planos.por_' . $plano['periodo']),
+        'preco' => moeda($precoBruto, $moeda),
+        'periodo' => $plano['divisor'] > 1 ? t('planos.periodo_n_meses', ['n' => $plano['divisor']]) : t('planos.por_' . $plano['periodo']),
+        'nota' => $plano['divisor'] > 1 ? t('planos.equivale_mes', ['valor' => moeda($precoBruto / $plano['divisor'], $moeda)]) : '',
     ];
 }
 ?>
@@ -72,6 +74,7 @@ foreach ($planos as $chave => $plano) {
       </div>
       <div class="resumo-plano-valor">
         <strong data-resumo-preco><?= e($resumoPlanos[$escolhido]['preco']) ?></strong><small>/<span data-resumo-periodo><?= e($resumoPlanos[$escolhido]['periodo']) ?></span></small>
+        <small class="resumo-plano-nota" data-resumo-nota><?= e($resumoPlanos[$escolhido]['nota']) ?></small>
       </div>
     </div>
 
