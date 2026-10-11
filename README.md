@@ -73,7 +73,7 @@ Preencha `PAYPAL_CLIENT_ID` e `PAYPAL_SECRET`, rode `php database/paypal-planos.
 
 ## Pagamentos (ExPay)
 
-Preencha `EXPAY_API_KEY` e `EXPAY_WEBHOOK_TOKEN` no `.env` e configure no painel da ExPay o webhook `{APP_URL}/webhooks/expay?token={EXPAY_WEBHOOK_TOKEN}`. O webhook só dispara a conferência: o status é sempre consultado na API, e a página do PIX também consulta a cada 5 segundos. Sem chave, em `APP_AMBIENTE=local`, o checkout roda em modo simulação com um botão para aprovar o pagamento. Planos e preços ficam em `config/app.php` (`planos`).
+Preencha `EXPAY_API_KEY` e `EXPAY_WEBHOOK_TOKEN` no `.env` e configure no painel da ExPay o webhook `{APP_URL}/webhooks/expay?token={EXPAY_WEBHOOK_TOKEN}`. O webhook só dispara a conferência: o status é sempre consultado na API, e a página do PIX também consulta a cada 5 segundos. Sem chave, em `APP_AMBIENTE=local` **com o `APP_URL` apontando para a sua máquina** (`.test`, `localhost`), o checkout roda em modo simulação com um botão para aprovar o pagamento. No servidor use sempre `APP_AMBIENTE=producao`. Planos e preços ficam em `config/app.php` (`planos`).
 
 ## Vagas reais (importação automática)
 
