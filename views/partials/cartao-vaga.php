@@ -66,6 +66,7 @@ $proxima ??= false; // vaga da "reserva": próxima do perfil, não estritamente 
           </button>
         </form>
       <?php endif; ?>
+      <?= parcial('partials/botao-compartilhar', ['vaga' => $vaga, 'classe' => 'botao-fantasma botao-pequeno']) ?>
     </div>
   <?php endif; ?>
 </article>
