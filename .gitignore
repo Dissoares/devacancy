@@ -1,6 +1,6 @@
 /vendor/
 .env
-/armazenamento/curriculos/*
-!/armazenamento/curriculos/.gitkeep
-/armazenamento/logs/*
-!/armazenamento/logs/.gitkeep
+/storage/uploads/curriculos/*
+!/storage/uploads/curriculos/.gitkeep
+/storage/logs/*
+!/storage/logs/.gitkeep
