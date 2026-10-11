@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Core\Csrf;
+use App\Core\Idioma;
 use App\Core\Sessao;
 use App\Core\Visao;
 
@@ -20,6 +21,58 @@ function configuracao(string $chave, mixed $padrao = null): mixed
         $valor = $valor[$parte];
     }
     return $valor;
+}
+
+/** Texto traduzido para o idioma atual (arquivos em lang/). */
+function t(string $chave, array $parametros = []): string
+{
+    return Idioma::texto($chave, $parametros);
+}
+
+/** Valor em dinheiro no formato do idioma atual: R$ 49,90 ou $9.99. */
+function moeda(float $valor, string $codigo = 'BRL', int $casas = 2): string
+{
+    $simbolo = ['BRL' => 'R$ ', 'USD' => '$', 'EUR' => '€'][$codigo] ?? $codigo . ' ';
+    return Idioma::atual() === 'pt'
+        ? $simbolo . number_format($valor, $casas, ',', '.')
+        : $simbolo . number_format($valor, $casas, '.', ',');
+}
+
+function numero(int|float $valor): string
+{
+    return Idioma::atual() === 'pt' ? number_format($valor, 0, ',', '.') : number_format($valor, 0, '.', ',');
+}
+
+/** Textos usados pelos scripts (avisos, rótulos de botões), no idioma atual. */
+function textos_js(): array
+{
+    $chaves = ['sessao_expirada', 'erro_generico', 'sem_conexao', 'mostrar_senha', 'ocultar_senha', 'remover', 'adicionar_mais', 'limite_arquivo', 'pronto_para_enviar'];
+    return array_combine($chaves, array_map(fn (string $chave) => t('js.' . $chave), $chaves));
+}
+
+/** Link para a página atual em outro idioma. */
+function url_idioma(string $idioma): string
+{
+    $consulta = $_GET;
+    $consulta['lang'] = $idioma;
+    return (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/') . '?' . http_build_query($consulta);
+}
+
+/** "São Paulo" vira "Sao Paulo" (o iconv com TRANSLIT gera "S~ao Paulo" no Windows). */
+function sem_acentos(string $texto): string
+{
+    if (class_exists(Normalizer::class)) {
+        $decomposto = Normalizer::normalize($texto, Normalizer::FORM_D);
+        if ($decomposto !== false) {
+            return preg_replace('/\p{Mn}+/u', '', $decomposto);
+        }
+    }
+    return strtr($texto, [
+        'á' => 'a', 'à' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'é' => 'e', 'ê' => 'e', 'è' => 'e', 'í' => 'i', 'ì' => 'i',
+        'ó' => 'o', 'ô' => 'o', 'õ' => 'o', 'ò' => 'o', 'ú' => 'u', 'ü' => 'u', 'ç' => 'c', 'ñ' => 'n',
+        'Á' => 'A', 'À' => 'A', 'Â' => 'A', 'Ã' => 'A', 'É' => 'E', 'Ê' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O',
+        'Ú' => 'U', 'Ç' => 'C', 'Ñ' => 'N',
+    ]);
 }
 
 function e(mixed $valor): string
@@ -69,6 +122,29 @@ function icone(string $nome, string $classe = 'icone'): string
     return '<svg class="' . e($classe) . '" aria-hidden="true"><use href="#i-' . e($nome) . '"/></svg>';
 }
 
+/** Ícone oficial de uma tecnologia (Devicon), ou string vazia se não houver. */
+function icone_stack(string $tecnologia, string $classe = 'icone-stack'): string
+{
+    $arquivo = \App\Core\IconesStack::arquivo($tecnologia);
+    return $arquivo === null ? '' : icone_stack_arquivo($arquivo, $classe);
+}
+
+function icone_stack_arquivo(string $arquivo, string $classe = 'icone-stack'): string
+{
+    return '<img class="' . e($classe) . '" src="' . e(asset('img/stacks/' . $arquivo . '.svg')) . '" alt="'
+        . e(\App\Core\IconesStack::nome($arquivo)) . '" title="' . e(\App\Core\IconesStack::nome($arquivo)) . '" width="16" height="16" loading="lazy" decoding="async">';
+}
+
+/** Fileira de ícones de uma stack (com a linguagem implícita: Spring → Java, .NET → C#). */
+function icones_stack(array $stack, int $limite = 4): string
+{
+    $arquivos = \App\Core\IconesStack::daStack($stack, $limite);
+    if ($arquivos === []) {
+        return '';
+    }
+    return '<span class="icones-stack">' . implode('', array_map(fn (string $arquivo) => icone_stack_arquivo($arquivo), $arquivos)) . '</span>';
+}
+
 function ativo(string $caminho): string
 {
     $atual = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
@@ -80,7 +156,19 @@ function data_br(?string $data, bool $comHora = false): string
     if (!$data) {
         return '—';
     }
-    return date($comHora ? 'd/m/Y \à\s H:i' : 'd/m/Y', strtotime($data));
+    $formato = Idioma::atual() === 'pt' ? ($comHora ? 'd/m/Y \à\s H:i' : 'd/m/Y') : ($comHora ? 'M j, Y \a	 g:i A' : 'M j, Y');
+    return date($formato, strtotime($data));
+}
+
+/** "há 3 h", "há 2 dias" (ou "3 h ago"). */
+function tempo_relativo(string $data): string
+{
+    $segundos = max(0, time() - strtotime($data));
+    return match (true) {
+        $segundos < 3600 => t('tempo.minutos', ['n' => max(1, intdiv($segundos, 60))]),
+        $segundos < 86400 => t('tempo.horas', ['n' => intdiv($segundos, 3600)]),
+        default => t(intdiv($segundos, 86400) === 1 ? 'tempo.dia' : 'tempo.dias', ['n' => intdiv($segundos, 86400)]),
+    };
 }
 
 function iniciais(string $nome): string
