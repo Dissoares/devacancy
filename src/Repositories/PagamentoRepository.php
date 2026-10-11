@@ -65,7 +65,7 @@ final class PagamentoRepository implements PagamentoRepositoryInterface
     public function listarPendentesDoMetodo(string $metodo): array
     {
         $consulta = $this->pdo->prepare(
-            "SELECT p.id, p.plano, p.valor, p.moeda, p.criado_em, u.nome, u.email
+            "SELECT p.id, p.plano, p.valor, p.moeda, p.metodo, p.criado_em, u.nome, u.email
                FROM pagamentos p JOIN usuarios u ON u.id = p.usuario_id
               WHERE p.metodo = ? AND p.status = 'pendente'
               ORDER BY p.criado_em DESC LIMIT 100"

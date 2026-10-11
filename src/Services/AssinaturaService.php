@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Core\Email;
 use App\Core\Idioma;
+use App\Core\Sessao;
 use App\Core\Transacao;
 use App\Entities\Pagamento;
 use App\Entities\Usuario;
@@ -28,6 +30,7 @@ final class AssinaturaService
         'pix' => ['nome' => 'PIX (ExPay)', 'regiao' => 'Brasil', 'moedas' => ['BRL']],
         'stripe' => ['nome' => 'Stripe (cartão, assinatura)', 'regiao' => 'Brasil e internacional', 'moedas' => ['BRL', 'USD']],
         'paypal' => ['nome' => 'PayPal (assinatura, conta Business)', 'regiao' => 'Brasil e internacional', 'moedas' => ['BRL', 'USD']],
+        'pix_manual' => ['nome' => 'PIX manual (copia e cola, confirmado pelo admin)', 'regiao' => 'Brasil', 'moedas' => ['BRL']],
         'paypal_email' => ['nome' => 'PayPal (só e-mail, pagamento avulso)', 'regiao' => 'Brasil e internacional', 'moedas' => ['BRL', 'USD']],
     ];
 
@@ -38,6 +41,8 @@ final class AssinaturaService
         private readonly ExpayService $expay,
         private readonly PaypalService $paypal,
         private readonly StripeService $stripe,
+        private readonly PixManualService $pixManual,
+        private readonly Email $email,
         private readonly ComissaoService $comissoes,
         private readonly Transacao $transacao,
     ) {
@@ -63,6 +68,10 @@ final class AssinaturaService
         if ($noBrasil && ($ativos['pix'] ?? true) && ($this->expay->configurado() || $this->simulacaoPix())) {
             $metodos[] = 'pix';
         }
+        // Enquanto não há conta no gateway, o PIX é o copia e cola do próprio dono, confirmado à mão.
+        if ($noBrasil && !$this->expay->configurado() && ($ativos['pix_manual'] ?? true) && $this->pixManual->configurado()) {
+            $metodos[] = 'pix_manual';
+        }
         if (($ativos['stripe'] ?? true) && ($this->stripe->configurado() || $this->simulacaoStripe())) {
             $metodos[] = 'stripe';
         }
@@ -82,6 +91,7 @@ final class AssinaturaService
         $ativos = $this->metodosPagamento->ativos();
         $configurado = [
             'pix' => $this->expay->configurado(),
+            'pix_manual' => $this->pixManual->configurado(),
             'stripe' => $this->stripe->configurado(),
             'paypal' => $this->paypal->configurado(),
             'paypal_email' => $this->paypal->pagamentoPorEmailConfigurado(),
@@ -559,20 +569,78 @@ final class AssinaturaService
         $this->aplicarStatus($pagamento, StatusPagamento::Pago);
     }
 
-    /** @return array<int, array> pagamentos por e-mail ainda sem confirmação (para o admin conferir no app do PayPal) */
-    public function paypalEmailPendentes(): array
+    // ---------------------------------------------------------------- PIX manual (copia e cola do dono)
+
+    /**
+     * Gera o pagamento e o código PIX copia e cola com o valor do plano. Sem CPF: quem confirma é o admin.
+     * @throws ValidacaoException
+     */
+    public function iniciarPixManual(Usuario $usuario, array $dados): Pagamento
     {
-        return $this->pagamentos->listarPendentesDoMetodo('paypal_email');
+        $plano = $this->planos()[$dados['plano'] ?? ''] ?? null;
+        if ($plano === null) {
+            throw new ValidacaoException(['plano' => t('pagamento.escolha_plano')]);
+        }
+        if (!in_array('pix_manual', $this->metodosPara(true), true)) {
+            throw new ValidacaoException(['geral' => t('pagamento.indisponivel')]);
+        }
+
+        $valor = $plano['precos']['BRL'];
+        $id = $this->pagamentos->criar($usuario->id, $dados['plano'], $valor, 'pix_manual', 'BRL');
+        $this->pagamentos->registrarCobranca($id, 'pix-manual-' . $id, $this->pixManual->codigoPara($valor, 'DV' . $id), null, null);
+
+        return $this->pagamentos->buscarPorId($id);
     }
 
-    /** O admin viu o dinheiro na conta PayPal e libera o plano. */
-    public function confirmarPaypalEmailManualmente(int $pagamentoId): void
+    /** "Já paguei": avisa a equipe por e-mail para conferir o recebimento (no máximo um aviso a cada 10 minutos por pagamento). */
+    public function avisarPagamentoManual(Usuario $usuario, int $id): bool
+    {
+        $pagamento = $this->pagamentoDoUsuario($usuario, $id);
+        if ($pagamento->metodo !== 'pix_manual' || !$pagamento->estaPendente()) {
+            return false;
+        }
+
+        $chave = 'aviso_pix_' . $id;
+        if ((int) Sessao::obter($chave, 0) > time() - 600) {
+            return true;
+        }
+        Sessao::definir($chave, time());
+
+        $destino = (string) configuracao('email.de');
+        $valor = moeda($pagamento->valor, $pagamento->moeda);
+        $this->email->enviar(
+            $destino,
+            "PIX para conferir: {$usuario->nome} diz que pagou {$valor}",
+            "{$usuario->nome} ({$usuario->email}) diz que pagou {$valor} do plano {$pagamento->plano} (pagamento #{$pagamento->id}).\n\n"
+                . "Confira no app do banco e confirme em " . url('/admin/pagamentos') . " para liberar o plano.",
+            '<p><strong>' . e($usuario->nome) . '</strong> (' . e($usuario->email) . ') diz que pagou <strong>' . e($valor) . '</strong> do plano '
+                . e($pagamento->plano) . ' (pagamento #' . $pagamento->id . ').</p><p>Confira no app do banco e confirme em <a href="'
+                . e(url('/admin/pagamentos')) . '">Admin → Pagamentos</a> para liberar o plano.</p>',
+        );
+        return true;
+    }
+
+    /** @return array<int, array> pagamentos manuais (PIX e PayPal por e-mail) ainda sem confirmação */
+    public function pagamentosManuaisPendentes(): array
+    {
+        $lista = [...$this->pagamentos->listarPendentesDoMetodo('pix_manual'), ...$this->pagamentos->listarPendentesDoMetodo('paypal_email')];
+        usort($lista, fn (array $a, array $b) => strcmp($b['criado_em'], $a['criado_em']));
+        return $lista;
+    }
+
+    /** O admin viu o dinheiro na conta e libera o plano. */
+    public function confirmarManualmente(int $pagamentoId): void
     {
         $pagamento = $this->pagamentos->buscarPorId($pagamentoId);
-        if ($pagamento === null || $pagamento->metodo !== 'paypal_email') {
+        if ($pagamento === null || !in_array($pagamento->metodo, ['pix_manual', 'paypal_email'], true)) {
             throw new NaoEncontradoException();
         }
         $this->aplicarStatus($pagamento, StatusPagamento::Pago);
+    }
+
+    public function pixManualProblema(): ?string
+    {
+        return $this->pixManual->problema();
     }
 
     // ---------------------------------------------------------------- Interno
