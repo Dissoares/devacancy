@@ -46,7 +46,7 @@ function numero(int|float $valor): string
 /** Textos usados pelos scripts (avisos, rótulos de botões), no idioma atual. */
 function textos_js(): array
 {
-    $chaves = ['sessao_expirada', 'erro_generico', 'sem_conexao', 'mostrar_senha', 'ocultar_senha', 'remover', 'adicionar_mais', 'limite_arquivo', 'pronto_para_enviar', 'cpf_valido', 'cpf_invalido'];
+    $chaves = ['sessao_expirada', 'erro_generico', 'sem_conexao', 'mostrar_senha', 'ocultar_senha', 'remover', 'adicionar_mais', 'limite_arquivo', 'pronto_para_enviar', 'cpf_valido', 'cpf_invalido', 'compartilhar_titulo', 'compartilhar_copiar', 'compartilhar_copiado'];
     return array_combine($chaves, array_map(fn (string $chave) => t('js.' . $chave), $chaves));
 }
 
@@ -190,4 +190,12 @@ function erro_campo(array $erros, string $campo): string
     return isset($erros[$campo])
         ? '<span class="mensagem-erro">' . icone('x', 'icone icone-sm') . e($erros[$campo]) . '</span>'
         : '';
+}
+
+/** Endereço público e compartilhável de uma vaga (o final com o título só ajuda a leitura do link). */
+function url_vaga(\App\Entities\Vaga $vaga): string
+{
+    $slug = trim((string) preg_replace('/[^a-z0-9]+/', '-', mb_strtolower(sem_acentos($vaga->titulo))), '-');
+    $slug = trim(mb_substr($slug, 0, 60), '-');
+    return url('/vaga/' . $vaga->id . ($slug !== '' ? '-' . $slug : ''));
 }
