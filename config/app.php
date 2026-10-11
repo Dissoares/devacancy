@@ -72,6 +72,10 @@ return [
     // PIX sem gateway: o "PIX copia e cola" estático da sua conta (do app do banco). O site refaz o código com o valor de cada plano.
     'pix' => [
         'copia_cola' => Ambiente::obter('PIX_COPIA_COLA', ''),
+        // Alternativa sem o código do banco: só a chave PIX, o nome de quem recebe e a cidade.
+        'chave' => Ambiente::obter('PIX_CHAVE', ''),
+        'nome' => Ambiente::obter('PIX_NOME', ''),
+        'cidade' => Ambiente::obter('PIX_CIDADE', ''),
     ],
 
     // Cartão por assinatura recorrente (Stripe Checkout). Webhook: {APP_URL}/webhooks/stripe com os eventos
