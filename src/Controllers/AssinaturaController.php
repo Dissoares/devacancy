@@ -71,6 +71,23 @@ final class AssinaturaController
         return Resposta::redirecionarHtmx('/pagamento/' . $pagamento->id);
     }
 
+    /** PayPal só com e-mail: registra o pagamento pendente e leva para a página com o botão "Pagar no PayPal". */
+    public function assinarPaypalEmail(Requisicao $requisicao): Resposta
+    {
+        $usuario = $this->autenticacao->usuarioAtual();
+        $dados = $requisicao->todos();
+
+        try {
+            $pagamento = $this->assinaturas->iniciarPagamentoPaypalEmail($usuario, $dados, $this->localizacao->noBrasil($requisicao));
+        } catch (ValidacaoException $erro) {
+            return Resposta::html(Visao::parcial('assinatura/partials/formulario-paypal-email', [
+                'erros' => $erro->erros(),
+            ]));
+        }
+
+        return Resposta::redirecionarHtmx('/pagamento/' . $pagamento->id);
+    }
+
     public function pagamento(Requisicao $requisicao): Resposta
     {
         $usuario = $this->autenticacao->usuarioAtual();
@@ -83,7 +100,17 @@ final class AssinaturaController
             'usuario' => $usuario,
             'pagamento' => $pagamento,
             'simulacao' => $this->assinaturas->simulacaoPix(),
+            'paypalEmail' => $pagamento->metodo === 'paypal_email' && $pagamento->estaPendente()
+                ? $this->assinaturas->formularioPaypalEmail($pagamento)
+                : null,
         ], 'app'));
+    }
+
+    /** Aviso automático (IPN) do PayPal. Não usa token: a autenticidade é conferida com o próprio PayPal. */
+    public function ipnPaypal(Requisicao $requisicao): Resposta
+    {
+        $this->assinaturas->processarIpn((string) file_get_contents('php://input'));
+        return Resposta::texto('ok');
     }
 
     /** Consultado pelo HTMX a cada poucos segundos enquanto o PIX está pendente. */
