@@ -866,3 +866,58 @@
 .seletor-idioma a:not(.ativo) .bandeira {
   opacity: .7;
 }
+
+/* ---------- Compartilhar (menu no computador) ---------- */
+.menu-compartilhar {
+  position: absolute;
+  z-index: 80;
+  display: grid;
+  min-width: 200px;
+  padding: 6px;
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  background: var(--superficie, #fff);
+  box-shadow: 0 18px 40px -12px rgba(15, 23, 42, .28);
+}
+
+.menu-compartilhar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  color: var(--texto);
+  font: inherit;
+  font-size: .92rem;
+  font-weight: 550;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.menu-compartilhar-item:hover,
+.menu-compartilhar-item:focus-visible {
+  background: var(--primaria-suave);
+  outline: none;
+}
+
+.menu-compartilhar-ponto {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.menu-compartilhar-copiar {
+  margin-top: 4px;
+  border-top: 1px solid var(--borda);
+  border-radius: 0 0 9px 9px;
+  color: var(--texto-suave);
+}
+
+.menu-compartilhar-copiar.copiado {
+  color: var(--sucesso);
+}
