@@ -328,6 +328,82 @@
   line-height: 1.1;
 }
 
+.bloco-analytics {
+  padding: 22px 24px;
+  margin-bottom: 16px;
+}
+
+.bloco-analytics h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.texto-vazio {
+  color: var(--texto-suave);
+  font-size: .9rem;
+}
+
+.tabela-simples {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .88rem;
+}
+
+.tabela-simples th,
+.tabela-simples td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--borda);
+}
+
+.tabela-simples th {
+  color: var(--texto-suave);
+  font-weight: 600;
+}
+
+.funil {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.funil-etapa-rotulo {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+  font-size: .9rem;
+}
+
+.funil-etapa-rotulo strong {
+  font-weight: 700;
+}
+
+.funil-etapa-rotulo small {
+  color: var(--texto-suave);
+  font-weight: 500;
+}
+
+.funil-barra {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--primaria-suave);
+  overflow: hidden;
+}
+
+.funil-barra span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primaria);
+  transition: width .4s ease;
+}
+
+.funil-barra-segmento span {
+  background: var(--acao);
+}
+
 .filtros {
   display: grid;
   grid-template-columns: minmax(240px, 1fr) repeat(3, 180px) auto;
