@@ -4,6 +4,9 @@
 (() => {
   'use strict';
 
+  const textos = window.TEXTOS ?? {};
+  const svgIcone = (nome) => `<svg class="icone icone-sm" aria-hidden="true"><use href="#i-${nome}"/></svg>`;
+
   // Tela de busca: mensagens de status, depois as vagas encontradas entram uma a uma com o contador
   // subindo e, no fim, aparece a conclusão com o botão de aplicar. O ritmo roda mesmo com
   // "reduzir animações" (só os movimentos saem, via CSS). Sem JS, tudo aparece de uma vez.
@@ -53,7 +56,17 @@
     })();
   }
 
-  // 000.000.000-00 enquanto digita.
+  // 000.000.000-00 enquanto digita, com validação ao vivo (mesmo cálculo de dígito verificador do backend).
+  const cpfValido = (digitos) => {
+    if (digitos.length !== 11 || /^(\d)\1{10}$/.test(digitos)) return false;
+    for (let posicao = 9; posicao < 11; posicao++) {
+      let soma = 0;
+      for (let i = 0; i < posicao; i++) soma += Number(digitos[i]) * (posicao + 1 - i);
+      if (Number(digitos[posicao]) !== ((10 * soma) % 11) % 10) return false;
+    }
+    return true;
+  };
+
   document.addEventListener('input', (evento) => {
     const campo = evento.target.closest?.('[data-mascara-cpf]');
     if (!campo) return;
@@ -62,6 +75,17 @@
       .replace(/^(\d{3})(\d)/, '$1.$2')
       .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
       .replace(/\.(\d{3})(\d)/, '.$1-$2');
+
+    if (!campo.hasAttribute('data-validar-cpf')) return;
+    const dica = document.getElementById('dica-cpf');
+    if (!dica) return;
+    if (digitos.length < 11) {
+      dica.innerHTML = '';
+    } else if (cpfValido(digitos)) {
+      dica.innerHTML = `<span class="dica-campo dica-ok">${svgIcone('check')} ${textos.cpf_valido ?? 'CPF válido'}</span>`;
+    } else {
+      dica.innerHTML = `<span class="dica-campo dica-erro">${svgIcone('x')} ${textos.cpf_invalido ?? 'Confira o CPF digitado'}</span>`;
+    }
   });
 
   document.addEventListener('click', async (evento) => {
@@ -76,6 +100,21 @@
     }
     window.Devacancy?.mostrarAviso(botao.dataset.mensagem, 'sucesso');
   });
+
+  // Resumo do plano (nome + preço) acima do pagamento: atualiza ao vivo quando troca o plano escolhido.
+  const resumo = document.querySelector('[data-resumo-plano]');
+  if (resumo) {
+    const planosResumo = JSON.parse(resumo.dataset.planos || '{}');
+    document.querySelectorAll('input[name="plano"]').forEach((radio) => {
+      radio.addEventListener('change', () => {
+        const dados = planosResumo[radio.value];
+        if (!dados) return;
+        resumo.querySelector('[data-resumo-nome]').textContent = dados.nome;
+        resumo.querySelector('[data-resumo-preco]').textContent = dados.preco;
+        resumo.querySelector('[data-resumo-periodo]').textContent = dados.periodo;
+      });
+    });
+  }
 
   // Abas de meio de pagamento (PIX / PayPal).
   document.querySelectorAll('[data-metodos]').forEach((metodos) => {

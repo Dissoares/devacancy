@@ -526,6 +526,45 @@
   font-size: .82rem;
 }
 
+.resumo-plano {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: var(--raio-lg);
+  background: var(--primaria-suave);
+  border: 1px solid rgba(37, 99, 235, .16);
+}
+
+.resumo-plano-rotulo {
+  display: block;
+  font-size: .76rem;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: var(--texto-suave);
+}
+
+.resumo-plano-nome {
+  display: block;
+  font-weight: 650;
+}
+
+.resumo-plano-valor {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.resumo-plano-valor strong {
+  font-size: 1.3rem;
+  font-weight: 750;
+  letter-spacing: -.01em;
+}
+
+.resumo-plano-valor small {
+  color: var(--texto-suave);
+}
+
 /* ---------- Pagamento PIX ---------- */
 .pagamento {
   display: grid;

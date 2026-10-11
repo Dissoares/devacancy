@@ -15,7 +15,8 @@
   <div class="<?= classe_campo($erros, 'cpf') ?>">
     <label class="campo-rotulo" for="cpf"><?= e(t('pagamento.cpf')) ?></label>
     <input class="entrada" id="cpf" name="cpf" inputmode="numeric" autocomplete="off" maxlength="14"
-           placeholder="000.000.000-00" value="<?= e($valores['cpf'] ?? '') ?>" data-mascara-cpf>
+           placeholder="000.000.000-00" value="<?= e($valores['cpf'] ?? '') ?>" data-mascara-cpf data-validar-cpf>
+    <div id="dica-cpf" aria-live="polite"></div>
     <?= erro_campo($erros, 'cpf') ?>
   </div>
 

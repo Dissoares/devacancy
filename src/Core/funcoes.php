@@ -46,7 +46,7 @@ function numero(int|float $valor): string
 /** Textos usados pelos scripts (avisos, rótulos de botões), no idioma atual. */
 function textos_js(): array
 {
-    $chaves = ['sessao_expirada', 'erro_generico', 'sem_conexao', 'mostrar_senha', 'ocultar_senha', 'remover', 'adicionar_mais', 'limite_arquivo', 'pronto_para_enviar'];
+    $chaves = ['sessao_expirada', 'erro_generico', 'sem_conexao', 'mostrar_senha', 'ocultar_senha', 'remover', 'adicionar_mais', 'limite_arquivo', 'pronto_para_enviar', 'cpf_valido', 'cpf_invalido'];
     return array_combine($chaves, array_map(fn (string $chave) => t('js.' . $chave), $chaves));
 }
 
