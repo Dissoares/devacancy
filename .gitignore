@@ -4,3 +4,5 @@
 !/storage/uploads/curriculos/.gitkeep
 /storage/logs/*
 !/storage/logs/.gitkeep
+
+/storage/cache/*
