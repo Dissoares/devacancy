@@ -1267,3 +1267,32 @@
 .vaga-publica .busca-garantias .icone {
   color: var(--sucesso-vivo, #16a34a);
 }
+
+/* ---------- PIX manual: QR code desenhado no navegador ---------- */
+.pix-manual {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.pix-manual .qr-pix {
+  width: 232px;
+  max-width: 100%;
+  padding: 10px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--borda);
+}
+
+.pix-manual .qr-pix svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.pix-manual-aviso {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
