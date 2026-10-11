@@ -80,7 +80,12 @@ final class AdminMigracaoController
             $admin = $this->prepararAdmin(trim((string) $requisicao->entrada('admin_email', '')), (string) $requisicao->entrada('admin_senha', ''));
         }
 
-        return $this->telaToken(null, $resultado, $admin);
+        // Diagnóstico do login com o que foi digitado (os campos de diagnóstico, ou os do administrador).
+        $emailDiag = trim((string) $requisicao->entrada('diag_email', '')) ?: trim((string) $requisicao->entrada('admin_email', ''));
+        $senhaDiag = (string) $requisicao->entrada('diag_senha', '') ?: (string) $requisicao->entrada('admin_senha', '');
+        $diagnostico = $emailDiag !== '' || $senhaDiag !== '' ? $this->diagnosticarLogin($emailDiag, $senhaDiag) : null;
+
+        return $this->telaToken(null, $resultado, $admin, $diagnostico);
     }
 
     // ---------------------------------------------------------------- Interno
@@ -131,13 +136,57 @@ final class AdminMigracaoController
         return 'Administrador pronto: ' . mb_strtolower($email) . '. Já pode entrar em /entrar com essa senha.';
     }
 
-    private function telaToken(?string $erro, ?array $resultado, ?string $admin = null): Resposta
+    /**
+     * Refaz, passo a passo, o que o login faz: acha a conta, lê o hash gravado e confere a senha.
+     * Nunca mostra a senha nem o hash inteiro. @return string[] linhas "✓/✗ ..." para a tela
+     */
+    private function diagnosticarLogin(string $email, string $senha): array
+    {
+        $ok = fn (bool $bom, string $texto): string => ($bom ? '✓ ' : '✗ ') . $texto;
+        $pdo = Conexao::obter();
+        $emailNormal = mb_strtolower(trim($email));
+
+        $linhas = [
+            "PHP " . PHP_VERSION . ' · banco ' . $pdo->query('SELECT VERSION()')->fetchColumn(),
+            $ok($senha !== '', 'Senha recebida pelo servidor: ' . strlen($senha) . ' bytes (' . mb_strlen($senha) . ' caracteres)'),
+        ];
+
+        $consulta = $pdo->prepare('SELECT id, tipo, nome, senha_hash FROM usuarios WHERE email = ?');
+        $consulta->execute([$emailNormal]);
+        $usuarios = $consulta->fetchAll();
+
+        $linhas[] = $ok(count($usuarios) === 1, count($usuarios) . ' conta(s) com o e-mail "' . $emailNormal . '"');
+        if ($usuarios === []) {
+            $linhas[] = 'Nenhuma conta com esse e-mail: o login diz "e-mail ou senha incorretos". Confira o e-mail digitado.';
+            return $linhas;
+        }
+
+        $conta = $usuarios[0];
+        $hash = (string) $conta['senha_hash'];
+        $linhas[] = "Conta #{$conta['id']} · tipo {$conta['tipo']} · {$conta['nome']}";
+        $linhas[] = $ok(strlen($hash) === 60 && str_starts_with($hash, '$2y$'), $hash === ''
+            ? 'Hash da senha: VAZIO (conta criada pelo Google, sem senha)'
+            : 'Hash da senha gravado: ' . strlen($hash) . ' caracteres, começa com ' . substr($hash, 0, 7) . ' (esperado: 60 caracteres, $2y$)');
+
+        if ($hash !== '' && $senha !== '') {
+            $confere = password_verify($senha, $hash);
+            $linhas[] = $ok($confere, $confere
+                ? 'password_verify: a senha digitada CONFERE com o hash gravado'
+                : 'password_verify: a senha digitada NÃO confere com o hash gravado');
+        }
+
+        $linhas[] = $ok($conta['tipo'] === 'admin', 'Tipo da conta: ' . $conta['tipo'] . ($conta['tipo'] === 'admin' ? '' : ' (não é administrador)'));
+        return $linhas;
+    }
+
+    private function telaToken(?string $erro, ?array $resultado, ?string $admin = null, ?array $diagnostico = null): Resposta
     {
         return Resposta::html(Visao::renderizar('instalador/migrar', [
             'titulo' => 'Migrações — Devacancy',
             'erro' => $erro,
             'resultado' => $resultado,
             'admin' => $admin,
+            'diagnostico' => $diagnostico,
         ], 'site'));
     }
 }
