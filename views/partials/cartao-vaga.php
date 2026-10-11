@@ -9,10 +9,15 @@ $bloqueada ??= true;
 $comAcao ??= false;
 $status ??= null;
 $recemEnviada ??= false;
+$proxima ??= false; // vaga da "reserva": próxima do perfil, não estritamente compatível
 ?>
 <article class="cartao-vaga<?= $bloqueada ? ' bloqueada' : '' ?><?= $recemEnviada ? ' recem-enviada' : '' ?>">
   <div class="cartao-vaga-topo">
-    <span class="compatibilidade"><?= e(t('vaga.compatibilidade', ['n' => (int) $compatibilidade])) ?></span>
+    <?php if ($proxima): ?>
+      <span class="compatibilidade compatibilidade-proxima"><?= e(t('vaga.proxima_do_perfil')) ?></span>
+    <?php else: ?>
+      <span class="compatibilidade"><?= e(t('vaga.compatibilidade', ['n' => (int) $compatibilidade])) ?></span>
+    <?php endif; ?>
     <span class="cartao-vaga-direita">
       <?= icones_stack($vaga->stack) ?>
       <?php if (strtotime($vaga->criadoEm) >= time() - 86400): ?>

@@ -33,6 +33,7 @@ $semCandidatura = array_values(array_filter($compativeis, fn (array $item) => !i
         <?= parcial('partials/cartao-vaga', [
             'vaga' => $item['vaga'],
             'compatibilidade' => $item['compatibilidade'],
+            'proxima' => $item['proxima'] ?? false,
             'bloqueada' => !$assinaturaAte,
             'comAcao' => true,
             'status' => $statusCandidaturas[$item['vaga']->id] ?? null,

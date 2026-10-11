@@ -70,7 +70,11 @@ $textoBotao = $usuario
           <span class="vaga-encontrada-selo"><?= icone('check', 'icone icone-sm') ?> <?= e(t('funil.vaga_encontrada')) ?></span>
           <span class="vaga-encontrada-direita">
             <?= icones_stack($vaga->stack) ?>
-            <span class="feed-item-match"><?= e(t('vaga.compatibilidade', ['n' => (int) $item['compatibilidade']])) ?></span>
+            <?php if (!empty($item['proxima'])): ?>
+              <span class="feed-item-match feed-item-proxima"><?= e(t('vaga.proxima_do_perfil')) ?></span>
+            <?php else: ?>
+              <span class="feed-item-match"><?= e(t('vaga.compatibilidade', ['n' => (int) $item['compatibilidade']])) ?></span>
+            <?php endif; ?>
           </span>
         </div>
 

@@ -52,6 +52,7 @@ final class CandidaturaController
                     return Resposta::html(Visao::parcial('partials/cartao-vaga', [
                         'vaga' => $item['vaga'],
                         'compatibilidade' => $item['compatibilidade'],
+                        'proxima' => $item['proxima'] ?? false,
                         'bloqueada' => false,
                         'comAcao' => true,
                         'status' => $this->candidaturas->statusPorVaga($usuario)[$vagaId] ?? null,

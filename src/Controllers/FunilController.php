@@ -95,6 +95,7 @@ final class FunilController
         $feed = array_map(fn (array $item) => [
             'vaga' => $item['vaga'],
             'compatibilidade' => $item['compatibilidade'],
+            'proxima' => $item['proxima'] ?? false,
             'stack' => $this->vagas->stackEmComum($perfil, $item['vaga']),
         ], array_slice($compativeis, 0, 8));
 

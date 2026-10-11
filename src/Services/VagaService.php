@@ -91,7 +91,8 @@ final class VagaService
         // Em todas, no máximo dois níveis de distância: estagiário não recebe vaga de tech lead.
         $nivelPerto = fn (Vaga $vaga) => abs(array_search($vaga->senioridade, $niveis, true) - $nivelPerfil) <= 2;
         $camadas = [
-            [5, fn (Vaga $vaga, int $emComum) => $nivelPerto($vaga) && in_array($vaga->area, $areas, true)],
+            // Mesma área, mas com alguma tecnologia em comum: sem isso, um dev Java recebia vaga de Cobol/Mainframe.
+            [5, fn (Vaga $vaga, int $emComum) => $nivelPerto($vaga) && in_array($vaga->area, $areas, true) && ($emComum > 0 || $vaga->stack === [])],
             [10, fn (Vaga $vaga, int $emComum) => $nivelPerto($vaga) && $vaga->modeloTrabalho === ModeloTrabalho::Remoto && ($emComum > 0 || in_array($vaga->area, $areas, true))],
             [15, fn (Vaga $vaga, int $emComum) => $nivelPerto($vaga) && $vaga->modeloTrabalho === ModeloTrabalho::Remoto],
         ];
