@@ -824,3 +824,20 @@
   flex-wrap: wrap;
   gap: 10px;
 }
+
+.gaveta-perigo {
+  padding: 0 24px 16px;
+}
+
+.gaveta-perigo .botao {
+  color: #b42318;
+}
+
+.formulario-linha {
+  display: grid;
+  gap: 8px;
+}
+
+.formulario-linha .entrada {
+  min-width: 260px;
+}
