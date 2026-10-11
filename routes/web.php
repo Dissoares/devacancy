@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Controllers\AdminAnalyticsController;
+use App\Controllers\AdminComissaoController;
 use App\Controllers\AdminController;
 use App\Controllers\AdminVagaController;
 use App\Controllers\AssinaturaController;
@@ -75,4 +76,6 @@ return function (Roteador $rotas): void {
     $rotas->post('/admin/vagas/{id}/alternar', [AdminVagaController::class, 'alternar'], $admin);
     $rotas->get('/admin/candidaturas', [CandidaturaController::class, 'fila'], $admin);
     $rotas->post('/admin/candidaturas/{id}/status', [CandidaturaController::class, 'atualizar'], $admin);
+    $rotas->get('/admin/comissoes', [AdminComissaoController::class, 'listar'], $admin);
+    $rotas->post('/admin/comissoes/{id}/pagar', [AdminComissaoController::class, 'marcarComoPaga'], $admin);
 };
