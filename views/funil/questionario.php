@@ -7,6 +7,7 @@
 use App\Enums\AreaAtuacao;
 use App\Enums\IdiomaFalado;
 use App\Enums\ModeloTrabalho;
+use App\Enums\NivelIngles;
 use App\Enums\RegiaoVagas;
 use App\Enums\Senioridade;
 use App\Services\FunilService;
@@ -17,7 +18,7 @@ $iconesModelo = ['remoto' => 'local', 'hibrido' => 'calendario', 'presencial' =>
 $periodo = $moeda === 'BRL' ? t('funil.por_mes') : t('funil.por_ano');
 $faixas = FunilService::FAIXAS_SALARIAIS[$moeda];
 
-$perguntas = ['area', 'senioridade', 'anos_experiencia', 'stack', 'idiomas', 'modelos', ...($noBrasil ? ['regiao_vagas'] : []), 'cidade', 'pretensao_salarial', 'ultima_remuneracao'];
+$perguntas = ['area', 'senioridade', 'anos_experiencia', 'stack', 'idiomas', 'nivel_ingles', 'modelos', ...($noBrasil ? ['regiao_vagas'] : []), 'cidade', 'pretensao_salarial', 'ultima_remuneracao'];
 $passoInicial ??= 0;
 foreach ($perguntas as $indice => $pergunta) {
     if (isset($erros[$pergunta])) {
@@ -108,6 +109,19 @@ $cabecalho = fn (string $pergunta, string $titulo, ?string $subtitulo = null): s
     <?= erro_campo($erros, 'idiomas') ?>
   </fieldset>
 
+  <fieldset class="pergunta" data-pergunta="nivel_ingles" data-avancar-ao-escolher data-condicional-campo="idiomas" data-condicional-valor="en">
+    <?= $cabecalho('nivel_ingles', t('funil.p_nivel_ingles'), t('funil.p_nivel_ingles_sub')) ?>
+    <div class="opcoes-lista">
+      <?php foreach (NivelIngles::cases() as $nivelIngles): ?>
+        <label class="opcao-cartao opcao-linha">
+          <input type="radio" name="nivel_ingles" value="<?= e($nivelIngles->value) ?>" <?= $marcado('nivel_ingles', $nivelIngles->value) ?>>
+          <span><strong><?= e($nivelIngles->rotulo()) ?></strong><small><?= e(t('funil.nivel_ingles_desc.' . $nivelIngles->value)) ?></small></span>
+        </label>
+      <?php endforeach; ?>
+    </div>
+    <?= erro_campo($erros, 'nivel_ingles') ?>
+  </fieldset>
+
   <fieldset class="pergunta" data-pergunta="modelos">
     <?= $cabecalho('modelos', t('funil.p_modelo'), t('funil.marque_varios')) ?>
     <div class="opcoes-cartao opcoes-tres">
@@ -181,7 +195,7 @@ $cabecalho = fn (string $pergunta, string $titulo, ?string $subtitulo = null): s
   <?= parcial('funil/radar', ['total' => $radarTotal]) ?>
 
   <div class="questionario-navegacao">
-    <button class="botao botao-fantasma" type="button" data-voltar><?= icone('chevron-esq', 'icone icone-sm') ?> <?= e(t('funil.voltar')) ?></button>
+    <button class="botao botao-fantasma" type="button" data-voltar aria-label="<?= e(t('funil.voltar')) ?>"><?= icone('chevron-esq', 'icone icone-sm') ?> <span class="rotulo-voltar"><?= e(t('funil.voltar')) ?></span></button>
     <button class="botao botao-primario botao-grande" type="button" data-continuar><?= e(t('funil.continuar')) ?> <?= icone('seta', 'icone icone-seta') ?></button>
     <button class="botao botao-primario botao-grande" type="submit" data-enviar>
       <?= icone('busca', 'icone icone-sm') ?> <?= e(t('funil.ver_minhas_vagas')) ?>
@@ -201,8 +215,8 @@ $cabecalho = fn (string $pergunta, string $titulo, ?string $subtitulo = null): s
     </div>
   </header>
   <dl class="perfil-vivo-linhas">
-    <?php foreach (['area', 'senioridade', 'anos_experiencia', 'stack', 'idiomas', 'modelos', ...($noBrasil ? ['regiao_vagas'] : []), 'cidade', 'pretensao_salarial'] as $campo): ?>
-      <div data-perfil-linha="<?= e($campo) ?>">
+    <?php foreach (['area', 'senioridade', 'anos_experiencia', 'stack', 'idiomas', 'nivel_ingles', 'modelos', ...($noBrasil ? ['regiao_vagas'] : []), 'cidade', 'pretensao_salarial'] as $campo): ?>
+      <div data-perfil-linha="<?= e($campo) ?>" <?= $campo === 'nivel_ingles' ? 'data-condicional-campo="idiomas" data-condicional-valor="en"' : '' ?>>
         <dt><?= e(t('funil.pv_' . $campo)) ?></dt>
         <dd data-perfil-valor>—</dd>
       </div>

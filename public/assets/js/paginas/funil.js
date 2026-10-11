@@ -18,6 +18,14 @@
 
   const ultima = () => atual === perguntas.length - 1;
 
+  /** Pergunta condicional (ex: nível de inglês só se marcou inglês nos idiomas): só conta se a condição bate. */
+  function condicaoAtendida(elemento) {
+    const campo = elemento.dataset.condicionalCampo;
+    if (!campo) return true;
+    const valor = elemento.dataset.condicionalValor;
+    return !!formulario.querySelector(`[name="${campo}[]"][value="${valor}"]:checked, [name="${campo}"][value="${valor}"]:checked`);
+  }
+
   function mostrar(indice) {
     const direcao = indice >= atual ? 'entra-direita' : 'entra-esquerda';
     atual = indice;
@@ -27,7 +35,17 @@
       if (posicao === indice) pergunta.classList.add(direcao);
       pergunta.setAttribute('aria-hidden', String(posicao !== indice));
     });
-    progresso.style.width = `${((indice + 1) / perguntas.length) * 100}%`;
+
+    // "Pergunta N de T" e a barra contam só as perguntas que valem para esta pessoa (sem as condicionais puladas).
+    const validas = perguntas.filter(condicaoAtendida);
+    const posicaoReal = validas.indexOf(perguntas[indice]) + 1;
+    const contador = perguntas[indice].querySelector('.pergunta-contador');
+    if (contador && posicaoReal > 0) {
+      let numero = 0;
+      const trocas = [posicaoReal, validas.length];
+      contador.firstChild.textContent = contador.firstChild.textContent.replace(/\d+/g, (achado) => (numero < 2 ? trocas[numero++] : achado));
+    }
+    progresso.style.width = `${(posicaoReal / validas.length) * 100}%`;
     botaoVoltar.disabled = indice === 0;
     botaoContinuar.hidden = ultima();
     botaoEnviar.hidden = !ultima();
@@ -39,6 +57,8 @@
 
   /** Radios obrigatórios precisam de uma escolha; grupos de checkbox, de pelo menos uma; a stack, de uma tag. */
   function respondida(pergunta) {
+    if (!condicaoAtendida(pergunta)) return true;
+
     const obrigatorio = pergunta.querySelector('[data-obrigatorio]');
     if (obrigatorio) return obrigatorio.value.trim() !== '';
 
@@ -64,11 +84,13 @@
       avisar(pergunta);
       return;
     }
-    if (ultima()) {
+    let proximo = atual + 1;
+    while (proximo < perguntas.length && !condicaoAtendida(perguntas[proximo])) proximo++;
+    if (proximo >= perguntas.length) {
       formulario.requestSubmit(botaoEnviar);
       return;
     }
-    mostrar(atual + 1);
+    mostrar(proximo);
     comemorar();
   }
 
@@ -93,7 +115,9 @@
 
   function atualizarPerfil() {
     if (!perfilVivo) return;
-    const linhas = [...perfilVivo.querySelectorAll('[data-perfil-linha]')];
+    const todasLinhas = [...perfilVivo.querySelectorAll('[data-perfil-linha]')];
+    todasLinhas.forEach((linha) => linha.hidden = !condicaoAtendida(linha));
+    const linhas = todasLinhas.filter(condicaoAtendida);
     let preenchidas = 0;
     linhas.forEach((linha) => {
       const valores = respostaDe(linha.dataset.perfilLinha);
@@ -141,7 +165,11 @@
   atualizarPerfil();
   formulario.classList.add('em-passos');
   botaoContinuar.addEventListener('click', avancar);
-  botaoVoltar.addEventListener('click', () => atual > 0 && mostrar(atual - 1));
+  botaoVoltar.addEventListener('click', () => {
+    let anterior = atual - 1;
+    while (anterior >= 0 && !condicaoAtendida(perguntas[anterior])) anterior--;
+    if (anterior >= 0) mostrar(anterior);
+  });
 
   // Escolha única: avança sozinho depois de um instante, para a pessoa ver a opção marcada.
   perguntas.filter((pergunta) => pergunta.hasAttribute('data-avancar-ao-escolher')).forEach((pergunta) => {
