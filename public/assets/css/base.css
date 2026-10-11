@@ -3,48 +3,55 @@
    ========================================================================== */
 
 :root {
-  --fundo: #07080c;
-  --fundo-2: #0b0d13;
-  --superficie: #10131b;
-  --superficie-2: #161a24;
-  --superficie-vidro: rgba(16, 19, 27, .72);
-  --borda: rgba(255, 255, 255, .08);
-  --borda-forte: rgba(255, 255, 255, .14);
+  /* Tema claro: azul transmite confiança, laranja fica reservado para os botões de ação. */
+  --fundo: #f6f8fc;
+  --fundo-2: #eef2f9;
+  --superficie: #ffffff;
+  --superficie-2: #f3f6fb;
+  --superficie-vidro: rgba(255, 255, 255, .92);
+  --borda: #e3e8f0;
+  --borda-forte: #cfd7e3;
 
-  --texto: #eef0f6;
-  --texto-2: #b4b9c8;
-  --texto-suave: #7f8597;
+  --texto: #0f172a;
+  --texto-2: #334155;
+  --texto-suave: #64748b;
 
-  --primaria: #7c6cff;
-  --primaria-forte: #6a58ff;
-  --primaria-suave: rgba(124, 108, 255, .14);
-  --ciano: #4cc9f0;
-  --sucesso: #3ddc97;
-  --sucesso-suave: rgba(61, 220, 151, .12);
-  --alerta: #ffb547;
-  --alerta-suave: rgba(255, 181, 71, .12);
-  --erro: #ff6b81;
-  --erro-suave: rgba(255, 107, 129, .12);
+  --primaria: #2563eb;
+  --primaria-forte: #1d4ed8;
+  --primaria-suave: rgba(37, 99, 235, .08);
+  --ciano: #0ea5e9;
+  --sucesso: #15803d;
+  --sucesso-vivo: #16a34a;
+  --sucesso-suave: rgba(22, 163, 74, .1);
+  --alerta: #b45309;
+  --alerta-suave: rgba(245, 158, 11, .14);
+  --erro: #dc2626;
+  --erro-suave: rgba(220, 38, 38, .08);
 
-  --gradiente: linear-gradient(120deg, #8b7bff 0%, #6a8bff 45%, #4cc9f0 100%);
-  --gradiente-texto: linear-gradient(100deg, #a99dff 0%, #7fa6ff 45%, #6fe0ff 100%);
+  /* Cor de ação (CTA): complementar ao azul, para o olho ir direto ao botão. */
+  --acao: #f97316;
+  --acao-forte: #ea580c;
+  --brilho-acao: 0 10px 24px -6px rgba(234, 88, 12, .45);
+
+  --gradiente: linear-gradient(120deg, #2563eb 0%, #4f46e5 55%, #0ea5e9 100%);
+  --gradiente-texto: linear-gradient(100deg, #1d4ed8 0%, #4f46e5 50%, #0284c7 100%);
 
   --raio-sm: 8px;
   --raio: 12px;
   --raio-lg: 18px;
   --raio-xl: 24px;
 
-  --sombra: 0 1px 0 rgba(255, 255, 255, .04) inset, 0 10px 30px rgba(0, 0, 0, .35);
-  --sombra-lg: 0 1px 0 rgba(255, 255, 255, .05) inset, 0 30px 80px rgba(0, 0, 0, .55);
-  --brilho-primaria: 0 0 0 1px rgba(124, 108, 255, .35), 0 8px 30px rgba(124, 108, 255, .35);
+  --sombra: 0 1px 2px rgba(15, 23, 42, .05), 0 8px 24px -8px rgba(15, 23, 42, .08);
+  --sombra-lg: 0 2px 6px rgba(15, 23, 42, .04), 0 28px 64px -16px rgba(15, 23, 42, .18);
+  --brilho-primaria: 0 0 0 3px rgba(37, 99, 235, .18);
 
-  --fonte: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fonte: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --fonte-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 
   --largura: 1180px;
   --transicao: .2s cubic-bezier(.2, .7, .2, 1);
 
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 *,
@@ -53,6 +60,11 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+/* O atributo hidden sempre esconde, mesmo em componentes com display próprio (botões, painéis em grid). */
+[hidden] {
+  display: none !important;
 }
 
 html {
@@ -106,7 +118,7 @@ h4 {
   color: var(--texto);
   font-weight: 600;
   line-height: 1.1;
-  letter-spacing: -.03em;
+  letter-spacing: -.02em;
   text-wrap: balance;
 }
 
@@ -115,8 +127,8 @@ p {
 }
 
 ::selection {
-  background: rgba(124, 108, 255, .35);
-  color: #fff;
+  background: rgba(37, 99, 235, .18);
+  color: var(--texto);
 }
 
 :focus-visible {
@@ -180,8 +192,8 @@ p {
   height: 44px;
   padding: 0 18px;
   border-radius: var(--raio);
-  font-size: .94rem;
-  font-weight: 550;
+  font-size: .95rem;
+  font-weight: 600;
   letter-spacing: -.01em;
   white-space: nowrap;
   transition: background var(--transicao), border-color var(--transicao), box-shadow var(--transicao), transform var(--transicao), color var(--transicao);
@@ -202,35 +214,40 @@ p {
   transform: translateX(3px);
 }
 
+/* Botão de ação (CTA): a única coisa laranja da página. */
 .botao-primario {
-  background: var(--primaria);
+  background: linear-gradient(180deg, #fb8a35 0%, var(--acao) 45%, var(--acao-forte) 100%);
   color: #fff;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, .25) inset, 0 6px 20px rgba(124, 108, 255, .35);
+  font-weight: 700;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .35) inset, var(--brilho-acao);
+  text-shadow: 0 1px 0 rgba(154, 52, 18, .35);
 }
 
 .botao-primario:hover {
-  background: var(--primaria-forte);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, .25) inset, 0 10px 30px rgba(124, 108, 255, .5);
+  background: linear-gradient(180deg, var(--acao) 0%, var(--acao-forte) 100%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .35) inset, 0 14px 30px -6px rgba(234, 88, 12, .55);
+  transform: translateY(-1px);
 }
 
+/* Botão sólido escuro (ações secundárias de destaque, como "Sou empresa"). */
 .botao-claro {
-  background: #fff;
-  color: #0b0d13;
+  background: var(--texto);
+  color: #fff;
 }
 
 .botao-claro:hover {
-  background: #e9ebf3;
+  background: #1e293b;
 }
 
 .botao-secundario {
-  background: rgba(255, 255, 255, .04);
+  background: rgba(15, 23, 42, 0.028);
   border: 1px solid var(--borda-forte);
   color: var(--texto);
 }
 
 .botao-secundario:hover {
-  background: rgba(255, 255, 255, .08);
-  border-color: rgba(255, 255, 255, .22);
+  background: rgba(15, 23, 42, 0.056);
+  border-color: rgba(15, 23, 42, 0.154);
 }
 
 .botao-fantasma {
@@ -239,7 +256,7 @@ p {
 
 .botao-fantasma:hover {
   color: var(--texto);
-  background: rgba(255, 255, 255, .05);
+  background: rgba(15, 23, 42, 0.035);
 }
 
 .botao-grande {
@@ -299,5 +316,59 @@ p {
     animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+.rotulo-botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Ação com menos peso (um botão por cartão): mesma cor do CTA, sem o preenchimento. */
+.botao-acao-suave {
+  border: 1.5px solid var(--acao);
+  background: #fff7ed;
+  color: var(--acao-forte);
+  font-weight: 700;
+}
+
+.botao-acao-suave:hover {
+  background: var(--acao);
+  color: #fff;
+  box-shadow: var(--brilho-acao);
+}
+
+/* ---------- Celular: sem rolagem lateral e sem zoom automático ---------- */
+/* "clip" corta o que passar da tela sem criar área de rolagem (e não quebra os elementos sticky, como o "hidden" faria). */
+html,
+body {
+  overflow-x: clip;
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+/* Toque duplo não dá zoom em botões, opções e links (o toque fica imediato). */
+a,
+button,
+label,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+/* O iPhone dá zoom ao focar campos com fonte menor que 16px: no celular, todos ficam com 16px. */
+@media (max-width: 900px) {
+  input,
+  select,
+  textarea,
+  .entrada,
+  .selecao,
+  .area-texto {
+    font-size: 16px !important;
   }
 }
