@@ -804,14 +804,22 @@
     font-size: .94rem;
   }
 
-  /* Botão na zona do polegar: gruda no rodapé enquanto a pessoa rola as opções. */
+  /* Botão sempre no mesmo lugar (rodapé da tela, zona do polegar), seja a pergunta curta ou longa. */
   .em-passos .questionario-navegacao {
-    position: sticky;
+    position: fixed;
+    left: 0;
+    right: 0;
     bottom: 0;
-    z-index: 5;
-    margin: 0 -16px;
+    z-index: 40;
     padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
-    background: linear-gradient(to bottom, rgba(246, 248, 252, 0), var(--fundo) 28%);
+    border-top: 1px solid var(--borda);
+    background: rgba(246, 248, 252, 0.94);
+    backdrop-filter: blur(12px);
+  }
+
+  /* Espaço no fim pra última opção nunca ficar escondida atrás da barra fixa. */
+  .questionario.em-passos {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
   }
 
   .questionario-navegacao [data-voltar] {
