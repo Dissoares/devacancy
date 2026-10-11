@@ -25,6 +25,56 @@ final class PaypalService
         return (string) configuracao('paypal.cliente_id');
     }
 
+    // ---------------------------------------------------------------- Pagamento direto por e-mail (sem API)
+
+    /** E-mail da conta PayPal que recebe os pagamentos avulsos (PAYPAL_EMAIL). */
+    public function emailRecebedor(): string
+    {
+        return (string) configuracao('paypal.email');
+    }
+
+    public function pagamentoPorEmailConfigurado(): bool
+    {
+        return $this->emailRecebedor() !== '';
+    }
+
+    /** Endereço para onde o formulário "Pagar com PayPal" envia o cliente. */
+    public function urlPagamentoDireto(): string
+    {
+        return configuracao('paypal.modo') === 'live'
+            ? 'https://www.paypal.com/cgi-bin/webscr'
+            : 'https://www.sandbox.paypal.com/cgi-bin/webscr';
+    }
+
+    /**
+     * Confere com o próprio PayPal se o aviso (IPN) é verdadeiro: devolve o corpo recebido e espera "VERIFIED".
+     * Em ambiente local, um aviso de teste com ipn_teste=1 passa direto (nunca em produção).
+     */
+    public function ipnVerdadeiro(string $corpo): bool
+    {
+        parse_str($corpo, $campos);
+        if (configuracao('app.ambiente') === 'local' && ($campos['ipn_teste'] ?? '') === '1') {
+            return true;
+        }
+
+        $url = configuracao('paypal.modo') === 'live'
+            ? 'https://ipnpb.paypal.com/cgi-bin/webscr'
+            : 'https://ipnpb.sandbox.paypal.com/cgi-bin/webscr';
+
+        $curl = curl_init($url);
+        curl_setopt_array($curl, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => 'cmd=_notify-validate&' . $corpo,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 20,
+            CURLOPT_HTTPHEADER => ['Content-Type: application/x-www-form-urlencoded', 'User-Agent: Devacancy-IPN'],
+        ]);
+        $resposta = curl_exec($curl);
+        curl_close($curl);
+
+        return is_string($resposta) && trim($resposta) === 'VERIFIED';
+    }
+
     /** ID do plano no PayPal para o plano interno e a moeda, ou null se não foi criado. */
     public function idDoPlano(string $plano, string $moeda): ?string
     {
