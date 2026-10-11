@@ -14,21 +14,44 @@ use App\Interfaces\AssinaturaRepositoryInterface;
 use App\Interfaces\PagamentoRepositoryInterface;
 use RuntimeException;
 
-/** Planos, checkout PIX e liberação da assinatura quando o pagamento é confirmado. */
+/**
+ * Planos, checkout e liberação da assinatura.
+ * Brasil: PIX (ExPay, cobrança avulsa por período) e PayPal em reais. Resto do mundo: PayPal em dólar.
+ * PayPal é assinatura recorrente: cada ciclo cobrado vira um pagamento e estende o prazo.
+ */
 final class AssinaturaService
 {
     public function __construct(
         private readonly AssinaturaRepositoryInterface $assinaturas,
         private readonly PagamentoRepositoryInterface $pagamentos,
         private readonly ExpayService $expay,
+        private readonly PaypalService $paypal,
         private readonly Transacao $transacao,
     ) {
     }
 
-    /** @return array<string, array{nome: string, valor: float, dias: int, meses: int, destaque?: bool}> */
+    /** @return array<string, array{dias: int, periodo: string, divisor: int, precos: array<string, float>, destaque?: bool}> */
     public function planos(): array
     {
         return configuracao('planos');
+    }
+
+    public function moedaPara(bool $noBrasil): string
+    {
+        return $noBrasil ? 'BRL' : 'USD';
+    }
+
+    /** Meios de pagamento oferecidos: PIX só para quem está no Brasil. @return string[] */
+    public function metodosPara(bool $noBrasil): array
+    {
+        $metodos = [];
+        if ($noBrasil && ($this->expay->configurado() || $this->simulacaoPix())) {
+            $metodos[] = 'pix';
+        }
+        if ($this->paypal->configurado() || $this->simulacaoPaypal()) {
+            $metodos[] = 'paypal';
+        }
+        return $metodos;
     }
 
     public function vigenteAte(Usuario $usuario): ?string
@@ -41,49 +64,69 @@ final class AssinaturaService
         return $this->assinaturas->contarAtivas();
     }
 
-    /** Sem chave da ExPay em ambiente local, o checkout gera cobranças de mentira para testar o fluxo. */
-    public function modoSimulacao(): bool
+    /** Sem chave da ExPay em ambiente local, o PIX gera cobranças de mentira para testar o fluxo. */
+    public function simulacaoPix(): bool
     {
         return !$this->expay->configurado() && configuracao('app.ambiente') === 'local';
     }
 
+    /** Sem credenciais do PayPal em ambiente local, o botão do PayPal vira um botão de simulação. */
+    public function simulacaoPaypal(): bool
+    {
+        return !$this->paypal->configurado() && configuracao('app.ambiente') === 'local';
+    }
+
+    public function paypalClienteId(): string
+    {
+        return $this->paypal->clienteId();
+    }
+
+    /** ID do plano no PayPal para montar o botão de assinatura. */
+    public function idPlanoPaypal(string $plano, string $moeda): ?string
+    {
+        return $this->paypal->idDoPlano($plano, $moeda);
+    }
+
+    // ---------------------------------------------------------------- PIX
+
     /** @throws ValidacaoException */
-    public function iniciarPagamento(Usuario $usuario, array $dados): Pagamento
+    public function iniciarPagamento(Usuario $usuario, array $dados, bool $noBrasil): Pagamento
     {
         $plano = $this->planos()[$dados['plano'] ?? ''] ?? null;
         $cpf = preg_replace('/\D/', '', (string) ($dados['cpf'] ?? ''));
 
         $erros = [];
         if ($plano === null) {
-            $erros['plano'] = 'Escolha um plano.';
+            $erros['plano'] = t('pagamento.escolha_plano');
         }
         if (!$this->cpfValido($cpf)) {
-            $erros['cpf'] = 'Informe um CPF válido.';
+            $erros['cpf'] = t('pagamento.cpf_invalido');
         }
         if ($erros !== []) {
             throw new ValidacaoException($erros);
         }
-        if (!$this->expay->configurado() && !$this->modoSimulacao()) {
-            throw new ValidacaoException(['geral' => 'Pagamentos indisponíveis no momento. Tente novamente em instantes.']);
+        if (!in_array('pix', $this->metodosPara($noBrasil), true)) {
+            throw new ValidacaoException(['geral' => t('pagamento.indisponivel')]);
         }
 
-        $id = $this->pagamentos->criar($usuario->id, $dados['plano'], $plano['valor'], 'pix');
+        $valor = $plano['precos']['BRL'];
+        $id = $this->pagamentos->criar($usuario->id, $dados['plano'], $valor, 'pix', 'BRL');
 
-        if ($this->modoSimulacao()) {
+        if ($this->simulacaoPix()) {
             $this->pagamentos->registrarCobranca($id, 'simulado-' . $id, 'PIX-SIMULADO-DEVACANCY-' . $id, null, date('Y-m-d H:i:s', strtotime('+30 minutes')));
             return $this->pagamentos->buscarPorId($id);
         }
 
         try {
-            $cobranca = $this->expay->criarCobrancaPix($plano['valor'], 'pagamento-' . $id, [
+            $cobranca = $this->expay->criarCobrancaPix($valor, 'pagamento-' . $id, [
                 'name' => $usuario->nome,
                 'document' => $cpf,
                 'email' => $usuario->email,
             ]);
         } catch (RuntimeException $erro) {
-            error_log(sprintf("[%s] ExPay: %s\n", date('Y-m-d H:i:s'), $erro->getMessage()), 3, RAIZ . '/storage/logs/erros.log');
+            $this->registrarErro('ExPay', $erro);
             $this->pagamentos->concluir($id, StatusPagamento::Falhou);
-            throw new ValidacaoException(['geral' => 'Não conseguimos gerar o PIX agora. Tente novamente em instantes.']);
+            throw new ValidacaoException(['geral' => t('pagamento.falha_pix')]);
         }
 
         $this->pagamentos->registrarCobranca($id, $cobranca['id'], $cobranca['copia_cola'], $cobranca['qr_base64'], $cobranca['expira_em']);
@@ -114,7 +157,7 @@ final class AssinaturaService
         try {
             $cobranca = $this->expay->consultarCobranca($pagamento->gatewayId);
         } catch (RuntimeException $erro) {
-            error_log(sprintf("[%s] ExPay: %s\n", date('Y-m-d H:i:s'), $erro->getMessage()), 3, RAIZ . '/storage/logs/erros.log');
+            $this->registrarErro('ExPay', $erro);
             return $pagamento;
         }
 
@@ -123,7 +166,7 @@ final class AssinaturaService
 
     public function simularPagamento(Usuario $usuario, int $id): Pagamento
     {
-        if (!$this->modoSimulacao()) {
+        if (!$this->simulacaoPix()) {
             throw new NaoEncontradoException();
         }
         return $this->aplicarStatus($this->pagamentoDoUsuario($usuario, $id), StatusPagamento::Pago);
@@ -141,6 +184,93 @@ final class AssinaturaService
         }
     }
 
+    // ---------------------------------------------------------------- PayPal
+
+    /**
+     * Chamado depois que a pessoa aprova a assinatura no botão do PayPal.
+     * Confere na API se a assinatura é mesmo desta pessoa. Retorna true se a assinatura já está ativa.
+     */
+    public function confirmarPaypal(Usuario $usuario, string $assinaturaId): bool
+    {
+        if (!preg_match('/^[A-Z0-9-]{6,64}$/', $assinaturaId)) {
+            throw new NaoEncontradoException();
+        }
+
+        $dados = $this->paypal->assinatura($assinaturaId);
+        if ((int) ($dados['custom_id'] ?? 0) !== $usuario->id) {
+            throw new NaoEncontradoException();
+        }
+
+        $this->sincronizarPaypal($assinaturaId, $dados);
+        return $this->vigenteAte($usuario) !== null;
+    }
+
+    /**
+     * Garante um pagamento para cada ciclo já cobrado pelo PayPal (idempotente: rodar de novo não duplica).
+     * Usado no retorno do checkout, na página de espera e no webhook de renovação.
+     */
+    public function sincronizarPaypal(string $assinaturaId, ?array $dados = null): void
+    {
+        try {
+            $dados ??= $this->paypal->assinatura($assinaturaId);
+        } catch (RuntimeException $erro) {
+            $this->registrarErro('PayPal', $erro);
+            return;
+        }
+
+        $interno = $this->paypal->planoInterno((string) ($dados['plan_id'] ?? ''));
+        $usuarioId = (int) ($dados['custom_id'] ?? 0);
+        if ($interno === null || $usuarioId === 0) {
+            return;
+        }
+
+        [$plano, $moeda] = $interno;
+        $ciclos = 0;
+        foreach ($dados['billing_info']['cycle_executions'] ?? [] as $execucao) {
+            $ciclos += (int) ($execucao['cycles_completed'] ?? 0);
+        }
+
+        for ($ciclo = $this->pagamentos->contarPagosDaAssinaturaExterna($assinaturaId) + 1; $ciclo <= $ciclos; $ciclo++) {
+            $this->registrarCicloPaypal($usuarioId, $plano, $moeda, $assinaturaId, $ciclo);
+        }
+    }
+
+    /** O PayPal manda o ID da assinatura em resource.id (eventos de assinatura) ou resource.billing_agreement_id (cobranças). */
+    public function processarWebhookPaypal(array $evento): void
+    {
+        $recurso = $evento['resource'] ?? [];
+        $assinaturaId = (string) ($recurso['billing_agreement_id'] ?? (str_starts_with((string) ($evento['event_type'] ?? ''), 'BILLING.SUBSCRIPTION') ? ($recurso['id'] ?? '') : ''));
+
+        if ($assinaturaId !== '') {
+            $this->sincronizarPaypal($assinaturaId);
+        }
+    }
+
+    /** Modo simulação (local, sem credenciais): ativa a assinatura como se o PayPal tivesse cobrado o primeiro ciclo. */
+    public function simularPaypal(Usuario $usuario, string $plano, string $moeda): void
+    {
+        if (!$this->simulacaoPaypal() || !isset($this->planos()[$plano]['precos'][$moeda])) {
+            throw new NaoEncontradoException();
+        }
+        $this->registrarCicloPaypal($usuario->id, $plano, $moeda, 'SIMULADO-' . strtoupper(bin2hex(random_bytes(6))), 1);
+    }
+
+    private function registrarCicloPaypal(int $usuarioId, string $plano, string $moeda, string $assinaturaId, int $ciclo): void
+    {
+        $config = $this->planos()[$plano] ?? throw new RuntimeException("Plano desconhecido: {$plano}");
+
+        $this->transacao->executar(function () use ($usuarioId, $plano, $moeda, $assinaturaId, $ciclo, $config): void {
+            $novo = $this->pagamentos->registrarPagoExterno(
+                $usuarioId, $plano, $config['precos'][$moeda], $moeda, 'paypal', "paypal-{$assinaturaId}-{$ciclo}", $assinaturaId,
+            );
+            if ($novo) {
+                $this->assinaturas->estender($usuarioId, $plano, $config['dias']);
+            }
+        });
+    }
+
+    // ---------------------------------------------------------------- Interno
+
     private function aplicarStatus(Pagamento $pagamento, StatusPagamento $status): Pagamento
     {
         if ($status === StatusPagamento::Pendente) {
@@ -156,6 +286,11 @@ final class AssinaturaService
         });
 
         return $this->pagamentos->buscarPorId($pagamento->id);
+    }
+
+    private function registrarErro(string $gateway, RuntimeException $erro): void
+    {
+        error_log(sprintf("[%s] %s: %s\n", date('Y-m-d H:i:s'), $gateway, $erro->getMessage()), 3, RAIZ . '/storage/logs/erros.log');
     }
 
     private function cpfValido(string $cpf): bool
