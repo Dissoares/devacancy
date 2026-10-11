@@ -19,13 +19,14 @@ interface UsuarioRepositoryInterface
 
     public function emailExiste(string $email): bool;
 
-    public function criar(TipoUsuario $tipo, string $nome, string $email, ?string $senhaHash, ?string $avatarUrl = null): Usuario;
+    public function criar(TipoUsuario $tipo, string $nome, string $email, ?string $senhaHash, ?string $avatarUrl = null, string $idioma = 'pt', ?string $pais = null): Usuario;
 
     public function vincularContaSocial(int $usuarioId, ProvedorSocial $provedor, string $provedorId): void;
 
     public function atualizarAvatarSeVazio(int $usuarioId, ?string $avatarUrl): void;
 
-    public function atualizarTelefone(int $usuarioId, string $telefone): void;
+    /** Telefone nulo mantém o atual. */
+    public function atualizarTelefone(int $usuarioId, ?string $telefone): void;
 
     public function marcarCadastroCompleto(int $usuarioId): void;
 
