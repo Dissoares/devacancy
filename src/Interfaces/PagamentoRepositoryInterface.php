@@ -22,6 +22,9 @@ interface PagamentoRepositoryInterface
 
     public function registrarCobranca(int $id, string $gatewayId, ?string $copiaCola, ?string $qrBase64, ?string $expiraEm): void;
 
+    /** Pagamentos ainda pendentes de um método, com o usuário, para a confirmação manual do admin. @return array<int, array> */
+    public function listarPendentesDoMetodo(string $metodo): array;
+
     /** Sai de "pendente" para o novo status. Retorna false se outro processo já mudou o status. */
     public function concluir(int $id, StatusPagamento $status): bool;
 }
