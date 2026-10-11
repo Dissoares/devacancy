@@ -6,6 +6,7 @@ use App\Core\Ambiente;
 use App\Core\Conexao;
 use App\Interfaces\AssinaturaRepositoryInterface;
 use App\Interfaces\CandidaturaRepositoryInterface;
+use App\Interfaces\ComissaoRepositoryInterface;
 use App\Interfaces\PagamentoRepositoryInterface;
 use App\Interfaces\PerfilEmpresaRepositoryInterface;
 use App\Interfaces\PerfilProfissionalRepositoryInterface;
@@ -13,6 +14,7 @@ use App\Interfaces\UsuarioRepositoryInterface;
 use App\Interfaces\VagaRepositoryInterface;
 use App\Repositories\AssinaturaRepository;
 use App\Repositories\CandidaturaRepository;
+use App\Repositories\ComissaoRepository;
 use App\Repositories\PagamentoRepository;
 use App\Repositories\PerfilEmpresaRepository;
 use App\Repositories\PerfilProfissionalRepository;
@@ -101,5 +103,6 @@ return [
         AssinaturaRepositoryInterface::class => AssinaturaRepository::class,
         PagamentoRepositoryInterface::class => PagamentoRepository::class,
         CandidaturaRepositoryInterface::class => CandidaturaRepository::class,
+        ComissaoRepositoryInterface::class => ComissaoRepository::class,
     ],
 ];
