@@ -116,15 +116,23 @@
   color: var(--texto-suave);
 }
 
-/* Cartões grandes (área, modelo de trabalho) */
+/* Cartões grandes (área, modelo de trabalho). Flex (não grid) pra centralizar o último item
+   órfão quando o total de opções é ímpar, em vez de deixar um buraco vazio do lado dele. */
 .opcoes-cartao {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
 }
 
-.opcoes-cartao.opcoes-tres {
-  grid-template-columns: repeat(3, 1fr);
+.opcoes-cartao .opcao-cartao {
+  flex: 1 1 150px;
+  max-width: calc(50% - 5px);
+}
+
+.opcoes-cartao.opcoes-tres .opcao-cartao {
+  flex-basis: 150px;
+  max-width: calc(33.333% - 7px);
 }
 
 .opcoes-lista {
@@ -161,9 +169,19 @@
 }
 
 .opcao-cartao > span .icone {
+  box-sizing: content-box;
   width: 22px;
   height: 22px;
+  padding: 9px;
+  border-radius: var(--raio);
+  background: var(--primaria-suave);
   color: var(--primaria);
+  transition: background var(--transicao), color var(--transicao);
+}
+
+.opcao-cartao input:checked + span .icone {
+  background: var(--primaria);
+  color: #fff;
 }
 
 .opcao-cartao strong {
@@ -271,12 +289,20 @@
   display: none;
 }
 
+/* Na primeira pergunta não há para onde voltar: o botão sai e o "Continuar" ocupa a linha toda. */
 .questionario-navegacao [data-voltar]:disabled {
-  visibility: hidden;
+  display: none;
 }
 
 .questionario-navegacao .botao-grande {
-  margin-left: auto;
+  flex: 1;
+  min-height: 54px;
+  font-size: 1.02rem;
+}
+
+.questionario-navegacao [data-voltar] {
+  flex: none;
+  min-height: 54px;
 }
 
 .questionario-nota {
@@ -335,11 +361,6 @@
   .conteudo-funil {
     padding-left: 16px;
     padding-right: 16px;
-  }
-
-  .opcoes-cartao,
-  .opcoes-cartao.opcoes-tres {
-    grid-template-columns: 1fr 1fr;
   }
 
   .opcoes-compactas {
@@ -783,8 +804,26 @@
     font-size: .94rem;
   }
 
-  .questionario-navegacao .botao-grande {
-    flex: 1;
+  /* Botão na zona do polegar: gruda no rodapé enquanto a pessoa rola as opções. */
+  .em-passos .questionario-navegacao {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    margin: 0 -16px;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: linear-gradient(to bottom, rgba(246, 248, 252, 0), var(--fundo) 28%);
+  }
+
+  .questionario-navegacao [data-voltar] {
+    width: 54px;
+    padding: 0;
+    justify-content: center;
+    border: 1px solid var(--borda-forte);
+    background: var(--superficie);
+  }
+
+  .questionario-navegacao .rotulo-voltar {
+    display: none;
   }
 }
 
@@ -1042,7 +1081,6 @@
 /* Celular: Remoto / Híbrido / Presencial cabem lado a lado. */
 @media (max-width: 600px) {
   .opcoes-cartao.opcoes-tres {
-    grid-template-columns: repeat(3, 1fr);
     gap: 8px;
   }
 
