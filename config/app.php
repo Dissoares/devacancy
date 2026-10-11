@@ -107,6 +107,7 @@ return [
         'smtp_seguranca' => Ambiente::obter('MAIL_SMTP_SEGURANCA', 'ssl'),
         'smtp_usuario' => Ambiente::obter('MAIL_SMTP_USUARIO', ''),
         'smtp_senha' => Ambiente::obter('MAIL_SMTP_SENHA', ''),
+        'smtp_verificar' => Ambiente::obter('MAIL_SMTP_VERIFICAR', 'sim'),
     ],
 
     // Rodar migrações pelo navegador em /install (sem acesso ao terminal). Sem MIGRACOES_TOKEN (16+ caracteres) a rota não existe.
