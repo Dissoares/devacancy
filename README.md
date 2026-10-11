@@ -77,6 +77,11 @@ Preencha `EXPAY_API_KEY` e `EXPAY_WEBHOOK_TOKEN` no `.env` e configure no painel
 
 ## Vagas reais (importação automática)
 
-`php database/importar-vagas.php` importa as vagas abertas dos repositórios de vagas da comunidade no GitHub (lista em `config/app.php`, chave `github`): cargo, nível, modelo, cidade, salário, stack e resumo da descrição. Vagas repetidas, antigas (mais de 45 dias) ou restritas a moradores dos EUA/Canadá são puladas. Agende para rodar 1x por dia; com `GITHUB_TOKEN` no `.env` o limite da API sobe de 60 para 5.000 consultas por hora.
+`php database/importar-vagas.php` importa vagas reais de duas fontes gratuitas, sempre pulando repetidas e anúncios com mais de 45 dias:
+
+- **GitHub**: vagas abertas dos repositórios de vagas da comunidade (lista em `config/app.php`, chave `github`), interpretando o título e a descrição da issue. Vagas restritas a moradores dos EUA/Canadá são puladas. Sem `GITHUB_TOKEN` no `.env`, o limite da API é 60 consultas por hora (sobe para 5.000 com o token).
+- **Adzuna**: agregador de vagas com API gratuita. Crie uma conta em [developer.adzuna.com/signup](https://developer.adzuna.com/signup) e preencha `ADZUNA_APP_ID`/`ADZUNA_APP_KEY` no `.env`; sem essas chaves, esse importador é pulado e só o do GitHub roda. Já vem filtrado para vagas no Brasil (`config/app.php`, chave `adzuna`).
+
+As duas fontes usam o mesmo classificador (`App\Core\ClassificadorVaga`) para adivinhar área, senioridade, modelo de trabalho e stack a partir do texto. Agende o script para rodar 1x por dia.
 
 `php database/baixar-cidades.php` baixa a lista oficial de municípios do Brasil (API do IBGE) e salva em `public/assets/data/cidades-br.json`, usada pelo autocomplete de cidade no cadastro e no perfil. Só é preciso rodar de novo se o IBGE criar algum município.
