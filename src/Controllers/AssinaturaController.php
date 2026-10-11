@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Idioma;
 use App\Core\Requisicao;
 use App\Core\Resposta;
 use App\Core\Sessao;
@@ -175,6 +176,56 @@ final class AssinaturaController
         return Resposta::redirecionarHtmx('/painel');
     }
 
+    /** Cartão (Stripe): cria a página de pagamento hospedada pelo Stripe e leva o cliente até ela. */
+    public function assinarStripe(Requisicao $requisicao): Resposta
+    {
+        $usuario = $this->autenticacao->usuarioAtual();
+
+        try {
+            $destino = $this->assinaturas->iniciarCheckoutStripe(
+                $usuario, $requisicao->todos(), $this->localizacao->noBrasil($requisicao), Idioma::atual(),
+            );
+        } catch (ValidacaoException $erro) {
+            return Resposta::html(Visao::parcial('assinatura/partials/formulario-stripe', [
+                'erros' => $erro->erros(),
+                'simulacao' => false,
+            ]));
+        }
+
+        return Resposta::redirecionarHtmx($destino);
+    }
+
+    /** Para onde o Stripe devolve o cliente depois de pagar. */
+    public function retornoStripe(Requisicao $requisicao): Resposta
+    {
+        $usuario = $this->autenticacao->usuarioAtual();
+        $liberado = $this->assinaturas->concluirCheckoutStripe($usuario, (string) $requisicao->consulta('session_id', ''));
+
+        Sessao::flash('sucesso', t($liberado ? 'pagamento.confirmado' : 'pagamento.stripe_processando'));
+        return Resposta::redirecionar('/painel');
+    }
+
+    public function simularStripe(Requisicao $requisicao): Resposta
+    {
+        $usuario = $this->autenticacao->usuarioAtual();
+        $moeda = $this->assinaturas->moedaPara($this->localizacao->noBrasil($requisicao));
+        $this->assinaturas->simularStripe($usuario, (string) $requisicao->entrada('plano', ''), $moeda);
+
+        Sessao::flash('sucesso', t('pagamento.confirmado'));
+        return Resposta::redirecionarHtmx('/painel');
+    }
+
+    /** Aviso do Stripe. A autenticidade vem da assinatura do cabeçalho Stripe-Signature, não de token na URL. */
+    public function webhookStripe(Requisicao $requisicao): Resposta
+    {
+        $autentico = $this->assinaturas->processarWebhookStripe(
+            (string) file_get_contents('php://input'),
+            (string) $requisicao->cabecalho('stripe-signature'),
+        );
+
+        return $autentico ? Resposta::texto('ok') : Resposta::texto('Unauthorized', 401);
+    }
+
     public function webhook(Requisicao $requisicao): Resposta
     {
         if (!$this->tokenValido($requisicao, (string) configuracao('expay.token_webhook'))) {
@@ -236,6 +287,7 @@ final class AssinaturaController
             'totalCompativeis' => $perfil instanceof PerfilProfissional ? count($this->vagas->compativeis($perfil)) : 0,
             'reservadas' => $reservadas,
             'vigenteAte' => $this->assinaturas->vigenteAte($usuario),
+            'stripeSimulacao' => $this->assinaturas->simulacaoStripe(),
             'paypal' => [
                 'simulacao' => $this->assinaturas->simulacaoPaypal(),
                 'clienteId' => $this->assinaturas->paypalClienteId(),
