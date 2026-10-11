@@ -13,18 +13,6 @@ use BackedEnum;
  */
 final class Validador
 {
-    private const MENSAGENS = [
-        'obrigatorio' => 'Campo obrigatório.',
-        'email' => 'Informe um e-mail válido.',
-        'url' => 'Informe um link válido (começando com https://).',
-        'min' => 'Mínimo de :p caracteres.',
-        'max' => 'Máximo de :p caracteres.',
-        'inteiro' => 'Informe um número inteiro.',
-        'entre' => 'Informe um valor entre :a e :b.',
-        'enum' => 'Selecione uma opção válida.',
-        'aceito' => 'É preciso aceitar para continuar.',
-    ];
-
     /** @throws ValidacaoException */
     public static function validar(array $dados, array $regras): void
     {
@@ -37,7 +25,7 @@ final class Validador
 
             if ($vazio) {
                 if (in_array('obrigatorio', $lista, true) || in_array('aceito', $lista, true)) {
-                    $erros[$campo] = in_array('aceito', $lista, true) ? self::MENSAGENS['aceito'] : self::MENSAGENS['obrigatorio'];
+                    $erros[$campo] = t(in_array('aceito', $lista, true) ? 'validacao.aceito' : 'validacao.obrigatorio');
                 }
                 continue;
             }
@@ -77,12 +65,11 @@ final class Validador
             return null;
         }
 
-        $mensagem = self::MENSAGENS[$nome] ?? 'Valor inválido.';
         if ($nome === 'entre') {
             [$a, $b] = explode(',', (string) $parametro);
-            return strtr($mensagem, [':a' => $a, ':b' => $b]);
+            return t('validacao.entre', ['a' => $a, 'b' => $b]);
         }
-        return str_replace(':p', (string) $parametro, $mensagem);
+        return t('validacao.' . $nome, ['p' => (string) $parametro]);
     }
 
     private static function estaEntre(string $valor, string $limites): bool
