@@ -2,7 +2,7 @@
 /**
  * @var \App\Entities\Usuario $usuario @var \App\Entities\PerfilProfissional|\App\Entities\PerfilEmpresa|null $perfil
  * @var array<int, array{vaga: \App\Entities\Vaga, compatibilidade: int}> $compativeis @var int $recentes @var ?string $assinaturaAte
- * @var array<int, \App\Enums\StatusCandidatura> $statusCandidaturas
+ * @var array<int, \App\Enums\StatusCandidatura> $statusCandidaturas @var ?string $linkIndicacao @var ?array $indicacoes
  */
 use App\Entities\PerfilEmpresa;
 use App\Entities\PerfilProfissional;
@@ -114,3 +114,7 @@ $statusCandidaturas ??= [];
     <?php endif; ?>
   </section>
 </div>
+
+<?php if ($linkIndicacao): ?>
+  <?= parcial('dashboard/indicacao', ['link' => $linkIndicacao, 'indicacoes' => $indicacoes]) ?>
+<?php endif; ?>
