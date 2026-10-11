@@ -19,7 +19,7 @@ interface UsuarioRepositoryInterface
 
     public function emailExiste(string $email): bool;
 
-    public function criar(TipoUsuario $tipo, string $nome, string $email, ?string $senhaHash, ?string $avatarUrl = null, string $idioma = 'pt', ?string $pais = null): Usuario;
+    public function criar(TipoUsuario $tipo, string $nome, string $email, ?string $senhaHash, ?string $avatarUrl = null, string $idioma = 'pt', ?string $pais = null, ?string $codigoIndicacaoUsado = null): Usuario;
 
     public function vincularContaSocial(int $usuarioId, ProvedorSocial $provedor, string $provedorId): void;
 
@@ -31,6 +31,9 @@ interface UsuarioRepositoryInterface
     public function marcarCadastroCompleto(int $usuarioId): void;
 
     public function registrarAcesso(int $usuarioId): void;
+
+    /** Gera e grava um código de indicação só se a conta ainda não tiver um (contas de antes dessa funcionalidade); devolve o código final. */
+    public function garantirCodigoIndicacao(int $usuarioId): string;
 
     /** @return array{itens: array<int, array>, total: int} linhas já unidas com os perfis */
     public function listar(FiltroUsuariosDTO $filtro): array;
