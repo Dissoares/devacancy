@@ -669,4 +669,13 @@ return [
     'vaga_publica.aplicar_logado' => 'Go to my dashboard',
     'funil.vaga_escolhida' => 'You picked: :titulo',
     'funil.vaga_escolhida_nota' => 'Create your account so our team can apply for you. The company is unlocked for subscribers.',
+    'planos.metodo_pix_manual' => 'PIX',
+    'pagamento.pix_manual_continuar' => 'Generate PIX',
+    'pagamento.pix_manual_nota' => 'You get the PIX code with the plan amount already filled in. After paying, let us know and we unlock your plan as soon as we confirm the payment.',
+    'pagamento.pix_manual_passos' => 'Open your bank app, choose Pix, then Pix copy and paste (or scan the QR code) and pay :valor.',
+    'pagamento.qr_leia' => 'Or scan the QR code with your bank app camera',
+    'pagamento.pix_manual_depois' => 'Paid? Tap the button so our team can check it. Unlocking is manual and usually takes a few minutes; this page refreshes by itself.',
+    'pagamento.ja_paguei' => 'I have paid',
+    'pagamento.aviso_enviado' => 'Notice sent! Our team will check the PIX and unlock your plan, usually within a few minutes.',
+    'pagamento.aviso_indisponivel' => 'This payment is no longer waiting.',
 ];
