@@ -1349,3 +1349,21 @@ html:has(.pagina-funil) {
     display: none;
   }
 }
+
+/* Aplicar e compartilhar em cada vaga encontrada */
+.vaga-encontrada-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.vaga-encontrada-acoes .botao-primario {
+  flex: 1 1 200px;
+}
+
+@media (max-width: 480px) {
+  .vaga-encontrada-acoes .botao {
+    flex: 1 1 100%;
+  }
+}
