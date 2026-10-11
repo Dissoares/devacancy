@@ -55,11 +55,26 @@ Enquanto as chaves não forem preenchidas, os botões avisam que o login social 
 - `/entrar` login
 - `/completar-perfil` segunda etapa do cadastro
 - `/painel` área do profissional ou da empresa
-- `/vagas-compativeis` resultado do match logo após o cadastro do profissional (vagas borradas + CTA)
-- `/planos` e `/pagamento/{id}` checkout PIX da assinatura
-- `/admin/vagas` cadastro das vagas que alimentam o match
+- `/comecar` questionário do profissional (anônimo, uma pergunta por tela)
+- `/vagas-compativeis` análise animada e resultado do match (antes do cadastro)
+- `/criar-conta` cadastro do profissional: e-mail e senha ou Google/GitHub/LinkedIn
+- `/planos` checkout: PIX + PayPal (Brasil, em reais) ou só PayPal (outros países, em dólar)
+- `/admin/vagas` cadastro das vagas (região Brasil/internacional e moeda) que alimentam o match
+- `/admin/candidaturas` fila de candidaturas pedidas pelos assinantes
 - `/admin` painel de cadastros (busca, filtros, detalhes, currículo e exportação CSV)
+
+## Idiomas
+
+Português para navegadores em português, inglês para os demais (`?lang=pt|en` troca e fica salvo). Textos em `lang/pt.php` e `lang/en.php`, usados com `t('chave')`. O país (geolocalização do IP via ipwho.is) define moeda e meios de pagamento; em ambiente local, simule com `?pais=US`.
+
+## Pagamentos (PayPal)
+
+Preencha `PAYPAL_CLIENT_ID` e `PAYPAL_SECRET`, rode `php database/paypal-planos.php` para criar os planos (semanal, mensal e trimestral em BRL e USD) e cole os IDs no `.env`. Webhook no painel do PayPal: `{APP_URL}/webhooks/paypal?token={PAYPAL_WEBHOOK_TOKEN}` (eventos `PAYMENT.SALE.COMPLETED` e `BILLING.SUBSCRIPTION.*`). Cada ciclo cobrado vira um pagamento e estende a assinatura; reprocessar o mesmo evento não duplica. Sem credenciais, em ambiente local, aparece um botão de simulação.
 
 ## Pagamentos (ExPay)
 
 Preencha `EXPAY_API_KEY` e `EXPAY_WEBHOOK_TOKEN` no `.env` e configure no painel da ExPay o webhook `{APP_URL}/webhooks/expay?token={EXPAY_WEBHOOK_TOKEN}`. O webhook só dispara a conferência: o status é sempre consultado na API, e a página do PIX também consulta a cada 5 segundos. Sem chave, em `APP_AMBIENTE=local`, o checkout roda em modo simulação com um botão para aprovar o pagamento. Planos e preços ficam em `config/app.php` (`planos`).
+
+## Vagas reais (importação automática)
+
+`php database/importar-vagas.php` importa as vagas abertas dos repositórios de vagas da comunidade no GitHub (lista em `config/app.php`, chave `github`): cargo, nível, modelo, cidade, salário, stack e resumo da descrição. Vagas repetidas, antigas (mais de 45 dias) ou restritas a moradores dos EUA/Canadá são puladas. Agende para rodar 1x por dia; com `GITHUB_TOKEN` no `.env` o limite da API sobe de 60 para 5.000 consultas por hora.
