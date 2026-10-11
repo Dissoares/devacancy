@@ -26,6 +26,7 @@ final class AssinaturaService
         private readonly PagamentoRepositoryInterface $pagamentos,
         private readonly ExpayService $expay,
         private readonly PaypalService $paypal,
+        private readonly ComissaoService $comissoes,
         private readonly Transacao $transacao,
     ) {
     }
@@ -260,11 +261,14 @@ final class AssinaturaService
         $config = $this->planos()[$plano] ?? throw new RuntimeException("Plano desconhecido: {$plano}");
 
         $this->transacao->executar(function () use ($usuarioId, $plano, $moeda, $assinaturaId, $ciclo, $config): void {
+            $gatewayId = "paypal-{$assinaturaId}-{$ciclo}";
             $novo = $this->pagamentos->registrarPagoExterno(
-                $usuarioId, $plano, $config['precos'][$moeda], $moeda, 'paypal', "paypal-{$assinaturaId}-{$ciclo}", $assinaturaId,
+                $usuarioId, $plano, $config['precos'][$moeda], $moeda, 'paypal', $gatewayId, $assinaturaId,
             );
             if ($novo) {
                 $this->assinaturas->estender($usuarioId, $plano, $config['dias']);
+                $pagamento = $this->pagamentos->buscarPorGatewayId($gatewayId);
+                $this->comissoes->registrarSeElegivel($usuarioId, $pagamento->id, $config['precos'][$moeda], $moeda);
             }
         });
     }
@@ -282,6 +286,7 @@ final class AssinaturaService
             if ($mudou && $status === StatusPagamento::Pago) {
                 $plano = $this->planos()[$pagamento->plano] ?? throw new RuntimeException("Plano desconhecido: {$pagamento->plano}");
                 $this->assinaturas->estender($pagamento->usuarioId, $pagamento->plano, $plano['dias']);
+                $this->comissoes->registrarSeElegivel($pagamento->usuarioId, $pagamento->id, $pagamento->valor, $pagamento->moeda);
             }
         });
 
