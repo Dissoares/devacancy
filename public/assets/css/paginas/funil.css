@@ -1252,3 +1252,74 @@ html:has(.pagina-funil) {
     display: none;
   }
 }
+
+/* ==========================================================================
+   Indicador de marcar: sempre visível ("buraquinho"), vira ✓ quando escolhido.
+   Círculo = escolha única, quadradinho = pode marcar mais de uma.
+   ========================================================================== */
+.opcao-cartao > span::after {
+  content: '';
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  box-sizing: border-box;
+  border: 2px solid var(--borda-forte);
+  border-radius: 50%;
+  background: var(--superficie);
+  transition: border-color var(--transicao), background-color var(--transicao);
+}
+
+.opcao-cartao input[type="checkbox"] + span::after {
+  border-radius: 7px;
+}
+
+.opcao-cartao:hover input:not(:checked) + span::after {
+  border-color: var(--primaria);
+}
+
+.opcao-cartao input:checked + span::after {
+  border-color: var(--primaria);
+}
+
+/* Lista (nível, experiência...): o indicador fica centralizado na altura e o texto não passa por baixo dele. */
+.opcao-linha > span {
+  padding-right: 54px;
+}
+
+.opcao-linha > span::after {
+  top: 50%;
+  margin-top: -11px;
+}
+
+/* Pílulas (idiomas, faixas de salário): o indicador vem antes do texto, sem a largura "pular" ao marcar. */
+.opcao-chip > span .icone {
+  display: none !important;
+}
+
+.opcao-chip > span::before {
+  content: '';
+  flex: none;
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  border: 2px solid var(--borda-forte);
+  border-radius: 50%;
+  background: var(--superficie) center / 12px no-repeat;
+  transition: border-color var(--transicao), background-color var(--transicao);
+}
+
+.opcao-chip input[type="checkbox"] + span::before {
+  border-radius: 6px;
+}
+
+.opcao-chip:hover input:not(:checked) + span::before {
+  border-color: var(--primaria);
+}
+
+.opcao-chip input:checked + span::before {
+  border-color: var(--primaria);
+  background-color: var(--primaria);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E");
+}
