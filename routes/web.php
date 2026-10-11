@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Controllers\AdminAnalyticsController;
 use App\Controllers\AdminComissaoController;
 use App\Controllers\AdminController;
+use App\Controllers\AdminMigracaoController;
 use App\Controllers\AdminPagamentoController;
 use App\Controllers\AdminVagaController;
 use App\Controllers\AssinaturaController;
@@ -65,6 +66,10 @@ return function (Roteador $rotas): void {
     $rotas->post('/webhooks/expay', [AssinaturaController::class, 'webhook']);
     $rotas->post('/webhooks/paypal', [AssinaturaController::class, 'webhookPaypal']);
 
+    // Migrações pelo navegador, com token do .env (para quem ainda não tem acesso ao admin ou ao terminal)
+    $rotas->get('/migrar', [AdminMigracaoController::class, 'formularioToken']);
+    $rotas->post('/migrar', [AdminMigracaoController::class, 'executarComToken']);
+
     // Administração
     $rotas->get('/admin', [AdminController::class, 'painel'], $admin);
     $rotas->get('/admin/analytics', [AdminAnalyticsController::class, 'painel'], $admin);
@@ -82,6 +87,8 @@ return function (Roteador $rotas): void {
     $rotas->post('/admin/candidaturas/{id}/status', [CandidaturaController::class, 'atualizar'], $admin);
     $rotas->get('/admin/comissoes', [AdminComissaoController::class, 'listar'], $admin);
     $rotas->post('/admin/comissoes/{id}/pagar', [AdminComissaoController::class, 'marcarComoPaga'], $admin);
+    $rotas->get('/admin/migracoes', [AdminMigracaoController::class, 'painel'], $admin);
+    $rotas->post('/admin/migracoes/executar', [AdminMigracaoController::class, 'executar'], $admin);
     $rotas->get('/admin/pagamentos', [AdminPagamentoController::class, 'listar'], $admin);
     $rotas->post('/admin/pagamentos/{chave}/alternar', [AdminPagamentoController::class, 'alternar'], $admin);
 };
