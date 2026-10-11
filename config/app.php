@@ -71,6 +71,8 @@ return [
 
     'paypal' => [
         'modo' => Ambiente::obter('PAYPAL_MODO', 'sandbox'),
+        // Conta que recebe pagamentos avulsos "só com e-mail" (sem API); o PayPal avisa o site por IPN.
+        'email' => Ambiente::obter('PAYPAL_EMAIL', ''),
         'cliente_id' => Ambiente::obter('PAYPAL_CLIENT_ID', ''),
         'segredo' => Ambiente::obter('PAYPAL_SECRET', ''),
         'token_webhook' => Ambiente::obter('PAYPAL_WEBHOOK_TOKEN', ''),
