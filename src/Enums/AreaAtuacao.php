@@ -18,14 +18,6 @@ enum AreaAtuacao: string
 
     public function rotulo(): string
     {
-        return match ($this) {
-            self::Frontend => 'Front-end',
-            self::Backend => 'Back-end',
-            self::Fullstack => 'Full-stack',
-            self::Mobile => 'Mobile',
-            self::Dados => 'Dados / IA',
-            self::DevOps => 'DevOps / Cloud',
-            self::Qa => 'QA / Testes',
-        };
+        return t('area.' . $this->value);
     }
 }
