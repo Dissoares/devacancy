@@ -1,5 +1,5 @@
 <?php
-/** @var array $metodos */
+/** @var array $metodos @var array $pendentes @var ?string $sucesso */
 ?>
 <section class="cabecalho-pagina">
   <div>
@@ -7,6 +7,10 @@
     <p>Liga e desliga as formas de pagamento mostradas no checkout dos assinantes.</p>
   </div>
 </section>
+
+<?php if (!empty($sucesso)): ?>
+  <div class="alerta alerta-sucesso alerta-topo"><?= icone('check') ?><span><?= e($sucesso) ?></span></div>
+<?php endif; ?>
 
 <section class="cartao tabela-cartao">
   <div class="tabela-rolagem">
@@ -44,3 +48,34 @@
     PIX só aparece pra quem está no Brasil; PayPal aparece pros dois.
   </p>
 </section>
+
+<?php if ($pendentes): ?>
+  <section class="cartao tabela-cartao">
+    <div class="tabela-rolagem">
+      <table class="tabela">
+        <caption class="texto-suave" style="text-align:left;padding:14px 16px">
+          <strong>PayPal (só e-mail) aguardando confirmação.</strong>
+          Normalmente o PayPal avisa o site sozinho. Se o dinheiro já está no seu app do PayPal e o plano não foi liberado, confirme aqui.
+        </caption>
+        <thead><tr><th>Cliente</th><th>Plano</th><th>Valor</th><th>Pedido em</th><th></th></tr></thead>
+        <tbody>
+          <?php foreach ($pendentes as $pagamento): ?>
+            <tr>
+              <td><strong class="texto-celula"><?= e($pagamento['nome']) ?></strong><small><?= e($pagamento['email']) ?></small></td>
+              <td><?= e(t('plano.' . $pagamento['plano'])) ?></td>
+              <td><?= e(moeda((float) $pagamento['valor'], $pagamento['moeda'])) ?></td>
+              <td class="texto-suave"><?= data_br($pagamento['criado_em'], true) ?></td>
+              <td>
+                <form method="post" action="/admin/pagamentos/<?= (int) $pagamento['id'] ?>/confirmar"
+                      onsubmit="return confirm('Confirme que o valor já aparece na sua conta PayPal. Liberar o plano agora?')">
+                  <?= csrf_campo() ?>
+                  <button class="botao botao-primario botao-pequeno" type="submit">Confirmar pagamento</button>
+                </form>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+  </section>
+<?php endif; ?>
