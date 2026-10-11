@@ -7,6 +7,7 @@ namespace App\DTOs;
 use App\Core\ListaDeTags;
 use App\Enums\AreaAtuacao;
 use App\Enums\ModeloTrabalho;
+use App\Enums\NivelIngles;
 use App\Enums\RegiaoVagas;
 use App\Enums\Senioridade;
 
@@ -31,6 +32,7 @@ final class PerfilProfissionalDTO
         public readonly string $moedaPretensao = 'BRL',
         public readonly array $idiomas = [],
         public readonly ?int $ultimaRemuneracao = null,
+        public readonly ?NivelIngles $nivelIngles = null,
     ) {
     }
 
@@ -54,6 +56,7 @@ final class PerfilProfissionalDTO
             'resumo' => 'max:1500',
             'idiomas' => 'enum:' . \App\Enums\IdiomaFalado::class,
             'ultima_remuneracao' => 'entre:0,2000000',
+            'nivel_ingles' => 'enum:' . NivelIngles::class,
         ];
     }
 
@@ -77,6 +80,7 @@ final class PerfilProfissionalDTO
             moedaPretensao: \App\Enums\Moeda::tryFrom((string) ($dados['moeda_pretensao'] ?? ''))?->value ?? 'BRL',
             idiomas: array_values(array_unique((array) ($dados['idiomas'] ?? []))),
             ultimaRemuneracao: ($dados['ultima_remuneracao'] ?? '') !== '' ? (int) $dados['ultima_remuneracao'] : null,
+            nivelIngles: NivelIngles::tryFrom((string) ($dados['nivel_ingles'] ?? '')),
         );
     }
 

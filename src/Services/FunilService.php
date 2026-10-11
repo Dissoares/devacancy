@@ -12,6 +12,7 @@ use App\Entities\Usuario;
 use App\Enums\AreaAtuacao;
 use App\Enums\IdiomaFalado;
 use App\Enums\ModeloTrabalho;
+use App\Enums\NivelIngles;
 use App\Enums\RegiaoVagas;
 use App\Enums\Senioridade;
 use App\Exceptions\ValidacaoException;
@@ -53,6 +54,7 @@ final class FunilService
             'anos_experiencia' => 'obrigatorio|entre:0,50',
             'stack' => 'obrigatorio|max:600',
             'idiomas' => 'obrigatorio|enum:' . IdiomaFalado::class,
+            'nivel_ingles' => 'enum:' . NivelIngles::class,
             'modelos' => 'obrigatorio|enum:' . ModeloTrabalho::class,
             'regiao_vagas' => 'obrigatorio|enum:' . RegiaoVagas::class,
             'cidade' => 'max:120',
@@ -70,6 +72,7 @@ final class FunilService
             'anos_experiencia' => (string) (int) $dados['anos_experiencia'],
             'stack' => (string) $dados['stack'],
             'idiomas' => $dados['idiomas'],
+            'nivel_ingles' => in_array('en', $dados['idiomas'], true) ? (string) ($dados['nivel_ingles'] ?? '') : '',
             'modelo_trabalho' => $this->modeloDasEscolhas($dados['modelos'])->value,
             'modelos' => $dados['modelos'],
             'regiao_vagas' => $dados['regiao_vagas'],
@@ -123,6 +126,7 @@ final class FunilService
             moedaPretensao: $dto->moedaPretensao,
             idiomas: $dto->idiomas,
             ultimaRemuneracao: $dto->ultimaRemuneracao,
+            nivelIngles: $dto->nivelIngles,
         );
     }
 

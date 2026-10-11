@@ -6,6 +6,7 @@ namespace App\Entities;
 
 use App\Enums\AreaAtuacao;
 use App\Enums\ModeloTrabalho;
+use App\Enums\NivelIngles;
 use App\Enums\RegiaoVagas;
 use App\Enums\Senioridade;
 
@@ -32,6 +33,7 @@ final class PerfilProfissional
         public readonly string $moedaPretensao = 'BRL',
         public readonly array $idiomas = [],
         public readonly ?int $ultimaRemuneracao = null,
+        public readonly ?NivelIngles $nivelIngles = null,
     ) {
     }
 
@@ -57,6 +59,7 @@ final class PerfilProfissional
             moedaPretensao: $linha['moeda_pretensao'] ?? 'BRL',
             idiomas: json_decode($linha['idiomas'] ?? '[]', true) ?: [],
             ultimaRemuneracao: isset($linha['ultima_remuneracao']) ? (int) $linha['ultima_remuneracao'] : null,
+            nivelIngles: isset($linha['nivel_ingles']) ? NivelIngles::tryFrom($linha['nivel_ingles']) : null,
         );
     }
 
