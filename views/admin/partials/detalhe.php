@@ -92,6 +92,12 @@ $link = fn (?string $url, string $rotulo): string => $url
   </section>
 <?php endif; ?>
 
+<form class="gaveta-perigo" method="post" action="/admin/usuarios/<?= $usuario->id ?>/excluir"
+      onsubmit="return confirm('Excluir o cadastro de <?= e(addslashes($usuario->nome)) ?> e tudo o que depende dele (perfil, candidaturas, assinaturas)? Isso não pode ser desfeito.')">
+  <?= csrf_campo() ?>
+  <button class="botao botao-fantasma botao-pequeno" type="submit">Excluir cadastro</button>
+</form>
+
 <footer class="gaveta-rodape">
   Cadastrado em <?= data_br($usuario->criadoEm, true) ?><?= $usuario->ultimoAcessoEm ? ' · Último acesso em ' . data_br($usuario->ultimoAcessoEm, true) : '' ?>
 </footer>
