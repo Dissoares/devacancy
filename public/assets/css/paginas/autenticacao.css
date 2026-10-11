@@ -328,3 +328,17 @@
     text-align: center;
   }
 }
+
+.link-esqueci {
+  justify-self: end;
+  margin-top: -6px;
+  color: var(--texto-suave);
+  font-size: .86rem;
+  text-decoration: underline;
+  text-decoration-color: rgba(15, 23, 42, 0.175);
+  text-underline-offset: 3px;
+}
+
+.link-esqueci:hover {
+  color: var(--primaria);
+}
