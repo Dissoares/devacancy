@@ -1,12 +1,10 @@
 <?php
-/** @var \App\Entities\Pagamento $pagamento @var ?array $plano @var bool $simulacao */
+/** @var \App\Entities\Pagamento $pagamento @var bool $simulacao */
 ?>
 <section class="pagamento">
-  <a class="link" href="/planos"><?= icone('chevron-esq', 'icone icone-sm') ?> Trocar plano</a>
-  <h1>Pague com PIX para ativar</h1>
-  <p class="texto-suave">
-    Plano <?= e($plano['nome'] ?? $pagamento->plano) ?> · R$ <?= number_format($pagamento->valor, 2, ',', '.') ?>
-  </p>
+  <a class="link" href="/planos"><?= icone('chevron-esq', 'icone icone-sm') ?> <?= e(t('pagamento.trocar_plano')) ?></a>
+  <h1><?= e(t('pagamento.pix_titulo')) ?></h1>
+  <p class="texto-suave"><?= e(t('plano.' . $pagamento->plano)) ?> · <?= e(moeda($pagamento->valor, $pagamento->moeda)) ?></p>
 
   <?= parcial('assinatura/partials/status-pagamento', ['pagamento' => $pagamento, 'simulacao' => $simulacao]) ?>
 </section>
