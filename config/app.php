@@ -93,6 +93,13 @@ return [
         ],
     ],
 
+    // Importação automática via Adzuna (agregador de vagas, grátis para uso básico). Cadastro gratuito em developer.adzuna.com.
+    'adzuna' => [
+        'app_id' => Ambiente::obter('ADZUNA_APP_ID', ''),
+        'app_key' => Ambiente::obter('ADZUNA_APP_KEY', ''),
+        'pais' => 'br',
+    ],
+
     // Interface => implementação, resolvidas pelo Container.
     'vinculos' => [
         PDO::class => fn () => Conexao::obter(),
