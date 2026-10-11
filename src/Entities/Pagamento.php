@@ -21,6 +21,7 @@ final class Pagamento
         public readonly ?string $expiraEm,
         public readonly ?string $pagoEm,
         public readonly string $criadoEm,
+        public readonly string $moeda = 'BRL',
     ) {
     }
 
@@ -39,6 +40,7 @@ final class Pagamento
             expiraEm: $linha['expira_em'],
             pagoEm: $linha['pago_em'],
             criadoEm: $linha['criado_em'],
+            moeda: $linha['moeda'] ?? 'BRL',
         );
     }
 
