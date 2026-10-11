@@ -13,8 +13,12 @@ use RuntimeException;
  */
 final class Email
 {
+    /** Motivo da última falha de envio (para a tela de diagnóstico do admin). */
+    public ?string $ultimoErro = null;
+
     public function enviar(string $para, string $assunto, string $texto, string $html): bool
     {
+        $this->ultimoErro = null;
         $de = (string) configuracao('email.de');
         $nome = (string) configuracao('email.nome');
         $limite = 'dv' . bin2hex(random_bytes(8));
@@ -41,6 +45,7 @@ final class Email
         }
 
         $enviado = @mail($para, $assuntoCodificado, $corpo, implode("\r\n", $cabecalhos), '-f' . $de);
+        $this->ultimoErro = $enviado ? null : 'O mail() da hospedagem recusou o envio. Configure o SMTP.';
         $this->registrar($enviado
             ? "mail(): aceito pelo servidor da hospedagem para {$para} (remetente {$de}). Se não chegar, confira o spam e o SPF/DKIM do domínio ou use SMTP."
             : "mail(): a hospedagem recusou o envio para {$para}. Configure o SMTP (MAIL_SMTP_HOST).");
@@ -64,7 +69,8 @@ final class Email
             : []);
         $socket = @stream_socket_client(($seguranca === 'ssl' ? 'ssl' : 'tcp') . "://{$host}:{$porta}", $codigo, $mensagem, 15, STREAM_CLIENT_CONNECT, $contexto);
         if (!$socket) {
-            $this->registrar("SMTP: não conectou em {$host}:{$porta} ({$mensagem})");
+            $this->ultimoErro = "Não conectou em {$host}:{$porta}: {$mensagem}";
+            $this->registrar('SMTP: ' . $this->ultimoErro);
             return false;
         }
         stream_set_timeout($socket, 15);
@@ -107,6 +113,7 @@ final class Email
 
             return true;
         } catch (RuntimeException $erro) {
+            $this->ultimoErro = $erro->getMessage();
             $this->registrar('SMTP: ' . $erro->getMessage());
             return false;
         } finally {
