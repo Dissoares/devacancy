@@ -120,6 +120,11 @@ foreach ($planos as $chave => $plano) {
             <p class="nota-seguranca"><?= icone('escudo', 'icone icone-sm') ?> <?= e(t('planos.paypal_nota')) ?></p>
           </div>
         <?php endif; ?>
+        <?php if (in_array('paypal_email', $metodos, true)): ?>
+          <div class="metodo-painel" data-painel="paypal_email" <?= $metodos[0] !== 'paypal_email' ? 'hidden' : '' ?>>
+            <?= parcial('assinatura/partials/formulario-paypal-email', ['erros' => $erros]) ?>
+          </div>
+        <?php endif; ?>
       </div>
     <?php endif; ?>
   </section>
