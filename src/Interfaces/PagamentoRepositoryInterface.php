@@ -9,7 +9,12 @@ use App\Enums\StatusPagamento;
 
 interface PagamentoRepositoryInterface
 {
-    public function criar(int $usuarioId, string $plano, float $valor, string $metodo): int;
+    public function criar(int $usuarioId, string $plano, float $valor, string $metodo, string $moeda = 'BRL'): int;
+
+    /** Registra uma cobrança já paga de uma assinatura externa (PayPal). False se o gatewayId já existia. */
+    public function registrarPagoExterno(int $usuarioId, string $plano, float $valor, string $moeda, string $metodo, string $gatewayId, string $assinaturaExterna): bool;
+
+    public function contarPagosDaAssinaturaExterna(string $assinaturaExterna): int;
 
     public function buscarPorId(int $id): ?Pagamento;
 
