@@ -15,12 +15,12 @@ final class VagaRepository implements VagaRepositoryInterface
     {
     }
 
-    public function criar(VagaDTO $dados): int
+    public function criar(VagaDTO $dados, ?string $criadoEm = null): int
     {
         $this->pdo->prepare(
             'INSERT INTO vagas
-                (titulo, empresa, area, senioridade, stack, modelo_trabalho, cidade, salario_min, salario_max, link, descricao)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                (titulo, empresa, area, senioridade, stack, modelo_trabalho, regiao, cidade, salario_min, salario_max, moeda, link, descricao, criado_em)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, NOW()))'
         )->execute([
             $dados->titulo,
             $dados->empresa,
@@ -28,14 +28,31 @@ final class VagaRepository implements VagaRepositoryInterface
             $dados->senioridade->value,
             json_encode($dados->stack, JSON_UNESCAPED_UNICODE),
             $dados->modeloTrabalho->value,
+            $dados->regiao->value,
             $dados->cidade,
             $dados->salarioMin,
             $dados->salarioMax,
+            $dados->moeda->value,
             $dados->link,
             $dados->descricao,
+            $criadoEm,
         ]);
 
         return (int) $this->pdo->lastInsertId();
+    }
+
+    public function existeSemelhante(string $titulo, string $empresa, int $dias): bool
+    {
+        $consulta = $this->pdo->prepare('SELECT 1 FROM vagas WHERE titulo = ? AND empresa = ? AND criado_em >= NOW() - INTERVAL ? DAY LIMIT 1');
+        $consulta->execute([$titulo, $empresa, $dias]);
+        return (bool) $consulta->fetchColumn();
+    }
+
+    public function existeLink(string $link): bool
+    {
+        $consulta = $this->pdo->prepare('SELECT 1 FROM vagas WHERE link = ? LIMIT 1');
+        $consulta->execute([$link]);
+        return (bool) $consulta->fetchColumn();
     }
 
     public function alternarAtiva(int $id): void
@@ -51,9 +68,18 @@ final class VagaRepository implements VagaRepositoryInterface
         return array_map(Vaga::deLinha(...), $consulta->fetchAll());
     }
 
-    public function buscarCandidatas(array $areas, array $senioridades, array $modelos, int $diasRecentes): array
+    public function listarAtivas(int $diasRecentes, int $limite = 2000): array
     {
-        if ($areas === [] || $senioridades === [] || $modelos === []) {
+        $consulta = $this->pdo->prepare('SELECT * FROM vagas WHERE ativa = 1 AND criado_em >= NOW() - INTERVAL ? DAY ORDER BY criado_em DESC LIMIT ?');
+        $consulta->bindValue(1, $diasRecentes, PDO::PARAM_INT);
+        $consulta->bindValue(2, $limite, PDO::PARAM_INT);
+        $consulta->execute();
+        return array_map(Vaga::deLinha(...), $consulta->fetchAll());
+    }
+
+    public function buscarCandidatas(array $areas, array $senioridades, array $modelos, array $regioes, int $diasRecentes): array
+    {
+        if ($areas === [] || $senioridades === [] || $modelos === [] || $regioes === []) {
             return [];
         }
 
@@ -61,15 +87,16 @@ final class VagaRepository implements VagaRepositoryInterface
 
         $consulta = $this->pdo->prepare(sprintf(
             'SELECT * FROM vagas
-             WHERE ativa = 1 AND area IN (%s) AND senioridade IN (%s) AND modelo_trabalho IN (%s)
+             WHERE ativa = 1 AND area IN (%s) AND senioridade IN (%s) AND modelo_trabalho IN (%s) AND regiao IN (%s)
                AND criado_em >= NOW() - INTERVAL ? DAY
              ORDER BY criado_em DESC
              LIMIT 500',
             $marcadores($areas),
             $marcadores($senioridades),
             $marcadores($modelos),
+            $marcadores($regioes),
         ));
-        $consulta->execute([...$areas, ...$senioridades, ...$modelos, $diasRecentes]);
+        $consulta->execute([...$areas, ...$senioridades, ...$modelos, ...$regioes, $diasRecentes]);
 
         return array_map(Vaga::deLinha(...), $consulta->fetchAll());
     }
