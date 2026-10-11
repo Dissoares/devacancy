@@ -24,6 +24,11 @@ final class Resposta
         return new self($conteudo, $status, ['Content-Type' => 'text/plain; charset=UTF-8']);
     }
 
+    public static function json(array $dados, int $status = 200): self
+    {
+        return new self((string) json_encode($dados, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $status, ['Content-Type' => 'application/json; charset=UTF-8']);
+    }
+
     public static function redirecionar(string $destino): self
     {
         return new self('', 302, ['Location' => url($destino)]);
