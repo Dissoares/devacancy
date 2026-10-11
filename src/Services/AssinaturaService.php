@@ -11,6 +11,7 @@ use App\Enums\StatusPagamento;
 use App\Exceptions\NaoEncontradoException;
 use App\Exceptions\ValidacaoException;
 use App\Interfaces\AssinaturaRepositoryInterface;
+use App\Interfaces\MetodoPagamentoRepositoryInterface;
 use App\Interfaces\PagamentoRepositoryInterface;
 use RuntimeException;
 
@@ -21,9 +22,16 @@ use RuntimeException;
  */
 final class AssinaturaService
 {
+    /** Catálogo fixo (nome, região, moedas) de cada forma de pagamento, pra tela admin. O "ativo" vem do banco. */
+    private const CATALOGO = [
+        'pix' => ['nome' => 'PIX (ExPay)', 'regiao' => 'Brasil', 'moedas' => ['BRL']],
+        'paypal' => ['nome' => 'PayPal', 'regiao' => 'Brasil e internacional', 'moedas' => ['BRL', 'USD']],
+    ];
+
     public function __construct(
         private readonly AssinaturaRepositoryInterface $assinaturas,
         private readonly PagamentoRepositoryInterface $pagamentos,
+        private readonly MetodoPagamentoRepositoryInterface $metodosPagamento,
         private readonly ExpayService $expay,
         private readonly PaypalService $paypal,
         private readonly ComissaoService $comissoes,
@@ -42,17 +50,40 @@ final class AssinaturaService
         return $noBrasil ? 'BRL' : 'USD';
     }
 
-    /** Meios de pagamento oferecidos: PIX só para quem está no Brasil. @return string[] */
+    /** Meios de pagamento oferecidos: PIX só para quem está no Brasil, e só os ligados pelo admin. @return string[] */
     public function metodosPara(bool $noBrasil): array
     {
+        $ativos = $this->metodosPagamento->ativos();
+
         $metodos = [];
-        if ($noBrasil && ($this->expay->configurado() || $this->simulacaoPix())) {
+        if ($noBrasil && ($ativos['pix'] ?? true) && ($this->expay->configurado() || $this->simulacaoPix())) {
             $metodos[] = 'pix';
         }
-        if ($this->paypal->configurado() || $this->simulacaoPaypal()) {
+        if (($ativos['paypal'] ?? true) && ($this->paypal->configurado() || $this->simulacaoPaypal())) {
             $metodos[] = 'paypal';
         }
         return $metodos;
+    }
+
+    /** Pra tela admin: cada forma de pagamento com nome, região, moedas, se tem chave no .env e se está ligada. */
+    public function catalogoDeMetodos(): array
+    {
+        $ativos = $this->metodosPagamento->ativos();
+        $configurado = ['pix' => $this->expay->configurado(), 'paypal' => $this->paypal->configurado()];
+
+        $catalogo = [];
+        foreach (self::CATALOGO as $chave => $info) {
+            $catalogo[] = [...$info, 'chave' => $chave, 'ativo' => $ativos[$chave] ?? true, 'configurado' => $configurado[$chave]];
+        }
+
+        return $catalogo;
+    }
+
+    public function alternarMetodo(string $chave): void
+    {
+        if (isset(self::CATALOGO[$chave])) {
+            $this->metodosPagamento->alternar($chave);
+        }
     }
 
     public function vigenteAte(Usuario $usuario): ?string
