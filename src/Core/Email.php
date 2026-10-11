@@ -40,7 +40,11 @@ final class Email
             return true;
         }
 
-        return @mail($para, $assuntoCodificado, $corpo, implode("\r\n", $cabecalhos), '-f' . $de);
+        $enviado = @mail($para, $assuntoCodificado, $corpo, implode("\r\n", $cabecalhos), '-f' . $de);
+        $this->registrar($enviado
+            ? "mail(): aceito pelo servidor da hospedagem para {$para} (remetente {$de}). Se não chegar, confira o spam e o SPF/DKIM do domínio ou use SMTP."
+            : "mail(): a hospedagem recusou o envio para {$para}. Configure o SMTP (MAIL_SMTP_HOST).");
+        return $enviado;
     }
 
     private function codificar(string $texto): string
@@ -54,7 +58,11 @@ final class Email
         $porta = (int) configuracao('email.smtp_porta');
         $seguranca = (string) configuracao('email.smtp_seguranca');
 
-        $socket = @stream_socket_client(($seguranca === 'ssl' ? 'ssl' : 'tcp') . "://{$host}:{$porta}", $codigo, $mensagem, 15);
+        // MAIL_SMTP_VERIFICAR=nao aceita certificado que não bate com o nome do servidor (comum em cPanel).
+        $contexto = stream_context_create(configuracao('email.smtp_verificar') === 'nao'
+            ? ['ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]]
+            : []);
+        $socket = @stream_socket_client(($seguranca === 'ssl' ? 'ssl' : 'tcp') . "://{$host}:{$porta}", $codigo, $mensagem, 15, STREAM_CLIENT_CONNECT, $contexto);
         if (!$socket) {
             $this->registrar("SMTP: não conectou em {$host}:{$porta} ({$mensagem})");
             return false;
@@ -95,6 +103,7 @@ final class Email
             // Linhas começadas por "." precisam ser duplicadas no protocolo SMTP.
             $this->comando($socket, preg_replace('/^\./m', '..', $mensagemCompleta) . "\r\n.", '250');
             @fwrite($socket, "QUIT\r\n");
+            $this->registrar("SMTP: enviado para {$para} via {$host}:{$porta}.");
 
             return true;
         } catch (RuntimeException $erro) {
