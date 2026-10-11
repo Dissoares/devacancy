@@ -12,6 +12,21 @@
     'Kubernetes', 'AWS', 'Azure', 'GCP', 'Git', 'GraphQL', 'Tailwind CSS',
   ];
 
+  const textos = window.TEXTOS ?? {};
+  /** Logo oficial da tecnologia (mapa vindo do servidor), ou null. */
+  const iconeStack = (valor) => {
+    const url = window.ICONES_STACK?.[valor.toLowerCase().replace(/[\s.\-_]/g, '')];
+    if (!url) return null;
+    const imagem = document.createElement('img');
+    imagem.className = 'icone-stack';
+    imagem.src = url;
+    imagem.alt = '';
+    imagem.width = 16;
+    imagem.height = 16;
+    return imagem;
+  };
+  window.Devacancy = { ...(window.Devacancy ?? {}), iconeStack };
+
   const icone = (nome) => `<svg class="icone" aria-hidden="true"><use href="#i-${nome}"/></svg>`;
 
   // ---------- Tipo de conta (profissional / empresa) ----------
@@ -45,7 +60,7 @@
         const mostrar = campo.type === 'password';
         campo.type = mostrar ? 'text' : 'password';
         botao.innerHTML = icone(mostrar ? 'olho-fechado' : 'olho');
-        botao.setAttribute('aria-label', mostrar ? 'Ocultar senha' : 'Mostrar senha');
+        botao.setAttribute('aria-label', mostrar ? textos.ocultar_senha : textos.mostrar_senha);
       });
     });
   }
@@ -82,14 +97,18 @@
 
       const sincronizar = () => {
         oculto.value = tags.join(', ');
+        // Avisa quem acompanha o formulário (ex.: o perfil ao vivo do questionário).
+        oculto.dispatchEvent(new Event('change', { bubbles: true }));
         caixa.querySelectorAll('.tag').forEach((tag) => tag.remove());
         tags.forEach((valor, indice) => {
           const tag = document.createElement('span');
           tag.className = 'tag';
           tag.textContent = valor;
+          const logoTag = iconeStack(valor);
+          if (logoTag) tag.prepend(logoTag);
           const remover = document.createElement('button');
           remover.type = 'button';
-          remover.setAttribute('aria-label', `Remover ${valor}`);
+          remover.setAttribute('aria-label', `${textos.remover} ${valor}`);
           remover.innerHTML = icone('x');
           remover.addEventListener('click', () => {
             tags.splice(indice, 1);
@@ -99,7 +118,7 @@
           tag.appendChild(remover);
           caixa.insertBefore(tag, digitacao);
         });
-        digitacao.placeholder = tags.length ? 'Adicionar mais…' : digitacao.dataset.placeholder;
+        digitacao.placeholder = tags.length ? textos.adicionar_mais : digitacao.dataset.placeholder;
         filtrarSugestoes();
       };
 
@@ -128,6 +147,8 @@
           botao.type = 'button';
           botao.className = 'sugestao-tag';
           botao.textContent = valor;
+          const logoSugestao = iconeStack(valor);
+          if (logoSugestao) botao.prepend(logoSugestao);
           botao.addEventListener('click', () => {
             adicionar(valor);
             digitacao.value = '';
@@ -183,8 +204,8 @@
         const tamanhoMb = (arquivo.size / 1024 / 1024).toFixed(1);
         titulo.textContent = arquivo.name;
         detalhe.textContent = arquivo.size > 5 * 1024 * 1024
-          ? `${tamanhoMb} MB — o limite é 5 MB`
-          : `${tamanhoMb} MB · pronto para enviar`;
+          ? `${tamanhoMb} MB — ${textos.limite_arquivo}`
+          : `${tamanhoMb} MB · ${textos.pronto_para_enviar}`;
       };
 
       campo.addEventListener('change', mostrarArquivo);
