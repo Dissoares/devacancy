@@ -25,6 +25,7 @@ $fim = min($total, $filtro->deslocamento() + FiltroUsuariosDTO::POR_PAGINA);
             <th>Tipo</th>
             <th>Perfil</th>
             <th>Stack</th>
+            <th>Assinatura</th>
             <th>WhatsApp</th>
             <th>Cadastro</th>
           </tr>
@@ -66,6 +67,14 @@ $fim = min($total, $filtro->deslocamento() + FiltroUsuariosDTO::POR_PAGINA);
                   <?php foreach (array_slice($stack, 0, 3) as $tecnologia): ?><span class="etiqueta"><?= e($tecnologia) ?></span><?php endforeach; ?>
                   <?php if (count($stack) > 3): ?><span class="etiqueta">+<?= count($stack) - 3 ?></span><?php endif; ?>
                 </div>
+              </td>
+              <td>
+                <?php if ($linha['plano_assinatura']): ?>
+                  <span class="selo selo-sucesso selo-ponto"><?= e(t('plano.' . $linha['plano_assinatura'])) ?></span>
+                  <small class="texto-suave">até <?= data_br($linha['assinatura_expira_em']) ?></small>
+                <?php else: ?>
+                  <span class="selo selo-neutro">Não assinante</span>
+                <?php endif; ?>
               </td>
               <td>
                 <?php if ($telefone): ?>
