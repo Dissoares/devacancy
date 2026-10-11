@@ -69,6 +69,11 @@ return [
         'token_webhook' => Ambiente::obter('EXPAY_WEBHOOK_TOKEN', ''),
     ],
 
+    // PIX sem gateway: o "PIX copia e cola" estático da sua conta (do app do banco). O site refaz o código com o valor de cada plano.
+    'pix' => [
+        'copia_cola' => Ambiente::obter('PIX_COPIA_COLA', ''),
+    ],
+
     // Cartão por assinatura recorrente (Stripe Checkout). Webhook: {APP_URL}/webhooks/stripe com os eventos
     // checkout.session.completed e invoice.paid; o segredo (whsec_...) vai em STRIPE_WEBHOOK_SECRET.
     'stripe' => [
