@@ -27,7 +27,14 @@ $abas = ['' => ['Todas', $totalGeral], 'ativas' => ['Ativas', $totalAtivas], 'pa
     <h1>Vagas</h1>
     <p>Vagas da curadoria interna. Elas alimentam o match e o contador de "vagas compatíveis" dos profissionais.</p>
   </div>
-  <a class="botao botao-primario" href="/admin/vagas/adzuna"><?= icone('busca', 'icone icone-sm') ?> Importar da Adzuna</a>
+  <div class="acoes-cabecalho">
+    <form method="post" action="/admin/vagas/importar-github" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').textContent = 'Importando… pode levar 1 minuto'">
+      <?= csrf_campo() ?>
+      <button class="botao botao-primario" type="submit"><?= icone('raio', 'icone icone-sm') ?> Importar do GitHub agora</button>
+    </form>
+    <a class="botao botao-secundario" href="/admin/vagas/adzuna"><?= icone('busca', 'icone icone-sm') ?> Importar da Adzuna</a>
+  </div>
+
 </section>
 
 <?php if ($sucesso): ?>
