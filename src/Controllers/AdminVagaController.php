@@ -12,6 +12,7 @@ use App\Enums\Senioridade;
 use App\Exceptions\ValidacaoException;
 use App\Services\AutenticacaoService;
 use App\Services\ImportadorVagasAdzuna;
+use App\Services\ImportadorVagasGithub;
 use App\Services\VagaService;
 use RuntimeException;
 
@@ -24,6 +25,7 @@ final class AdminVagaController
     public function __construct(
         private readonly VagaService $vagas,
         private readonly ImportadorVagasAdzuna $adzuna,
+        private readonly ImportadorVagasGithub $github,
         private readonly AutenticacaoService $autenticacao,
     ) {
     }
@@ -58,6 +60,21 @@ final class AdminVagaController
         $this->vagas->excluir((int) $requisicao->parametro('id'));
         Sessao::flash('sucesso', 'Vaga excluída.');
         return Resposta::redirecionar($this->voltarPara($requisicao));
+    }
+
+    /** Mesma importação automática do terminal (repositórios de vagas do GitHub), disparada pelo navegador. */
+    public function importarGithub(Requisicao $requisicao): Resposta
+    {
+        set_time_limit(180);
+        $resumo = $this->github->importar();
+
+        $mensagem = "GitHub: {$resumo['importadas']} vagas novas, {$resumo['repetidas']} já existiam, {$resumo['ignoradas']} ignoradas (antigas).";
+        if ($resumo['erros'] !== []) {
+            $mensagem .= ' Avisos: ' . implode(' | ', array_slice($resumo['erros'], 0, 3));
+        }
+
+        Sessao::flash('sucesso', $mensagem);
+        return Resposta::redirecionar('/admin/vagas');
     }
 
     public function buscarAdzuna(Requisicao $requisicao): Resposta
