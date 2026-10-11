@@ -164,6 +164,14 @@
   formulario.addEventListener('input', atualizarPerfil);
   atualizarPerfil();
   formulario.classList.add('em-passos');
+
+  // O rodapé fixo (celular) muda de altura quando o contador de vagas aparece: o espaço no fim da página acompanha.
+  const rodape = formulario.querySelector('[data-rodape]');
+  if (rodape && 'ResizeObserver' in window) {
+    new ResizeObserver(() => {
+      document.documentElement.style.setProperty('--rodape-altura', `${Math.ceil(rodape.getBoundingClientRect().height)}px`);
+    }).observe(rodape);
+  }
   botaoContinuar.addEventListener('click', avancar);
   botaoVoltar.addEventListener('click', () => {
     let anterior = atual - 1;

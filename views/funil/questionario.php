@@ -192,17 +192,20 @@ $cabecalho = fn (string $pergunta, string $titulo, ?string $subtitulo = null): s
     <?= erro_campo($erros, 'ultima_remuneracao') ?>
   </fieldset>
 
-  <?= parcial('funil/radar', ['total' => $radarTotal]) ?>
+  <!-- Rodapé: no celular fica fixo na tela (contador, nota e botões juntos, sempre no mesmo lugar). -->
+  <div class="questionario-rodape" data-rodape>
+    <?= parcial('funil/radar', ['total' => $radarTotal]) ?>
 
-  <div class="questionario-navegacao">
-    <button class="botao botao-fantasma" type="button" data-voltar aria-label="<?= e(t('funil.voltar')) ?>"><?= icone('chevron-esq', 'icone icone-sm') ?> <span class="rotulo-voltar"><?= e(t('funil.voltar')) ?></span></button>
-    <button class="botao botao-primario botao-grande" type="button" data-continuar><?= e(t('funil.continuar')) ?> <?= icone('seta', 'icone icone-seta') ?></button>
-    <button class="botao botao-primario botao-grande" type="submit" data-enviar>
-      <?= icone('busca', 'icone icone-sm') ?> <?= e(t('funil.ver_minhas_vagas')) ?>
-    </button>
+    <p class="questionario-nota"><?= icone('cadeado', 'icone icone-sm') ?> <?= e(t('funil.nota_privacidade')) ?></p>
+
+    <div class="questionario-navegacao">
+      <button class="botao botao-fantasma" type="button" data-voltar aria-label="<?= e(t('funil.voltar')) ?>"><?= icone('chevron-esq', 'icone icone-sm') ?> <span class="rotulo-voltar"><?= e(t('funil.voltar')) ?></span></button>
+      <button class="botao botao-primario botao-grande" type="button" data-continuar><?= e(t('funil.continuar')) ?> <?= icone('seta', 'icone icone-seta') ?></button>
+      <button class="botao botao-primario botao-grande" type="submit" data-enviar>
+        <?= icone('busca', 'icone icone-sm') ?> <?= e(t('funil.ver_minhas_vagas')) ?>
+      </button>
+    </div>
   </div>
-
-  <p class="questionario-nota"><?= icone('cadeado', 'icone icone-sm') ?> <?= e(t('funil.nota_privacidade')) ?></p>
 </form>
 
 <!-- Perfil montando ao vivo: cada resposta preenche uma linha (o JS lê o texto das opções marcadas). -->
