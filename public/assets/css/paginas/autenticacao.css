@@ -27,8 +27,8 @@
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(ellipse 80% 60% at 0% 0%, rgba(124, 108, 255, .3), transparent 60%),
-    radial-gradient(ellipse 70% 50% at 100% 100%, rgba(76, 201, 240, .16), transparent 60%),
+    radial-gradient(ellipse 80% 60% at 0% 0%, rgba(37, 99, 235, .3), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 100% 100%, rgba(14, 165, 233, .16), transparent 60%),
     var(--fundo-2);
 }
 
@@ -37,8 +37,8 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, .04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, .04) 1px, transparent 1px);
+    linear-gradient(rgba(15, 23, 42, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.028) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(ellipse 80% 70% at 30% 40%, #000 20%, transparent 75%);
   -webkit-mask-image: radial-gradient(ellipse 80% 70% at 30% 40%, #000 20%, transparent 75%);
@@ -47,7 +47,7 @@
 .auth-lateral-conteudo h2 {
   margin: 20px 0 36px;
   font-size: clamp(2rem, 3.2vw, 2.9rem);
-  font-weight: 650;
+  font-weight: 750;
   letter-spacing: -.045em;
 }
 
@@ -73,8 +73,8 @@
   flex-shrink: 0;
   border-radius: 10px;
   border: 1px solid var(--borda-forte);
-  background: rgba(255, 255, 255, .05);
-  color: #b8afff;
+  background: rgba(15, 23, 42, 0.035);
+  color: var(--primaria);
 }
 
 .auth-beneficios strong {
@@ -128,8 +128,8 @@
 
 .auth-cabecalho h1 {
   font-size: 2rem;
-  font-weight: 650;
-  letter-spacing: -.04em;
+  font-weight: 750;
+  letter-spacing: -.025em;
 }
 
 .auth-cabecalho p {
@@ -152,7 +152,7 @@
   color: var(--texto);
   font-weight: 550;
   text-decoration: underline;
-  text-decoration-color: rgba(255, 255, 255, .25);
+  text-decoration-color: rgba(15, 23, 42, 0.175);
   text-underline-offset: 3px;
 }
 
@@ -195,7 +195,7 @@
   max-width: 160px;
   height: 4px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, .08);
+  background: rgba(15, 23, 42, 0.056);
   overflow: hidden;
 }
 
@@ -229,7 +229,7 @@
   height: 34px;
   border-radius: 10px;
   background: var(--primaria-suave);
-  color: #b8afff;
+  color: var(--primaria);
 }
 
 .bloco-titulo h2 {
