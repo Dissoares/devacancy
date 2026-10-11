@@ -8,7 +8,7 @@
   </div>
 </section>
 
-<?php if ($pixProblema && $pixProblema !== 'PIX_COPIA_COLA não está no .env.'): ?>
+<?php if ($pixProblema && $pixProblema !== \App\Services\PixManualService::SEM_CONFIGURACAO): ?>
   <div class="alerta alerta-erro alerta-topo" role="alert"><?= icone('x') ?><span>PIX manual: <?= e($pixProblema) ?></span></div>
 <?php endif; ?>
 
