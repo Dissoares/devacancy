@@ -16,6 +16,7 @@ use App\Exceptions\ValidacaoException;
 use App\Services\AssinaturaService;
 use App\Services\AutenticacaoService;
 use App\Services\CandidaturaService;
+use App\Services\ComissaoService;
 use App\Services\UsuarioService;
 use App\Services\VagaService;
 
@@ -27,6 +28,7 @@ final class UsuarioController
         private readonly VagaService $vagas,
         private readonly AssinaturaService $assinaturas,
         private readonly CandidaturaService $candidaturas,
+        private readonly ComissaoService $comissoes,
     ) {
     }
 
@@ -140,6 +142,7 @@ final class UsuarioController
         $usuario = $this->autenticacao->usuarioAtual();
         $perfil = $this->usuarios->perfilDe($usuario);
         $compativeis = $perfil instanceof PerfilProfissional ? $this->vagas->compativeis($perfil) : [];
+        $codigoIndicacao = $usuario->ehProfissional() ? $this->usuarios->garantirCodigoIndicacao($usuario) : null;
 
         return Resposta::html(Visao::renderizar('dashboard/inicio', [
             'titulo' => t('painel.titulo_pagina'),
@@ -149,6 +152,8 @@ final class UsuarioController
             'recentes' => $this->vagas->contarRecentes($compativeis),
             'assinaturaAte' => $usuario->ehProfissional() ? $this->assinaturas->vigenteAte($usuario) : null,
             'statusCandidaturas' => $usuario->ehProfissional() ? $this->candidaturas->statusPorVaga($usuario) : [],
+            'linkIndicacao' => $codigoIndicacao ? $this->comissoes->linkDeIndicacao($codigoIndicacao) : null,
+            'indicacoes' => $usuario->ehProfissional() ? $this->comissoes->painelDoUsuario($usuario) : null,
             'sucesso' => Sessao::obterFlash('sucesso'),
         ], 'app'));
     }
