@@ -1,7 +1,7 @@
 <div class="auth-cartao">
   <div class="auth-cabecalho">
-    <h1>Bem-vindo de volta</h1>
-    <p>Entre para acompanhar suas candidaturas.</p>
+    <h1><?= e(t('auth.entrar_titulo')) ?></h1>
+    <p><?= e(t('auth.entrar_texto')) ?></p>
   </div>
 
   <?php if (!empty($aviso)): ?>
@@ -13,9 +13,9 @@
 
   <?= parcial('partials/botoes-sociais', ['origem' => 'entrar', 'tipo' => 'profissional']) ?>
 
-  <div class="divisor">ou com e-mail</div>
+  <div class="divisor"><?= e(t('auth.ou_email')) ?></div>
 
   <?= parcial('auth/formulario-entrar', ['erro' => null, 'email' => $email]) ?>
 
-  <p class="auth-rodape">Ainda não tem conta? <a href="/cadastro">Criar conta grátis</a></p>
+  <p class="auth-rodape"><?= e(t('auth.sem_conta')) ?> <a href="/comecar"><?= e(t('landing.cta_curto')) ?></a></p>
 </div>
