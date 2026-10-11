@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Core\Idioma;
 use App\Core\Transacao;
 use App\Entities\Pagamento;
 use App\Entities\Usuario;
@@ -25,7 +26,8 @@ final class AssinaturaService
     /** Catálogo fixo (nome, região, moedas) de cada forma de pagamento, pra tela admin. O "ativo" vem do banco. */
     private const CATALOGO = [
         'pix' => ['nome' => 'PIX (ExPay)', 'regiao' => 'Brasil', 'moedas' => ['BRL']],
-        'paypal' => ['nome' => 'PayPal', 'regiao' => 'Brasil e internacional', 'moedas' => ['BRL', 'USD']],
+        'paypal' => ['nome' => 'PayPal (assinatura, conta Business)', 'regiao' => 'Brasil e internacional', 'moedas' => ['BRL', 'USD']],
+        'paypal_email' => ['nome' => 'PayPal (só e-mail, pagamento avulso)', 'regiao' => 'Brasil e internacional', 'moedas' => ['BRL', 'USD']],
     ];
 
     public function __construct(
@@ -62,6 +64,10 @@ final class AssinaturaService
         if (($ativos['paypal'] ?? true) && ($this->paypal->configurado() || $this->simulacaoPaypal())) {
             $metodos[] = 'paypal';
         }
+        // O PayPal só com e-mail é a alternativa de quem não tem a conta Business com a API da assinatura.
+        if (!$this->paypal->configurado() && ($ativos['paypal_email'] ?? true) && $this->paypal->pagamentoPorEmailConfigurado()) {
+            $metodos[] = 'paypal_email';
+        }
         return $metodos;
     }
 
@@ -69,7 +75,11 @@ final class AssinaturaService
     public function catalogoDeMetodos(): array
     {
         $ativos = $this->metodosPagamento->ativos();
-        $configurado = ['pix' => $this->expay->configurado(), 'paypal' => $this->paypal->configurado()];
+        $configurado = [
+            'pix' => $this->expay->configurado(),
+            'paypal' => $this->paypal->configurado(),
+            'paypal_email' => $this->paypal->pagamentoPorEmailConfigurado(),
+        ];
 
         $catalogo = [];
         foreach (self::CATALOGO as $chave => $info) {
@@ -177,7 +187,8 @@ final class AssinaturaService
     /** Confere o status no gateway (o webhook pode atrasar ou nem estar configurado). */
     public function sincronizar(Pagamento $pagamento): Pagamento
     {
-        if (!$pagamento->estaPendente() || $pagamento->gatewayId === null) {
+        // O PayPal por e-mail não tem consulta: quem confirma é o aviso (IPN) ou o admin.
+        if (!$pagamento->estaPendente() || $pagamento->gatewayId === null || $pagamento->metodo !== 'pix') {
             return $pagamento;
         }
 
@@ -302,6 +313,107 @@ final class AssinaturaService
                 $this->comissoes->registrarSeElegivel($usuarioId, $pagamento->id, $config['precos'][$moeda], $moeda);
             }
         });
+    }
+
+    // ---------------------------------------------------------------- PayPal só com e-mail
+
+    /** @throws ValidacaoException */
+    public function iniciarPagamentoPaypalEmail(Usuario $usuario, array $dados, bool $noBrasil): Pagamento
+    {
+        $plano = $this->planos()[$dados['plano'] ?? ''] ?? null;
+        if ($plano === null) {
+            throw new ValidacaoException(['plano' => t('pagamento.escolha_plano')]);
+        }
+        if (!in_array('paypal_email', $this->metodosPara($noBrasil), true)) {
+            throw new ValidacaoException(['geral' => t('pagamento.indisponivel')]);
+        }
+
+        $moeda = $this->moedaPara($noBrasil);
+        $id = $this->pagamentos->criar($usuario->id, $dados['plano'], $plano['precos'][$moeda], 'paypal_email', $moeda);
+        $this->pagamentos->registrarCobranca($id, 'paypal-email-' . $id, null, null, null);
+
+        return $this->pagamentos->buscarPorId($id);
+    }
+
+    /** Campos do formulário que leva o cliente ao PayPal com e-mail, valor e identificação já preenchidos. @return array{url: string, campos: array<string, string>} */
+    public function formularioPaypalEmail(Pagamento $pagamento): array
+    {
+        return [
+            'url' => $this->paypal->urlPagamentoDireto(),
+            'campos' => [
+                'cmd' => '_xclick',
+                'business' => $this->paypal->emailRecebedor(),
+                'item_name' => configuracao('app.nome') . ' — ' . t('plano.' . $pagamento->plano),
+                'amount' => number_format($pagamento->valor, 2, '.', ''),
+                'currency_code' => $pagamento->moeda,
+                'custom' => 'pagamento-' . $pagamento->id,
+                'no_shipping' => '1',
+                'no_note' => '1',
+                'charset' => 'utf-8',
+                'lc' => Idioma::atual() === 'pt' ? 'BR' : 'US',
+                'notify_url' => url('/webhooks/paypal-ipn'),
+                'return' => url('/pagamento/' . $pagamento->id),
+                'cancel_return' => url('/planos?plano=' . $pagamento->plano),
+                'rm' => '1',
+            ],
+        ];
+    }
+
+    /**
+     * Aviso (IPN) do PayPal: só vale se o PayPal confirmar que ele mesmo o enviou, se o dinheiro foi para o
+     * e-mail configurado e se moeda e valor batem com o pagamento. Qualquer coisa diferente é ignorada.
+     */
+    public function processarIpn(string $corpo): void
+    {
+        parse_str($corpo, $campos);
+
+        if (!$this->paypal->ipnVerdadeiro($corpo)) {
+            return;
+        }
+        if (($campos['payment_status'] ?? '') !== 'Completed' || !preg_match('/^pagamento-(\d+)$/', (string) ($campos['custom'] ?? ''), $achado)) {
+            return;
+        }
+
+        $pagamento = $this->pagamentos->buscarPorId((int) $achado[1]);
+        if ($pagamento === null || $pagamento->metodo !== 'paypal_email' || !$pagamento->estaPendente()) {
+            return;
+        }
+
+        $recebedor = mb_strtolower($this->paypal->emailRecebedor());
+        $destinoCerto = mb_strtolower((string) ($campos['receiver_email'] ?? '')) === $recebedor
+            || mb_strtolower((string) ($campos['business'] ?? '')) === $recebedor;
+        $valorCerto = (string) ($campos['mc_currency'] ?? '') === $pagamento->moeda
+            && (float) ($campos['mc_gross'] ?? 0) + 0.005 >= $pagamento->valor;
+
+        if (!$destinoCerto || !$valorCerto) {
+            $this->registrarErro('PayPal IPN', new RuntimeException("Pagamento #{$pagamento->id} recusado: destino ou valor não conferem."));
+            return;
+        }
+
+        if (!empty($campos['txn_id'])) {
+            try {
+                $this->pagamentos->registrarCobranca($pagamento->id, (string) $campos['txn_id'], null, null, null);
+            } catch (\PDOException) {
+                // txn_id repetido: o aviso já foi tratado antes; a conclusão abaixo é idempotente.
+            }
+        }
+        $this->aplicarStatus($pagamento, StatusPagamento::Pago);
+    }
+
+    /** @return array<int, array> pagamentos por e-mail ainda sem confirmação (para o admin conferir no app do PayPal) */
+    public function paypalEmailPendentes(): array
+    {
+        return $this->pagamentos->listarPendentesDoMetodo('paypal_email');
+    }
+
+    /** O admin viu o dinheiro na conta PayPal e libera o plano. */
+    public function confirmarPaypalEmailManualmente(int $pagamentoId): void
+    {
+        $pagamento = $this->pagamentos->buscarPorId($pagamentoId);
+        if ($pagamento === null || $pagamento->metodo !== 'paypal_email') {
+            throw new NaoEncontradoException();
+        }
+        $this->aplicarStatus($pagamento, StatusPagamento::Pago);
     }
 
     // ---------------------------------------------------------------- Interno
