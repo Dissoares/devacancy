@@ -109,6 +109,52 @@ final class UsuarioService
         return $this->usuarios->buscarPorId($id) ?? throw new NaoEncontradoException();
     }
 
+    /** @return Usuario[] */
+    public function administradores(): array
+    {
+        return $this->usuarios->listarAdmins();
+    }
+
+    /**
+     * Dá permissão de administrador à conta com esse e-mail (ela precisa já ter se cadastrado).
+     * @throws ValidacaoException
+     */
+    public function promoverAAdmin(string $email): Usuario
+    {
+        $usuario = $this->usuarios->buscarPorEmail(mb_strtolower(trim($email)));
+        if ($usuario === null) {
+            throw new ValidacaoException(['email' => 'Nenhum cadastro com esse e-mail. A pessoa precisa criar a conta primeiro.']);
+        }
+        if ($usuario->ehAdmin()) {
+            throw new ValidacaoException(['email' => 'Essa conta já é administradora.']);
+        }
+
+        $this->usuarios->promoverAAdmin($usuario->id);
+        return $usuario;
+    }
+
+    /**
+     * Exclui o cadastro e tudo que depende dele (perfil, candidaturas, assinaturas), inclusive o currículo.
+     * @throws ValidacaoException
+     */
+    public function excluir(int $id, int $quemExclui): void
+    {
+        $usuario = $this->buscarPorId($id);
+
+        if ($usuario->id === $quemExclui) {
+            throw new ValidacaoException(['usuario' => 'Você não pode excluir a própria conta enquanto está logado nela.']);
+        }
+        if ($usuario->ehAdmin() && $this->usuarios->contarAdmins() <= 1) {
+            throw new ValidacaoException(['usuario' => 'Este é o único administrador. Promova outra conta antes de excluí-lo.']);
+        }
+
+        $perfil = $this->perfilDe($usuario);
+        $this->usuarios->excluir($usuario->id);
+        if ($perfil instanceof PerfilProfissional) {
+            $this->curriculos->remover($perfil->curriculoArquivo);
+        }
+    }
+
     public function perfilDe(Usuario $usuario): PerfilProfissional|PerfilEmpresa|null
     {
         return match ($usuario->tipo) {
