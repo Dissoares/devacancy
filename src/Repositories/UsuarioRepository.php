@@ -50,12 +50,12 @@ final class UsuarioRepository implements UsuarioRepositoryInterface
         return (bool) $consulta->fetchColumn();
     }
 
-    public function criar(TipoUsuario $tipo, string $nome, string $email, ?string $senhaHash, ?string $avatarUrl = null): Usuario
+    public function criar(TipoUsuario $tipo, string $nome, string $email, ?string $senhaHash, ?string $avatarUrl = null, string $idioma = 'pt', ?string $pais = null): Usuario
     {
         $consulta = $this->pdo->prepare(
-            'INSERT INTO usuarios (tipo, nome, email, senha_hash, avatar_url) VALUES (?, ?, ?, ?, ?)'
+            'INSERT INTO usuarios (tipo, nome, email, senha_hash, avatar_url, idioma, pais) VALUES (?, ?, ?, ?, ?, ?, ?)'
         );
-        $consulta->execute([$tipo->value, $nome, mb_strtolower($email), $senhaHash, $avatarUrl]);
+        $consulta->execute([$tipo->value, $nome, mb_strtolower($email), $senhaHash, $avatarUrl, $idioma, $pais]);
 
         return $this->buscarPorId((int) $this->pdo->lastInsertId());
     }
@@ -76,8 +76,11 @@ final class UsuarioRepository implements UsuarioRepositoryInterface
             ->execute([$avatarUrl, $usuarioId]);
     }
 
-    public function atualizarTelefone(int $usuarioId, string $telefone): void
+    public function atualizarTelefone(int $usuarioId, ?string $telefone): void
     {
+        if ($telefone === null) {
+            return;
+        }
         $this->pdo->prepare('UPDATE usuarios SET telefone = ? WHERE id = ?')->execute([$telefone, $usuarioId]);
     }
 
