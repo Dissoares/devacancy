@@ -53,7 +53,7 @@ abstract class ProvedorOAuthBase implements ProvedorOAuthInterface
             'client_secret' => $this->clienteSegredo(),
         ]);
 
-        return $resposta['access_token'] ?? throw new AutenticacaoException('O provedor não autorizou o login.');
+        return $resposta['access_token'] ?? throw new AutenticacaoException(t('auth.provedor_negou'));
     }
 
     protected function exigirEmail(?string $email): string
