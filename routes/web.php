@@ -8,6 +8,7 @@ use App\Controllers\AdminController;
 use App\Controllers\AdminEmailController;
 use App\Controllers\AdminMigracaoController;
 use App\Controllers\AdminPagamentoController;
+use App\Controllers\AdminUsuarioController;
 use App\Controllers\AdminVagaController;
 use App\Controllers\AssinaturaController;
 use App\Controllers\AutenticacaoController;
@@ -94,6 +95,9 @@ return function (Roteador $rotas): void {
     $rotas->post('/admin/candidaturas/{id}/status', [CandidaturaController::class, 'atualizar'], $admin);
     $rotas->get('/admin/comissoes', [AdminComissaoController::class, 'listar'], $admin);
     $rotas->post('/admin/comissoes/{id}/pagar', [AdminComissaoController::class, 'marcarComoPaga'], $admin);
+    $rotas->get('/admin/administradores', [AdminUsuarioController::class, 'administradores'], $admin);
+    $rotas->post('/admin/administradores', [AdminUsuarioController::class, 'promover'], $admin);
+    $rotas->post('/admin/usuarios/{id}/excluir', [AdminUsuarioController::class, 'excluir'], $admin);
     $rotas->get('/admin/email', [AdminEmailController::class, 'painel'], $admin);
     $rotas->post('/admin/email/testar', [AdminEmailController::class, 'testar'], $admin);
     $rotas->get('/admin/migracoes', [AdminMigracaoController::class, 'painel'], $admin);
