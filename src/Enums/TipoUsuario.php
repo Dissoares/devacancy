@@ -14,11 +14,7 @@ enum TipoUsuario: string
 
     public function rotulo(): string
     {
-        return match ($this) {
-            self::Profissional => 'Profissional',
-            self::Empresa => 'Empresa',
-            self::Admin => 'Administrador',
-        };
+        return t('tipo_usuario.' . $this->value);
     }
 
     /** Tipos que podem se cadastrar pelo site público. */
