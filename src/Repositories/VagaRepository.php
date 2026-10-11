@@ -42,6 +42,14 @@ final class VagaRepository implements VagaRepositoryInterface
         return (int) $this->pdo->lastInsertId();
     }
 
+    public function buscarPorId(int $id): ?Vaga
+    {
+        $consulta = $this->pdo->prepare('SELECT * FROM vagas WHERE id = ?');
+        $consulta->execute([$id]);
+        $linha = $consulta->fetch();
+        return $linha ? Vaga::deLinha($linha) : null;
+    }
+
     public function existeSemelhante(string $titulo, string $empresa, int $dias): bool
     {
         $consulta = $this->pdo->prepare('SELECT 1 FROM vagas WHERE titulo = ? AND empresa = ? AND criado_em >= NOW() - INTERVAL ? DAY LIMIT 1');

@@ -12,6 +12,8 @@ interface VagaRepositoryInterface
     /** $criadoEm nulo usa agora (vagas importadas guardam a data original do anúncio). */
     public function criar(VagaDTO $dados, ?string $criadoEm = null): int;
 
+    public function buscarPorId(int $id): ?Vaga;
+
     public function existeLink(string $link): bool;
 
     /** Mesma vaga (título e empresa) já cadastrada nos últimos N dias. */

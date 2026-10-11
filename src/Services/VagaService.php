@@ -13,6 +13,7 @@ use App\Enums\AreaAtuacao;
 use App\Enums\ModeloTrabalho;
 use App\Enums\RegiaoVagas;
 use App\Enums\Senioridade;
+use App\Exceptions\NaoEncontradoException;
 use App\Exceptions\ValidacaoException;
 use App\Interfaces\VagaRepositoryInterface;
 
@@ -40,6 +41,16 @@ final class VagaService
         }
 
         return $this->vagas->criar($vaga);
+    }
+
+    /** Vaga que pode ser aberta por qualquer pessoa (link compartilhado): só as ativas existem para o público. @throws NaoEncontradoException */
+    public function publica(int $id): Vaga
+    {
+        $vaga = $this->vagas->buscarPorId($id);
+        if ($vaga === null || !$vaga->ativa) {
+            throw new NaoEncontradoException();
+        }
+        return $vaga;
     }
 
     /** @return Vaga[] */
