@@ -498,6 +498,7 @@ return [
     'landing.divisao_nos_tempo' => 'You don\'t need to visit any job site',
     'landing.programa_em' => 'You code in',
     'landing.demo_painel' => 'Your applications',
+    'landing.demo_clique' => 'Tap to start',
     'landing.titulo_pagina' => 'Devacancy — You code. We apply.',
     'landing.descricao_pagina' => 'Answer a few questions, see the jobs that match your stack and level, and let us send the applications for you.',
     'landing.anuncio_selo' => 'Free',

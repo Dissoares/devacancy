@@ -2725,3 +2725,64 @@
     padding-bottom: 92px;
   }
 }
+
+/* Celular clicável: leva direto pro questionário. */
+a.celular {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .3s cubic-bezier(.2, .8, .2, 1), box-shadow .3s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a.celular:hover,
+a.celular:focus-visible {
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: 0 60px 100px -30px rgba(37, 99, 235, .45), inset 0 0 0 2px #475569;
+}
+
+a.celular:focus-visible {
+  outline: 3px solid var(--primaria);
+  outline-offset: 6px;
+}
+
+a.celular:active {
+  transform: scale(.985);
+}
+
+.celular-dica {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--acao);
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 650;
+  white-space: nowrap;
+  box-shadow: var(--brilho-acao);
+  transform: translateX(-50%);
+  animation: dica-celular 2.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.celular-dica .icone {
+  width: 14px;
+  height: 14px;
+}
+
+@keyframes dica-celular {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .celular-dica { animation: none; }
+  a.celular:hover, a.celular:focus-visible { transform: none; }
+}

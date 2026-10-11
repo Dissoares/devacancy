@@ -498,6 +498,7 @@ return [
     'landing.divisao_nos_tempo' => 'Você não precisa entrar em site de vaga nenhum',
     'landing.programa_em' => 'Você programa em',
     'landing.demo_painel' => 'Suas candidaturas',
+    'landing.demo_clique' => 'Toque para começar',
     'landing.titulo_pagina' => 'Devacancy — Você programa. A gente se candidata.',
     'landing.descricao_pagina' => 'Responda algumas perguntas, veja as vagas compatíveis com a sua stack e o seu nível, e deixe que a gente envie as candidaturas por você.',
     'landing.anuncio_selo' => 'Grátis',

@@ -137,8 +137,8 @@ $perguntas = array_map(fn (int $n) => [t("landing.faq_{$n}_p"), t("landing.faq_{
         <?php endforeach; ?>
       </ol>
 
-      <!-- Celular desenhado em código: uma tela por passo. -->
-      <div class="celular" aria-hidden="true">
+      <!-- Celular desenhado em código: uma tela por passo. Clicável: leva direto pro questionário. -->
+      <a class="celular" href="/comecar" aria-label="<?= e(t('landing.demo_clique')) ?>">
         <div class="celular-tela">
           <div class="celular-barra"><span class="marca-mini">dev<b>acancy</b></span><span class="celular-hora">9:41</span></div>
 
@@ -174,7 +174,8 @@ $perguntas = array_map(fn (int $n) => [t("landing.faq_{$n}_p"), t("landing.faq_{
             <small class="cena-rodape"><?= e(t('landing.divisao_nos_tempo')) ?></small>
           </div>
         </div>
-      </div>
+        <span class="celular-dica"><?= e(t('landing.demo_clique')) ?> <?= icone('seta', 'icone icone-sm') ?></span>
+      </a>
     </div>
   </div>
 </section>
