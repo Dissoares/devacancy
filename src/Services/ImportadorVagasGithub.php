@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Core\ClassificadorVaga;
 use App\Core\ClienteHttp;
 use App\DTOs\VagaDTO;
 use App\Enums\AreaAtuacao;
 use App\Enums\Moeda;
-use App\Enums\ModeloTrabalho;
 use App\Enums\RegiaoVagas;
-use App\Enums\Senioridade;
 use App\Interfaces\VagaRepositoryInterface;
 use RuntimeException;
 
@@ -23,16 +22,6 @@ final class ImportadorVagasGithub
 {
     /** Anúncios mais antigos que isso nem são importados. */
     private const DIAS_MAXIMOS = 45;
-
-    private const TECNOLOGIAS = [
-        'React Native', 'React', 'Angular', 'Vue', 'Next.js', 'Nuxt', 'Svelte', 'TypeScript', 'JavaScript', 'Node.js',
-        'NestJS', 'Nest.js', 'PHP', 'Laravel', 'Symfony', 'Python', 'Django', 'FastAPI', 'Flask', 'Java', 'Spring', 'Kotlin',
-        'C#', '.NET', 'Go', 'Golang', 'Ruby', 'Rails', 'Elixir', 'Rust', 'Scala', 'Swift', 'SwiftUI', 'Objective-C',
-        'Flutter', 'Dart', 'Android', 'iOS', 'AWS', 'Azure', 'GCP', 'Docker', 'Kubernetes', 'Terraform', 'PostgreSQL',
-        'MySQL', 'MongoDB', 'Redis', 'GraphQL', 'Kafka', 'SQL', 'Cypress', 'Selenium', 'Playwright', 'Jest',
-        'Tailwind', 'HTML', 'CSS', 'Spark', 'Airflow', 'Power BI', 'Cobol', 'Solidity', 'Mainframe',
-        'Delphi', 'SAP', 'ABAP', 'Salesforce', 'Unity', 'C++',
-    ];
 
     public function __construct(
         private readonly ClienteHttp $http,
@@ -107,10 +96,10 @@ final class ImportadorVagasGithub
         return new VagaDTO(
             titulo: mb_substr($partes['cargo'], 0, 150),
             empresa: mb_substr($partes['empresa'] ?? 'Confidencial', 0, 150),
-            area: $this->area($titulo, $areaPadrao),
-            senioridade: $this->senioridade($titulo, $rotulos),
-            stack: $this->stack($texto),
-            modeloTrabalho: $this->modelo($titulo, $rotulos),
+            area: ClassificadorVaga::area($titulo, $areaPadrao),
+            senioridade: ClassificadorVaga::senioridade($titulo, implode(' ', $rotulos)),
+            stack: ClassificadorVaga::stack($texto),
+            modeloTrabalho: ClassificadorVaga::modelo($titulo . ' ' . implode(' ', $rotulos)),
             cidade: $partes['cidade'],
             salarioMin: $salarioMin,
             salarioMax: $salarioMax,
@@ -192,11 +181,11 @@ final class ImportadorVagasGithub
             $cargo = trim(substr($cargo, 0, -strlen($m[0])));
         }
         $cargo = trim(preg_replace('/[\s(-]*\bUSD\b\)?\s*$/u', '', $cargo));
-        if (preg_match('/\s*\(([^),]{2,30})\)+\s*$/u', $cargo, $m) && !preg_match('/\b(remot|h[ií]brid|pj|clt)/iu', $m[1]) && !$this->ehTecnologia($m[1])) {
+        if (preg_match('/\s*\(([^),]{2,30})\)+\s*$/u', $cargo, $m) && !preg_match('/\b(remot|h[ií]brid|pj|clt)/iu', $m[1]) && !ClassificadorVaga::pareceTecnologia($m[1])) {
             $empresa ??= trim(preg_replace('/\bUSD\b/u', '', $m[1]));
             $cargo = trim(substr($cargo, 0, -strlen($m[0])));
         }
-        if (preg_match('/\s*[-–]\s+([^-–]{2,40})$/u', $cargo, $m) && !preg_match('/,|\b(remot|h[ií]brid|presencial|pj|clt|j[uú]nior|pleno|s[eê]nior)/iu', $m[1]) && !$this->ehTecnologia($m[1])) {
+        if (preg_match('/\s*[-–]\s+([^-–]{2,40})$/u', $cargo, $m) && !preg_match('/,|\b(remot|h[ií]brid|presencial|pj|clt|j[uú]nior|pleno|s[eê]nior)/iu', $m[1]) && !ClassificadorVaga::pareceTecnologia($m[1])) {
             $empresa ??= trim($m[1]);
             $cargo = trim(substr($cargo, 0, -strlen($m[0])));
         }
@@ -232,66 +221,7 @@ final class ImportadorVagasGithub
             && !preg_match(self::RUIDO, $texto)
             && !preg_match('/^[A-Z]{2}$|^em\s|^\d|home office|remot|h[ií]brid|presencial|tempo determinado|meses|vaga/iu', $texto)
             && $this->cidadeDe($texto) === null
-            && !$this->ehTecnologia($texto);
-    }
-
-    private function ehTecnologia(string $texto): bool
-    {
-        foreach (self::TECNOLOGIAS as $tecnologia) {
-            if (stripos($texto, $tecnologia) !== false) {
-                return true;
-            }
-        }
-        return (bool) preg_match('/\b(llm|ia|ai|ux|ui|healthtech|fintech|saas|ehr|emr)\b/iu', $texto);
-    }
-    private function area(string $titulo, AreaAtuacao $padrao): AreaAtuacao
-    {
-        return match (true) {
-            (bool) preg_match('/full[\s-]?stack/iu', $titulo) => AreaAtuacao::Fullstack,
-            (bool) preg_match('/\b(mobile|android|ios|flutter|react native)\b/iu', $titulo) => AreaAtuacao::Mobile,
-            (bool) preg_match('/\b(qa|quality|testes?|tester)\b/iu', $titulo) => AreaAtuacao::Qa,
-            (bool) preg_match('/\b(devops|sre|cloud|infra|infraestrutura|plataforma)\b/iu', $titulo) => AreaAtuacao::DevOps,
-            (bool) preg_match('/\b(dados|data|machine learning|ml|ia|ai)\b/iu', $titulo) => AreaAtuacao::Dados,
-            (bool) preg_match('/front[\s-]?end/iu', $titulo) => AreaAtuacao::Frontend,
-            (bool) preg_match('/back[\s-]?end/iu', $titulo) => AreaAtuacao::Backend,
-            default => $padrao,
-        };
-    }
-
-    /** O título manda; sem nível no título, usa o rótulo mais baixo da issue; sem nada, pleno. */
-    private function senioridade(string $titulo, array $rotulos): Senioridade
-    {
-        $mapa = [
-            Senioridade::Estagio->value => '/est[aá]gi|trainee|\bintern\b|internship/iu',
-            Senioridade::Junior->value => '/j[uú]nior|\bjr\b/iu',
-            Senioridade::Pleno->value => '/pleno|\bmid\b|\bpl\b/iu',
-            Senioridade::Senior->value => '/s[eê]nior|\bsr\b/iu',
-            Senioridade::Especialista->value => '/especialista|tech lead|staff|principal|l[ií]der/iu',
-        ];
-
-        foreach ($mapa as $nivel => $padrao) {
-            if (preg_match($padrao, $titulo)) {
-                return Senioridade::from($nivel);
-            }
-        }
-        foreach ($mapa as $nivel => $padrao) {
-            foreach ($rotulos as $rotulo) {
-                if (preg_match($padrao, $rotulo)) {
-                    return Senioridade::from($nivel);
-                }
-            }
-        }
-        return Senioridade::Pleno;
-    }
-
-    private function modelo(string $titulo, array $rotulos): ModeloTrabalho
-    {
-        $alvo = $titulo . ' ' . implode(' ', $rotulos);
-        return match (true) {
-            (bool) preg_match('/remot/iu', $alvo) => ModeloTrabalho::Remoto,
-            (bool) preg_match('/h[ií]brid/iu', $alvo) => ModeloTrabalho::Hibrido,
-            default => ModeloTrabalho::Presencial,
-        };
+            && !ClassificadorVaga::pareceTecnologia($texto);
     }
 
     /** "R$ 8.000 a R$ 12.000", "USD 4.000 a 8.000", "até R$ 10 mil". @return array{0: ?int, 1: ?int, 2: Moeda} */
@@ -318,22 +248,6 @@ final class ImportadorVagasGithub
             }
         }
         return [null, null, preg_match('/\bUSD\b|US\$/', $corpo) ? Moeda::Dolar : Moeda::Real];
-    }
-
-    /** @return string[] até 8 tecnologias citadas, na ordem da lista (as mais específicas primeiro). */
-    private function stack(string $texto): array
-    {
-        $achadas = [];
-        foreach (self::TECNOLOGIAS as $tecnologia) {
-            $padrao = '/(?<![\w.#])' . preg_quote($tecnologia, '/') . '(?![\w#])/i';
-            if (preg_match($padrao, $texto)) {
-                $achadas[] = $tecnologia === 'Golang' ? 'Go' : $tecnologia;
-            }
-        }
-        if (in_array('React Native', $achadas, true)) {
-            $achadas = array_values(array_diff($achadas, ['React']));
-        }
-        return array_slice(array_values(array_unique($achadas)), 0, 8);
     }
 
     /** Primeiro parágrafo útil da descrição, sem markdown, até ~400 caracteres. */
