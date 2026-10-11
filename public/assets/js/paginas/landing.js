@@ -155,15 +155,18 @@
     const linkFixo = ctaFixo.querySelector('a');
     let agendado = false;
 
-    const naTela = (elemento) => {
+    // O cartão do CTA final só "esconde" o botão fixo enquanto está bem à vista (quase metade dele na tela).
+    // Se sobrou só uma faixa no topo (a pessoa já está no rodapé), o botão fixo volta: nada fica sem ação.
+    const bemVisivel = (elemento) => {
       const area = elemento.getBoundingClientRect();
-      return area.bottom > 0 && area.top < window.innerHeight;
+      const sobreposto = Math.min(area.bottom, window.innerHeight) - Math.max(area.top, 0);
+      return sobreposto / area.height >= 0.45;
     };
 
     const atualizar = () => {
       agendado = false;
       const passouDoInicio = inicioQuiz.getBoundingClientRect().bottom < 0;
-      const visivel = passouDoInicio && !(botaoFinal && naTela(botaoFinal));
+      const visivel = passouDoInicio && !(botaoFinal && bemVisivel(botaoFinal));
       ctaFixo.classList.toggle('visivel', visivel);
       document.body.classList.toggle('com-cta-fixo', visivel);
       ctaFixo.setAttribute('aria-hidden', String(!visivel));
