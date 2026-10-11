@@ -16,12 +16,6 @@ enum Senioridade: string
 
     public function rotulo(): string
     {
-        return match ($this) {
-            self::Estagio => 'Estágio',
-            self::Junior => 'Júnior',
-            self::Pleno => 'Pleno',
-            self::Senior => 'Sênior',
-            self::Especialista => 'Especialista / Tech Lead',
-        };
+        return t('senioridade.' . $this->value);
     }
 }
