@@ -15,11 +15,6 @@ enum ModeloTrabalho: string
 
     public function rotulo(): string
     {
-        return match ($this) {
-            self::Remoto => 'Remoto',
-            self::Hibrido => 'Híbrido',
-            self::Presencial => 'Presencial',
-            self::Indiferente => 'Tanto faz',
-        };
+        return t('modelo.' . $this->value);
     }
 }
