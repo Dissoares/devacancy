@@ -13,6 +13,8 @@ namespace App\Services;
  */
 final class PixManualService
 {
+    public const SEM_CONFIGURACAO = 'Informe PIX_CHAVE (com PIX_NOME e PIX_CIDADE) ou PIX_COPIA_COLA no .env.';
+
     /** Ordem em que os campos devem aparecer no código final. */
     private const ORDEM_FIXA = ['00', '01', '26', '52', '53', '54', '58', '59', '60', '61', '62', '63'];
 
@@ -24,9 +26,9 @@ final class PixManualService
     /** Por que o código do .env não serve, para a tela de diagnóstico do admin. Null quando está tudo certo. */
     public function problema(): ?string
     {
-        $codigo = trim((string) configuracao('pix.copia_cola'));
+        $codigo = $this->codigoBase();
         if ($codigo === '') {
-            return 'PIX_COPIA_COLA não está no .env.';
+            return self::SEM_CONFIGURACAO;
         }
         $campos = $this->ler($codigo);
         if ($campos === null) {
@@ -100,7 +102,32 @@ final class PixManualService
         if ($this->problema() !== null) {
             return null;
         }
-        return $this->ler(trim((string) configuracao('pix.copia_cola')));
+        return $this->ler($this->codigoBase());
+    }
+
+    /**
+     * O código estático de partida: o PIX copia e cola colado no .env ou, na falta dele, um montado só com a chave
+     * (PIX_CHAVE), o nome (PIX_NOME) e a cidade (PIX_CIDADE) de quem recebe.
+     */
+    private function codigoBase(): string
+    {
+        $colado = trim((string) configuracao('pix.copia_cola'));
+        if ($colado !== '') {
+            return $colado;
+        }
+
+        $chave = trim((string) configuracao('pix.chave'));
+        if ($chave === '') {
+            return '';
+        }
+
+        $conta = $this->campo('00', 'br.gov.bcb.pix') . $this->campo('01', $chave);
+        $corpo = $this->campo('00', '01') . $this->campo('26', $conta) . $this->campo('52', '0000') . $this->campo('53', '986')
+            . $this->campo('58', 'BR')
+            . $this->campo('59', $this->limitar((string) (configuracao('pix.nome') ?: 'DEVACANCY'), 25))
+            . $this->campo('60', $this->limitar((string) (configuracao('pix.cidade') ?: 'SAO PAULO'), 15))
+            . $this->campo('62', $this->campo('05', '***')) . '6304';
+        return $corpo . self::crc16($corpo);
     }
 
     /**
