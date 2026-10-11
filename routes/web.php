@@ -70,6 +70,8 @@ return function (Roteador $rotas): void {
     $rotas->get('/pagamento/{id}', [AssinaturaController::class, 'pagamento'], $perfilCompleto);
     $rotas->get('/pagamento/{id}/status', [AssinaturaController::class, 'statusPagamento'], $perfilCompleto);
     $rotas->post('/pagamento/{id}/simular', [AssinaturaController::class, 'simularPagamento'], $perfilCompleto);
+    $rotas->post('/assinar/pix-manual', [AssinaturaController::class, 'assinarPixManual'], $perfilCompleto);
+    $rotas->post('/pagamento/{id}/avisar', [AssinaturaController::class, 'avisarPagamento'], $perfilCompleto);
     $rotas->post('/assinar/stripe', [AssinaturaController::class, 'assinarStripe'], $perfilCompleto);
     $rotas->post('/assinar/stripe/simular', [AssinaturaController::class, 'simularStripe'], $perfilCompleto);
     $rotas->get('/assinatura/stripe/retorno', [AssinaturaController::class, 'retornoStripe'], $perfilCompleto);
