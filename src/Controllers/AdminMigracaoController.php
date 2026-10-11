@@ -73,7 +73,14 @@ final class AdminMigracaoController
         }
 
         Sessao::remover('tentativas_migrar');
-        return $this->telaToken(null, $this->rodar());
+
+        $resultado = $this->rodar();
+        $admin = null;
+        if ($resultado['erro'] === null) {
+            $admin = $this->prepararAdmin(trim((string) $requisicao->entrada('admin_email', '')), (string) $requisicao->entrada('admin_senha', ''));
+        }
+
+        return $this->telaToken(null, $resultado, $admin);
     }
 
     // ---------------------------------------------------------------- Interno
@@ -103,12 +110,34 @@ final class AdminMigracaoController
         return $token;
     }
 
-    private function telaToken(?string $erro, ?array $resultado): Resposta
+    /**
+     * Cria o administrador, ou promove a conta que já existe com esse e-mail (ex.: criada antes pelo Google),
+     * e define a senha dele. Devolve a mensagem para a tela, ou null se os campos vieram vazios.
+     */
+    private function prepararAdmin(string $email, string $senha): ?string
+    {
+        if ($email === '' && $senha === '') {
+            return null;
+        }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($senha) < 8 || mb_strlen($senha) > 72) {
+            return 'Administrador não alterado: informe um e-mail válido e uma senha de 8 a 72 caracteres.';
+        }
+
+        Conexao::obter()->prepare(
+            "INSERT INTO usuarios (tipo, nome, email, senha_hash, cadastro_completo) VALUES ('admin', 'Administrador', ?, ?, 1)
+             ON DUPLICATE KEY UPDATE tipo = 'admin', senha_hash = VALUES(senha_hash), cadastro_completo = 1"
+        )->execute([mb_strtolower($email), password_hash($senha, PASSWORD_DEFAULT)]);
+
+        return 'Administrador pronto: ' . mb_strtolower($email) . '. Já pode entrar em /entrar com essa senha.';
+    }
+
+    private function telaToken(?string $erro, ?array $resultado, ?string $admin = null): Resposta
     {
         return Resposta::html(Visao::renderizar('instalador/migrar', [
             'titulo' => 'Migrações — Devacancy',
             'erro' => $erro,
             'resultado' => $resultado,
+            'admin' => $admin,
         ], 'site'));
     }
 }
