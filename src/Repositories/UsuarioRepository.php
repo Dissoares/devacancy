@@ -17,7 +17,10 @@ final class UsuarioRepository implements UsuarioRepositoryInterface
         u.id, u.tipo, u.nome, u.email, u.telefone, u.avatar_url, u.cadastro_completo, u.criado_em, u.ultimo_acesso_em,
         pp.area, pp.senioridade, pp.cargo_desejado, pp.anos_experiencia, pp.stack, pp.modelo_trabalho, pp.cidade,
         pp.pretensao_salarial, pp.linkedin_url, pp.github_url, pp.portfolio_url, pp.curriculo_arquivo,
-        pe.nome_empresa, pe.site, pe.tamanho, pe.cargo_contato, pe.stacks_contratacao, pe.vagas_abertas';
+        pe.nome_empresa, pe.site, pe.tamanho, pe.cargo_contato, pe.stacks_contratacao, pe.vagas_abertas,
+        a.plano AS plano_assinatura, a.expira_em AS assinatura_expira_em';
+
+    private const JUNCAO_ASSINATURA = 'LEFT JOIN assinaturas a ON a.usuario_id = u.id AND a.expira_em > NOW()';
 
     public function __construct(private readonly PDO $pdo)
     {
@@ -108,8 +111,10 @@ final class UsuarioRepository implements UsuarioRepositoryInterface
             'SELECT %s FROM usuarios u
                LEFT JOIN perfis_profissionais pp ON pp.usuario_id = u.id
                LEFT JOIN perfis_empresas pe ON pe.usuario_id = u.id
+               %s
                %s ORDER BY u.criado_em DESC, u.id DESC LIMIT %d OFFSET %d',
             self::COLUNAS_LISTAGEM,
+            self::JUNCAO_ASSINATURA,
             $onde,
             FiltroUsuariosDTO::POR_PAGINA,
             $filtro->deslocamento(),
@@ -127,8 +132,10 @@ final class UsuarioRepository implements UsuarioRepositoryInterface
             'SELECT %s FROM usuarios u
                LEFT JOIN perfis_profissionais pp ON pp.usuario_id = u.id
                LEFT JOIN perfis_empresas pe ON pe.usuario_id = u.id
+               %s
                %s ORDER BY u.criado_em DESC',
             self::COLUNAS_LISTAGEM,
+            self::JUNCAO_ASSINATURA,
             $onde,
         ));
         $consulta->execute($parametros);
