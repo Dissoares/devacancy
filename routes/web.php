@@ -17,6 +17,7 @@ use App\Controllers\FunilController;
 use App\Controllers\LandingController;
 use App\Controllers\RecuperacaoSenhaController;
 use App\Controllers\UsuarioController;
+use App\Controllers\VagaPublicaController;
 use App\Core\Roteador;
 use App\Middlewares\AdminMiddleware;
 use App\Middlewares\AutenticadoMiddleware;
@@ -30,6 +31,9 @@ return function (Roteador $rotas): void {
     $perfilCompleto = [...$logado, PerfilCompletoMiddleware::class];
 
     $rotas->get('/', [LandingController::class, 'inicio']);
+    $rotas->get('/vaga/{id}', [VagaPublicaController::class, 'mostrar']);
+    $rotas->get('/vaga/{id}/aplicar', [VagaPublicaController::class, 'aplicar']);
+    $rotas->get('/vaga/{id}/imagem.png', [VagaPublicaController::class, 'imagem']);
     $rotas->get('/vitrine', [LandingController::class, 'vitrine']);
 
     // Funil do profissional: questionário → vagas compatíveis → criar conta (sem login até aqui)
