@@ -3,6 +3,7 @@
  * @var array $planos @var string $moeda @var string[] $metodos @var array $valores @var array $erros
  * @var int $totalCompativeis @var int $reservadas @var ?string $vigenteAte
  * @var array{simulacao: bool, clienteId: string, planos: array<string, ?string>} $paypal
+ * @var bool $stripeSimulacao
  * @var \App\Entities\Usuario $usuario
  */
 use App\Core\Idioma;
@@ -95,6 +96,12 @@ foreach ($planos as $chave => $plano) {
         <?php if (in_array('pix', $metodos, true)): ?>
           <div class="metodo-painel" data-painel="pix" <?= $metodos[0] !== 'pix' ? 'hidden' : '' ?>>
             <?= parcial('assinatura/partials/formulario-pix', ['valores' => $valores, 'erros' => $erros]) ?>
+          </div>
+        <?php endif; ?>
+
+        <?php if (in_array('stripe', $metodos, true)): ?>
+          <div class="metodo-painel" data-painel="stripe" <?= $metodos[0] !== 'stripe' ? 'hidden' : '' ?>>
+            <?= parcial('assinatura/partials/formulario-stripe', ['erros' => $erros, 'simulacao' => $stripeSimulacao]) ?>
           </div>
         <?php endif; ?>
 
