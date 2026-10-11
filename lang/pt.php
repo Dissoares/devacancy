@@ -637,4 +637,10 @@ return [
     'recuperar.link_invalido_titulo' => 'Link expirado',
     'recuperar.link_invalido' => 'Este link já foi usado ou expirou. Peça um novo para continuar.',
     'recuperar.pedir_outro' => 'Pedir novo link',
+    'planos.metodo_paypal_email' => 'PayPal',
+    'pagamento.paypal_titulo' => 'Pagar com PayPal',
+    'pagamento.paypal_continuar' => 'Continuar para o PayPal',
+    'pagamento.paypal_email_nota' => 'Pagamento único pelo PayPal, sem renovação automática. Você volta aqui e o plano é liberado assim que o PayPal confirmar.',
+    'pagamento.paypal_pagar' => 'Pagar :valor no PayPal',
+    'pagamento.paypal_depois' => 'Depois de pagar, volte para esta página: o plano é liberado sozinho, em geral em menos de um minuto. Se passar de 15 minutos, fale com suporte@devacancy.online.',
 ];
