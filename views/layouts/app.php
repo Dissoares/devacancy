@@ -1,6 +1,6 @@
-<?php /** @var \App\Entities\Usuario $usuario */ ?>
+<?php /** @var \App\Entities\Usuario $usuario */ use App\Core\Idioma; ?>
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="<?= Idioma::html() ?>">
 <head>
   <?= parcial('partials/head', ['titulo' => $titulo ?? null, 'estilos' => ['paginas/painel.css', 'paginas/assinatura.css']]) ?>
   <?php if ($usuario->ehAdmin()): ?>
@@ -20,10 +20,12 @@
         <nav class="barra-app-navegacao" aria-label="Administração">
           <a class="<?= ativo('/admin') ?>" href="/admin"><?= icone('usuarios', 'icone icone-sm') ?> Cadastros</a>
           <a class="<?= ativo('/admin/vagas') ?>" href="/admin/vagas"><?= icone('maleta', 'icone icone-sm') ?> Vagas</a>
+          <a class="<?= ativo('/admin/candidaturas') ?>" href="/admin/candidaturas"><?= icone('raio', 'icone icone-sm') ?> Candidaturas</a>
         </nav>
       <?php endif; ?>
 
       <div class="menu-usuario">
+        <?= parcial('partials/seletor-idioma') ?>
         <span class="avatar">
           <?php if ($usuario->avatarUrl): ?>
             <img src="<?= e($usuario->avatarUrl) ?>" alt="" referrerpolicy="no-referrer">
@@ -37,7 +39,7 @@
         </span>
         <form method="post" action="/sair">
           <?= csrf_campo() ?>
-          <button class="botao botao-fantasma botao-pequeno" type="submit" title="Sair"><?= icone('sair', 'icone icone-sm') ?><span class="ocultar-movel">Sair</span></button>
+          <button class="botao botao-fantasma botao-pequeno" type="submit" title="<?= e(t('nav.sair')) ?>"><?= icone('sair', 'icone icone-sm') ?><span class="ocultar-movel"><?= e(t('nav.sair')) ?></span></button>
         </form>
       </div>
     </div>
