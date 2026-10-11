@@ -100,7 +100,31 @@ final class ImportadorVagasAdzuna
         $resumo['importadas']++;
     }
 
-    private function interpretar(array $dados): VagaDTO
+    /** Busca uma página de um termo, sem salvar nada (usado na tela de importação manual). @return array[] resultados brutos da Adzuna */
+    public function buscarPagina(string $termo, int $pagina = 1): array
+    {
+        $resposta = $this->http->get($this->url($termo, $pagina), [], 20);
+        return $resposta['results'] ?? [];
+    }
+
+    public function jaImportada(string $link): bool
+    {
+        return $this->vagas->existeLink($link);
+    }
+
+    /** Importa uma vaga específica escolhida na tela manual. Null se já tiver sido importada (checagem defensiva). */
+    public function importarUma(array $bruta): ?int
+    {
+        $link = $bruta['redirect_url'] ?? null;
+        if (!$link || $this->vagas->existeLink($link)) {
+            return null;
+        }
+
+        $criadoEm = isset($bruta['created']) ? date('Y-m-d H:i:s', strtotime((string) $bruta['created'])) : null;
+        return $this->vagas->criar($this->interpretar($bruta), $criadoEm);
+    }
+
+    public function interpretar(array $dados): VagaDTO
     {
         $titulo = trim((string) ($dados['title'] ?? ''));
         $descricao = (string) ($dados['description'] ?? '');
@@ -151,7 +175,8 @@ final class ImportadorVagasAdzuna
         ]);
 
         return sprintf(
-            'https://api.adzuna.com/v1/api/jobs/%s/search/%d?%s',
+            '%s/jobs/%s/search/%d?%s',
+            rtrim((string) configuracao('adzuna.url'), '/'),
             configuracao('adzuna.pais', 'br'),
             $pagina,
             $parametros,

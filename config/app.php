@@ -95,6 +95,7 @@ return [
 
     // Importação automática via Adzuna (agregador de vagas, grátis para uso básico). Cadastro gratuito em developer.adzuna.com.
     'adzuna' => [
+        'url' => Ambiente::obter('ADZUNA_URL', 'https://api.adzuna.com/v1/api'),
         'app_id' => Ambiente::obter('ADZUNA_APP_ID', ''),
         'app_key' => Ambiente::obter('ADZUNA_APP_KEY', ''),
         'pais' => 'br',
