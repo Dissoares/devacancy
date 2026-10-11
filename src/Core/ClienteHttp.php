@@ -10,9 +10,9 @@ final class ClienteHttp
 {
     private const TEMPO_LIMITE = 15;
 
-    public function get(string $url, array $cabecalhos = []): array
+    public function get(string $url, array $cabecalhos = [], int $tempoLimite = self::TEMPO_LIMITE): array
     {
-        return $this->enviar('GET', $url, null, $cabecalhos);
+        return $this->enviar('GET', $url, null, $cabecalhos, $tempoLimite);
     }
 
     /** Envia o corpo como application/x-www-form-urlencoded (padrão do OAuth). */
@@ -32,13 +32,13 @@ final class ClienteHttp
         ]);
     }
 
-    private function enviar(string $metodo, string $url, ?string $corpo, array $cabecalhos): array
+    private function enviar(string $metodo, string $url, ?string $corpo, array $cabecalhos, int $tempoLimite = self::TEMPO_LIMITE): array
     {
         $curl = curl_init($url);
         curl_setopt_array($curl, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => $metodo,
-            CURLOPT_TIMEOUT => self::TEMPO_LIMITE,
+            CURLOPT_TIMEOUT => $tempoLimite,
             CURLOPT_HTTPHEADER => ['Accept: application/json', 'User-Agent: Devacancy', ...$cabecalhos],
         ]);
         if ($corpo !== null) {
