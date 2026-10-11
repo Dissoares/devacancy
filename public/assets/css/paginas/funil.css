@@ -34,6 +34,34 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
+}
+
+/* Celulares estreitos (320–360px): marca, idioma e "Entrar" precisam caber sem cortar. */
+@media (max-width: 380px) {
+  .barra-funil-interno {
+    gap: 8px;
+  }
+
+  .barra-funil-acoes {
+    gap: 4px;
+  }
+
+  .barra-funil-acoes .botao-pequeno {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+@media (max-width: 340px) {
+  .barra-funil-interno .marca-nome {
+    font-size: .95rem;
+  }
+
+  .barra-funil-interno .marca-simbolo {
+    width: 26px;
+    height: 26px;
+  }
 }
 
 .conteudo-funil {
