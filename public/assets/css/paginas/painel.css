@@ -4,7 +4,7 @@
 
 .pagina-app {
   background:
-    radial-gradient(ellipse 60% 40% at 50% -10%, rgba(124, 108, 255, .12), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 50% -10%, rgba(37, 99, 235, .12), transparent 70%),
     var(--fundo);
 }
 
@@ -21,7 +21,7 @@
   top: 0;
   z-index: 40;
   border-bottom: 1px solid var(--borda);
-  background: rgba(7, 8, 12, .8);
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
@@ -52,7 +52,7 @@
 .barra-app-navegacao a.ativo,
 .barra-app-navegacao a:hover {
   color: var(--texto);
-  background: rgba(255, 255, 255, .06);
+  background: rgba(15, 23, 42, 0.042);
 }
 
 .menu-usuario {
@@ -92,11 +92,12 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: #b8afff;
+  color: var(--primaria);
 }
 
 .link:hover {
-  color: #fff;
+  color: var(--primaria-forte);
+  text-decoration: underline;
 }
 
 .alerta-topo {
@@ -115,8 +116,8 @@
 .boas-vindas h1 {
   margin: 14px 0 8px;
   font-size: clamp(1.9rem, 4vw, 2.6rem);
-  font-weight: 650;
-  letter-spacing: -.04em;
+  font-weight: 750;
+  letter-spacing: -.025em;
 }
 
 .boas-vindas p {
@@ -183,13 +184,13 @@
 
 .linha-tempo .concluido .linha-tempo-marcador {
   border-color: var(--sucesso);
-  background: var(--sucesso);
-  color: #06120c;
+  background: var(--sucesso-vivo);
+  color: #fff;
 }
 
 .linha-tempo .atual .linha-tempo-marcador {
   border-color: var(--primaria);
-  box-shadow: 0 0 0 4px rgba(124, 108, 255, .18);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, .18);
 }
 
 .linha-tempo .atual .linha-tempo-marcador::after {
@@ -257,7 +258,7 @@
   margin-bottom: 8px;
   border-radius: 16px;
   border: 1px solid var(--borda-forte);
-  background: rgba(255, 255, 255, .04);
+  background: rgba(15, 23, 42, 0.028);
   color: var(--texto-2);
 }
 
@@ -280,8 +281,8 @@
 
 .cabecalho-pagina h1 {
   font-size: 1.9rem;
-  font-weight: 650;
-  letter-spacing: -.04em;
+  font-weight: 750;
+  letter-spacing: -.025em;
 }
 
 .cabecalho-pagina p {
@@ -312,7 +313,7 @@
   height: 40px;
   border-radius: 11px;
   background: var(--primaria-suave);
-  color: #b8afff;
+  color: var(--primaria);
 }
 
 .indicador-rotulo {
@@ -322,8 +323,8 @@
 
 .indicador-valor {
   font-size: 1.6rem;
-  font-weight: 650;
-  letter-spacing: -.03em;
+  font-weight: 750;
+  letter-spacing: -.02em;
   line-height: 1.1;
 }
 
@@ -382,7 +383,7 @@
 .tabela th {
   padding: 12px 16px;
   border-bottom: 1px solid var(--borda);
-  background: rgba(255, 255, 255, .02);
+  background: rgba(15, 23, 42, 0.014);
   color: var(--texto-suave);
   font-size: .76rem;
   font-weight: 550;
@@ -405,7 +406,7 @@
 
 .tabela tbody tr:hover,
 .tabela tbody tr:focus-visible {
-  background: rgba(255, 255, 255, .03);
+  background: rgba(15, 23, 42, 0.021);
   outline: none;
 }
 
@@ -438,7 +439,7 @@
   gap: 6px;
   padding: 5px 10px;
   border-radius: 8px;
-  border: 1px solid rgba(61, 220, 151, .25);
+  border: 1px solid rgba(22, 163, 74, .25);
   background: var(--sucesso-suave);
   color: var(--sucesso);
   font-size: .8rem;
@@ -447,7 +448,7 @@
 }
 
 .link-whatsapp:hover {
-  border-color: rgba(61, 220, 151, .5);
+  border-color: rgba(22, 163, 74, .5);
 }
 
 .paginacao {
@@ -482,7 +483,7 @@
 .gaveta-fundo {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, .55);
+  background: rgba(15, 23, 42, 0.193);
   backdrop-filter: blur(3px);
   opacity: 0;
   transition: opacity .25s;
@@ -497,7 +498,7 @@
   overflow-y: auto;
   border-left: 1px solid var(--borda-forte);
   background: var(--fundo-2);
-  box-shadow: -30px 0 80px rgba(0, 0, 0, .5);
+  box-shadow: -30px 0 80px rgba(15, 23, 42, 0.175);
   transform: translateX(100%);
   transition: transform .32s cubic-bezier(.2, .8, .2, 1);
 }
@@ -555,7 +556,7 @@
 
 .botao-fechar:hover {
   color: var(--texto);
-  background: rgba(255, 255, 255, .06);
+  background: rgba(15, 23, 42, 0.042);
 }
 
 .gaveta-acoes {
