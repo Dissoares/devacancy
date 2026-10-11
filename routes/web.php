@@ -66,12 +66,16 @@ return function (Roteador $rotas): void {
     $rotas->get('/pagamento/{id}', [AssinaturaController::class, 'pagamento'], $perfilCompleto);
     $rotas->get('/pagamento/{id}/status', [AssinaturaController::class, 'statusPagamento'], $perfilCompleto);
     $rotas->post('/pagamento/{id}/simular', [AssinaturaController::class, 'simularPagamento'], $perfilCompleto);
+    $rotas->post('/assinar/stripe', [AssinaturaController::class, 'assinarStripe'], $perfilCompleto);
+    $rotas->post('/assinar/stripe/simular', [AssinaturaController::class, 'simularStripe'], $perfilCompleto);
+    $rotas->get('/assinatura/stripe/retorno', [AssinaturaController::class, 'retornoStripe'], $perfilCompleto);
     $rotas->post('/assinar/paypal-email', [AssinaturaController::class, 'assinarPaypalEmail'], $perfilCompleto);
     $rotas->post('/assinar/paypal', [AssinaturaController::class, 'confirmarPaypal'], $perfilCompleto);
     $rotas->post('/assinar/paypal/simular', [AssinaturaController::class, 'simularPaypal'], $perfilCompleto);
     $rotas->get('/assinatura/paypal/{id}', [AssinaturaController::class, 'aguardandoPaypal'], $perfilCompleto);
     $rotas->get('/assinatura/paypal/{id}/status', [AssinaturaController::class, 'statusPaypal'], $perfilCompleto);
     $rotas->post('/webhooks/expay', [AssinaturaController::class, 'webhook']);
+    $rotas->post('/webhooks/stripe', [AssinaturaController::class, 'webhookStripe']);
     $rotas->post('/webhooks/paypal-ipn', [AssinaturaController::class, 'ipnPaypal']);
     $rotas->post('/webhooks/paypal', [AssinaturaController::class, 'webhookPaypal']);
 
