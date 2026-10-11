@@ -1,5 +1,5 @@
 <?php
-/** @var ?string $erro @var ?array{executadas: string[], erro: ?array{arquivo: string, mensagem: string}} $resultado */
+/** @var ?string $erro @var ?string $admin @var ?array{executadas: string[], erro: ?array{arquivo: string, mensagem: string}} $resultado */
 ?>
 <section class="secao">
   <div class="container instalador">
@@ -24,6 +24,9 @@
       <?php else: ?>
         <div class="alerta alerta-sucesso"><?= icone('check') ?><span>Nada a fazer: o banco já está atualizado.</span></div>
       <?php endif; ?>
+      <?php if ($admin): ?>
+        <div class="alerta <?= str_starts_with($admin, 'Administrador pronto') ? 'alerta-sucesso' : 'alerta-erro' ?>"><?= icone('check') ?><span><?= e($admin) ?></span></div>
+      <?php endif; ?>
       <p class="texto-suave">Por segurança, <strong>remova <code>MIGRACOES_TOKEN</code> do <code>.env</code></strong> agora: sem ele esta página deixa de existir.</p>
     <?php else: ?>
       <form class="formulario" method="post" action="/install" autocomplete="off">
@@ -32,7 +35,19 @@
           <label class="campo-rotulo" for="token">Token</label>
           <input class="entrada" id="token" name="token" type="password" autocomplete="off" required autofocus>
         </div>
-        <button class="botao botao-primario botao-grande" type="submit">Rodar migrações pendentes</button>
+        <fieldset class="instalador-admin">
+          <legend>Administrador (opcional)</legend>
+          <p class="texto-suave">Preencha para criar o administrador ou, se o e-mail já tiver conta (por exemplo criada pelo Google), torná-la administradora com esta senha.</p>
+          <div class="campo">
+            <label class="campo-rotulo" for="admin_email">E-mail do administrador</label>
+            <input class="entrada" id="admin_email" name="admin_email" type="email" autocomplete="off">
+          </div>
+          <div class="campo">
+            <label class="campo-rotulo" for="admin_senha">Senha (mínimo 8 caracteres)</label>
+            <input class="entrada" id="admin_senha" name="admin_senha" type="password" autocomplete="new-password" minlength="8">
+          </div>
+        </fieldset>
+        <button class="botao botao-primario botao-grande" type="submit">Rodar migrações e salvar</button>
       </form>
     <?php endif; ?>
   </div>
