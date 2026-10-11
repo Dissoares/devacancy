@@ -1,0 +1,1079 @@
+/* ==========================================================================
+   Devacancy — funil do profissional: questionário, vagas compatíveis e criar conta
+   ========================================================================== */
+
+.pagina-funil {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% -10%, rgba(37, 99, 235, .16), transparent 70%),
+    var(--fundo);
+}
+
+.barra-funil {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid var(--borda);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.barra-funil-interno {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1180px;
+  height: 60px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.barra-funil-acoes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.conteudo-funil {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 24px 72px;
+}
+
+/* ---------- Questionário ---------- */
+.questionario {
+  display: grid;
+  gap: 24px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.questionario-progresso {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--borda);
+}
+
+.questionario-progresso span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--gradiente);
+  transition: width .4s cubic-bezier(.4, 0, .2, 1);
+}
+
+.pergunta {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Sem JS, todas as perguntas aparecem em sequência; com JS, uma por vez. */
+.em-passos .pergunta:not(.ativa) {
+  display: none;
+}
+
+.em-passos .pergunta.ativa {
+  animation: surgir .35s cubic-bezier(.2, .8, .2, 1);
+}
+
+.pergunta.tremer {
+  animation: tremer .35s;
+}
+
+@keyframes tremer {
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-3px); }
+}
+
+.pergunta-contador {
+  color: var(--texto-suave);
+  font-family: var(--fonte-mono);
+  font-size: .8rem;
+}
+
+.pergunta legend {
+  padding: 0;
+}
+
+.pergunta h1 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -.02em;
+}
+
+.pergunta-subtitulo {
+  margin-top: -4px;
+  margin-bottom: 4px;
+  color: var(--texto-suave);
+}
+
+/* Cartões grandes (área, modelo de trabalho) */
+.opcoes-cartao {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.opcoes-cartao.opcoes-tres {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.opcoes-lista {
+  display: grid;
+  gap: 10px;
+}
+
+.opcoes-compactas {
+  grid-template-columns: 1fr 1fr;
+}
+
+.opcao-cartao {
+  position: relative;
+  cursor: pointer;
+}
+
+.opcao-cartao input,
+.opcao-chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.opcao-cartao > span {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  height: 100%;
+  padding: 18px;
+  border: 1px solid var(--borda-forte);
+  border-radius: var(--raio-lg);
+  background: var(--superficie-vidro);
+  transition: border-color var(--transicao), background var(--transicao), box-shadow var(--transicao);
+}
+
+.opcao-cartao > span .icone {
+  width: 22px;
+  height: 22px;
+  color: var(--primaria);
+}
+
+.opcao-cartao strong {
+  font-size: .98rem;
+  font-weight: 600;
+}
+
+.opcao-cartao small {
+  color: var(--texto-suave);
+  font-size: .86rem;
+}
+
+.opcao-linha > span {
+  gap: 2px;
+  padding: 14px 18px;
+}
+
+.opcao-cartao:hover > span,
+.opcao-chip:hover > span {
+  border-color: rgba(15, 23, 42, 0.175);
+}
+
+.opcao-cartao input:checked + span,
+.opcao-chip input:checked + span {
+  border-color: var(--primaria);
+  background: var(--primaria-suave);
+  box-shadow: var(--brilho-primaria);
+}
+
+.opcao-cartao input:focus-visible + span,
+.opcao-chip input:focus-visible + span {
+  outline: 2px solid var(--primaria);
+  outline-offset: 2px;
+}
+
+/* Chips (idiomas, faixas salariais) */
+.opcoes-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.opcao-chip {
+  position: relative;
+  cursor: pointer;
+}
+
+.opcao-chip > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--borda-forte);
+  border-radius: 999px;
+  background: var(--superficie-vidro);
+  font-weight: 500;
+  transition: border-color var(--transicao), background var(--transicao), box-shadow var(--transicao);
+}
+
+.opcao-chip > span .icone {
+  display: none;
+}
+
+.opcao-chip input[type="checkbox"]:checked + span .icone {
+  display: inline-block;
+  color: var(--sucesso);
+}
+
+.opcoes-chips-grandes .opcao-chip > span {
+  height: 52px;
+  padding: 0 20px;
+}
+
+.entrada-icone {
+  position: relative;
+}
+
+.entrada-icone .icone {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--texto-suave);
+}
+
+.entrada-icone .entrada {
+  padding-left: 44px;
+}
+
+.entrada-grande {
+  height: 56px;
+  font-size: 1.05rem;
+}
+
+.questionario-navegacao {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Sem JS não há passos: só o botão de enviar. */
+.questionario:not(.em-passos) [data-voltar],
+.questionario:not(.em-passos) [data-continuar] {
+  display: none;
+}
+
+.questionario-navegacao [data-voltar]:disabled {
+  visibility: hidden;
+}
+
+.questionario-navegacao .botao-grande {
+  margin-left: auto;
+}
+
+.questionario-nota {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--texto-suave);
+  font-size: .82rem;
+}
+
+/* ---------- Criar conta ---------- */
+.criar-conta {
+  display: grid;
+  gap: 16px;
+  max-width: 460px;
+  margin: 4vh auto 0;
+  padding: 32px;
+}
+
+.criar-conta h1 {
+  font-size: 1.6rem;
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -.02em;
+}
+
+.criar-conta .formulario {
+  display: grid;
+  gap: 16px;
+}
+
+.criar-conta .divisor {
+  margin: 4px 0;
+}
+
+.nota-termos {
+  color: var(--texto-suave);
+  font-size: .78rem;
+  text-align: center;
+}
+
+.auth-rodape {
+  color: var(--texto-suave);
+  font-size: .9rem;
+  text-align: center;
+}
+
+.auth-rodape a {
+  color: var(--texto);
+  font-weight: 550;
+}
+
+@media (max-width: 600px) {
+  .barra-funil-interno,
+  .conteudo-funil {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .opcoes-cartao,
+  .opcoes-cartao.opcoes-tres {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .opcoes-compactas {
+    grid-template-columns: 1fr;
+  }
+
+  .criar-conta {
+    padding: 22px;
+  }
+}
+
+/* ---------- Radar ao vivo no questionário ---------- */
+.questionario-radar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid rgba(22, 163, 74, .25);
+  border-radius: var(--raio);
+  background: var(--sucesso-suave);
+  color: var(--texto);
+  font-size: .9rem;
+  animation: surgir .4s cubic-bezier(.2, .8, .2, 1);
+}
+
+.questionario-radar .feed-busca-radar {
+  background: var(--sucesso);
+}
+
+.questionario-radar .feed-busca-radar::after {
+  border-color: var(--sucesso);
+}
+
+.pergunta legend {
+  display: grid;
+  gap: 6px;
+}
+
+/* ==========================================================================
+   Busca de vagas (depois do questionário)
+   ========================================================================== */
+.busca {
+  display: grid;
+  gap: 18px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.busca-topo {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.busca-icone {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background: var(--primaria-suave);
+  color: var(--primaria);
+  box-shadow: var(--brilho-primaria);
+}
+
+.buscando .busca-icone {
+  animation: pulsar 1.6s ease-in-out infinite;
+}
+
+.busca-topo h1 {
+  font-size: clamp(1.45rem, 4.6vw, 2rem);
+  line-height: 1.2;
+}
+
+.busca-perfil {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  list-style: none;
+}
+
+.busca-perfil li {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  background: var(--superficie);
+  color: var(--texto-2);
+  font-size: .82rem;
+  font-weight: 600;
+}
+
+.busca-perfil .busca-perfil-stack {
+  border-color: rgba(37, 99, 235, .25);
+  background: var(--primaria-suave);
+  color: var(--primaria-forte);
+}
+
+.busca-status {
+  position: sticky;
+  top: 60px;
+  z-index: 5;
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid rgba(37, 99, 235, .25);
+  border-radius: var(--raio-lg);
+  background: rgba(255, 255, 255, .95);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--sombra);
+}
+
+.busca-status-linha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .95rem;
+}
+
+.busca-contador {
+  margin-left: auto;
+  color: var(--texto-suave);
+  font-size: .86rem;
+  white-space: nowrap;
+}
+
+.busca-contador b {
+  color: var(--sucesso-vivo);
+  font-family: var(--fonte-mono);
+  font-size: 1.25rem;
+}
+
+.busca.concluida .feed-busca-radar {
+  background: var(--sucesso-vivo);
+}
+
+.busca.concluida .feed-busca-radar::after {
+  animation: none;
+  opacity: 0;
+}
+
+/* Cartões de vaga encontrada */
+.vagas-encontradas {
+  display: grid;
+  gap: 12px;
+  list-style: none;
+}
+
+.js .vaga-encontrada:not(.visivel) {
+  display: none;
+}
+
+.vaga-encontrada {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid var(--borda);
+  border-left: 4px solid var(--sucesso-vivo);
+  border-radius: var(--raio-lg);
+  background: var(--superficie);
+  box-shadow: var(--sombra);
+}
+
+.vaga-encontrada.visivel {
+  animation: entrar-feed .5s cubic-bezier(.2, .8, .2, 1);
+}
+
+.vaga-encontrada-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.vaga-encontrada-selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--sucesso);
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+
+.vaga-encontrada h2 {
+  font-size: 1.08rem;
+  line-height: 1.3;
+}
+
+.vaga-encontrada-empresa {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--texto-suave);
+}
+
+.vaga-encontrada-empresa .icone:last-child {
+  color: var(--alerta);
+}
+
+.vaga-encontrada-dados {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  list-style: none;
+  color: var(--texto-2);
+  font-size: .86rem;
+}
+
+.vaga-encontrada-dados li {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.vaga-encontrada-salario {
+  color: var(--sucesso);
+  font-weight: 700;
+}
+
+.vaga-encontrada-descricao {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  color: var(--texto-suave);
+  font-size: .88rem;
+  line-height: 1.55;
+}
+
+.vaga-encontrada-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.etiqueta-sua {
+  border-color: rgba(22, 163, 74, .35);
+  background: var(--sucesso-suave);
+  color: var(--sucesso);
+  font-weight: 600;
+}
+
+.vaga-encontrada-vazia {
+  justify-items: center;
+  border-left-color: var(--primaria);
+  text-align: center;
+}
+
+/* Conclusão com o botão de aplicar */
+.js .busca-conclusao:not(.visivel) {
+  display: none;
+}
+
+.busca-conclusao {
+  display: grid;
+  gap: 14px;
+  padding: 26px 22px;
+  border: 2px solid var(--primaria);
+  border-radius: var(--raio-xl);
+  background: linear-gradient(180deg, #eff6ff, var(--superficie) 60%);
+  box-shadow: 0 30px 60px -30px rgba(37, 99, 235, .45);
+  text-align: center;
+  scroll-margin: 120px;
+}
+
+.busca-conclusao.visivel {
+  animation: surgir .5s cubic-bezier(.2, .8, .2, 1);
+}
+
+.busca-conclusao h2 {
+  font-size: clamp(1.5rem, 5vw, 2.1rem);
+  line-height: 1.2;
+}
+
+.busca-conclusao p {
+  color: var(--texto-2);
+}
+
+.busca-garantias {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 16px;
+  list-style: none;
+  color: var(--texto-suave);
+  font-size: .84rem;
+}
+
+.busca-garantias li {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.busca-garantias .icone {
+  color: var(--sucesso-vivo);
+}
+
+.cta-fixo-funil {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .busca-status {
+    top: 60px;
+  }
+
+  .vaga-encontrada {
+    padding: 16px;
+  }
+
+  .cta-fixo-funil {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    display: block;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--borda);
+    background: rgba(255, 255, 255, .96);
+    box-shadow: 0 -10px 30px -12px rgba(15, 23, 42, .18);
+    transform: translateY(110%);
+    transition: transform .3s cubic-bezier(.2, .8, .2, 1);
+  }
+
+  .cta-fixo-funil.visivel {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Ritmo do questionário
+   O <legend> de um <fieldset> é desenhado de forma especial e ignora margens;
+   com float + largura total ele vira um bloco comum e o espaçamento passa a valer.
+   ========================================================================== */
+.questionario {
+  gap: 28px;
+}
+
+.pergunta {
+  display: block;
+}
+
+.pergunta legend {
+  float: left;
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 26px;
+  padding: 0;
+}
+
+.pergunta legend + * {
+  clear: both;
+}
+
+.pergunta h1 {
+  font-size: clamp(1.6rem, 4.2vw, 2.1rem);
+  line-height: 1.18;
+}
+
+.pergunta-subtitulo {
+  margin: -16px 0 26px;
+  font-size: .98rem;
+  line-height: 1.5;
+}
+
+.opcoes-cartao,
+.opcoes-lista {
+  gap: 12px;
+}
+
+.opcoes-chips {
+  gap: 10px;
+}
+
+.pergunta .mensagem-erro {
+  margin-top: 12px;
+}
+
+.questionario-radar {
+  margin-top: -4px;
+}
+
+.questionario-navegacao {
+  align-items: center;
+  padding-top: 4px;
+}
+
+.questionario-nota {
+  margin-top: -8px;
+}
+
+/* Desktop: a pergunta vira um cartão centralizado, com respiro em volta. */
+@media (min-width: 761px) {
+  .conteudo-funil:has(.questionario) {
+    padding-top: 48px;
+  }
+
+  .questionario {
+    max-width: 700px;
+    padding: 36px 44px 32px;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio-xl);
+    background: var(--superficie);
+    box-shadow: var(--sombra-lg);
+  }
+
+  .questionario-progresso {
+    margin-bottom: 4px;
+  }
+
+  .opcao-linha > span {
+    padding: 16px 20px;
+  }
+}
+
+/* Celular: sem cartão, conteúdo de ponta a ponta, botões grandes. */
+@media (max-width: 760px) {
+  .conteudo-funil:has(.questionario) {
+    padding-top: 20px;
+  }
+
+  .questionario {
+    gap: 24px;
+  }
+
+  .pergunta legend {
+    margin-bottom: 20px;
+  }
+
+  .pergunta-subtitulo {
+    margin: -10px 0 20px;
+    font-size: .94rem;
+  }
+
+  .questionario-navegacao .botao-grande {
+    flex: 1;
+  }
+}
+
+/* ==========================================================================
+   Questionário com perfil ao vivo, transições e micro-comemoração
+   ========================================================================== */
+.questionario-layout {
+  display: grid;
+  gap: 20px;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.questionario {
+  position: relative;
+  width: 100%;
+}
+
+/* Transição lateral entre perguntas */
+.em-passos .pergunta.ativa.entra-direita {
+  animation: entrar-direita .42s cubic-bezier(.2, .8, .2, 1);
+}
+
+.em-passos .pergunta.ativa.entra-esquerda {
+  animation: entrar-esquerda .42s cubic-bezier(.2, .8, .2, 1);
+}
+
+@keyframes entrar-direita {
+  from { opacity: 0; transform: translateX(36px); }
+}
+
+@keyframes entrar-esquerda {
+  from { opacity: 0; transform: translateX(-36px); }
+}
+
+/* Selo ✓ na opção escolhida */
+.opcao-cartao > span {
+  position: relative;
+}
+
+.opcao-cartao input:checked + span::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--primaria) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E") center / 14px no-repeat;
+  box-shadow: 0 4px 10px -2px rgba(37, 99, 235, .5);
+  animation: selo-ok .35s cubic-bezier(.3, 1.6, .5, 1);
+}
+
+@keyframes selo-ok {
+  from { transform: scale(0); }
+}
+
+.opcao-cartao:hover > span,
+.opcao-chip:hover > span {
+  transform: translateY(-1px);
+}
+
+.opcao-cartao > span,
+.opcao-chip > span {
+  transition: border-color var(--transicao), background var(--transicao), box-shadow var(--transicao), transform var(--transicao);
+}
+
+/* Pílula "Perfil 40% pronto" */
+.questionario-comemoracao {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--sucesso-vivo);
+  color: #fff;
+  font-size: .8rem;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 10px 20px -8px rgba(22, 163, 74, .6);
+}
+
+.questionario-comemoracao.visivel {
+  animation: comemorar 1.8s ease forwards;
+}
+
+@keyframes comemorar {
+  0% { opacity: 0; transform: translateY(6px) scale(.9); }
+  15% { opacity: 1; transform: none; }
+  80% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateY(-6px); }
+}
+
+/* Cartão "Seu perfil" */
+.perfil-vivo {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-xl);
+  background: var(--superficie);
+  box-shadow: var(--sombra-lg);
+}
+
+.perfil-vivo-topo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.perfil-vivo-topo strong {
+  display: block;
+  font-size: 1.02rem;
+}
+
+.perfil-vivo-topo small {
+  color: var(--texto-suave);
+  font-size: .82rem;
+}
+
+.perfil-vivo-anel {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: conic-gradient(var(--sucesso-vivo) var(--valor), var(--borda) 0);
+  transition: background .5s;
+}
+
+.perfil-vivo-anel::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: var(--superficie);
+}
+
+.perfil-vivo-anel b {
+  position: relative;
+  font-family: var(--fonte-mono);
+  font-size: .82rem;
+}
+
+.perfil-vivo-linhas {
+  display: grid;
+  gap: 2px;
+}
+
+.perfil-vivo-linhas > div {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--raio-sm);
+  font-size: .86rem;
+}
+
+.perfil-vivo-linhas dt {
+  color: var(--texto-suave);
+}
+
+.perfil-vivo-linhas dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.perfil-vivo-linhas .preenchida dd {
+  color: var(--texto);
+}
+
+.perfil-vivo-linhas .piscar {
+  animation: piscar-linha 1s ease;
+}
+
+@keyframes piscar-linha {
+  0% { background: rgba(22, 163, 74, .16); }
+  100% { background: transparent; }
+}
+
+.perfil-vivo-linhas .etiqueta {
+  padding: 2px 8px;
+  font-size: .74rem;
+}
+
+.perfil-vivo-rodape {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--borda);
+  color: var(--texto-suave);
+  font-size: .78rem;
+}
+
+/* Desktop largo: pergunta + perfil lado a lado */
+@media (min-width: 1024px) {
+  .questionario-layout {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+  }
+
+  .questionario {
+    max-width: none;
+  }
+
+  .perfil-vivo {
+    position: sticky;
+    top: 92px;
+  }
+
+  .questionario-nota {
+    display: none;
+  }
+}
+
+/* Telas menores: o perfil vira uma faixa compacta (anel + resumo) acima da pergunta */
+@media (max-width: 1023px) {
+  .perfil-vivo {
+    order: -1;
+    max-width: 700px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 12px 14px;
+    box-shadow: var(--sombra);
+  }
+
+  .perfil-vivo-anel {
+    width: 44px;
+    height: 44px;
+  }
+
+  .perfil-vivo-anel::before {
+    inset: 5px;
+  }
+
+  .perfil-vivo-linhas,
+  .perfil-vivo-rodape {
+    display: none;
+  }
+
+  .questionario-comemoracao {
+    top: 10px;
+    right: 0;
+  }
+}
+
+/* Celular: Remoto / Híbrido / Presencial cabem lado a lado. */
+@media (max-width: 600px) {
+  .opcoes-cartao.opcoes-tres {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .opcoes-tres .opcao-cartao > span {
+    justify-items: center;
+    padding: 16px 8px;
+    text-align: center;
+  }
+
+  .opcoes-tres .opcao-cartao strong {
+    font-size: .9rem;
+  }
+}
+
+/* Radar atualizado pelo HTMX: a caixa fica parada e só o número dá um "pop" a cada resposta. */
+.questionario-radar {
+  animation: none;
+}
+
+.questionario-radar-alvo:not(:has(.questionario-radar)) {
+  display: none;
+}
+
+.radar-numero {
+  display: inline-block;
+  color: var(--sucesso);
+  font-family: var(--fonte-mono);
+  font-size: 1.05em;
+  animation: radar-pop .45s cubic-bezier(.3, 1.6, .5, 1);
+}
+
+@keyframes radar-pop {
+  from { transform: scale(.4); opacity: 0; }
+}
