@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Core\Requisicao;
 use App\Core\Resposta;
+use App\Core\Sessao;
 use App\Core\Visao;
 use App\DTOs\FiltroUsuariosDTO;
 use App\Enums\AreaAtuacao;
@@ -34,6 +35,8 @@ final class AdminController
             'estatisticas' => $this->usuarios->estatisticas(),
             'filtro' => $filtro,
             'resultado' => $this->usuarios->listar($filtro),
+            'sucesso' => Sessao::obterFlash('sucesso'),
+            'erro' => Sessao::obterFlash('erro'),
         ], 'app'));
     }
 
