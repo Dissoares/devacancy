@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Controllers\AdminAnalyticsController;
 use App\Controllers\AdminController;
 use App\Controllers\AdminVagaController;
 use App\Controllers\AssinaturaController;
@@ -64,6 +65,7 @@ return function (Roteador $rotas): void {
 
     // Administração
     $rotas->get('/admin', [AdminController::class, 'painel'], $admin);
+    $rotas->get('/admin/analytics', [AdminAnalyticsController::class, 'painel'], $admin);
     $rotas->get('/admin/usuarios', [AdminController::class, 'listar'], $admin);
     $rotas->get('/admin/usuarios/exportar', [AdminController::class, 'exportar'], $admin);
     $rotas->get('/admin/usuarios/{id}', [AdminController::class, 'detalhe'], $admin);
