@@ -1,5 +1,5 @@
 <?php
-/** @var array $metodos @var array $pendentes @var ?string $sucesso */
+/** @var array $metodos @var array $pendentes @var ?string $sucesso @var ?string $pixProblema */
 ?>
 <section class="cabecalho-pagina">
   <div>
@@ -7,6 +7,10 @@
     <p>Liga e desliga as formas de pagamento mostradas no checkout dos assinantes.</p>
   </div>
 </section>
+
+<?php if ($pixProblema && $pixProblema !== 'PIX_COPIA_COLA não está no .env.'): ?>
+  <div class="alerta alerta-erro alerta-topo" role="alert"><?= icone('x') ?><span>PIX manual: <?= e($pixProblema) ?></span></div>
+<?php endif; ?>
 
 <?php if (!empty($sucesso)): ?>
   <div class="alerta alerta-sucesso alerta-topo"><?= icone('check') ?><span><?= e($sucesso) ?></span></div>
@@ -54,20 +58,21 @@
     <div class="tabela-rolagem">
       <table class="tabela">
         <caption class="texto-suave" style="text-align:left;padding:14px 16px">
-          <strong>PayPal (só e-mail) aguardando confirmação.</strong>
-          Normalmente o PayPal avisa o site sozinho. Se o dinheiro já está no seu app do PayPal e o plano não foi liberado, confirme aqui.
+          <strong>Pagamentos aguardando confirmação.</strong>
+          Confira no app do banco (PIX) ou do PayPal se o dinheiro chegou e confirme para liberar o plano. No PayPal só com e-mail, o aviso costuma chegar sozinho.
         </caption>
-        <thead><tr><th>Cliente</th><th>Plano</th><th>Valor</th><th>Pedido em</th><th></th></tr></thead>
+        <thead><tr><th>Cliente</th><th>Forma</th><th>Plano</th><th>Valor</th><th>Pedido em</th><th></th></tr></thead>
         <tbody>
           <?php foreach ($pendentes as $pagamento): ?>
             <tr>
               <td><strong class="texto-celula"><?= e($pagamento['nome']) ?></strong><small><?= e($pagamento['email']) ?></small></td>
+              <td><span class="selo selo-neutro"><?= $pagamento['metodo'] === 'pix_manual' ? 'PIX' : 'PayPal' ?></span></td>
               <td><?= e(t('plano.' . $pagamento['plano'])) ?></td>
               <td><?= e(moeda((float) $pagamento['valor'], $pagamento['moeda'])) ?></td>
               <td class="texto-suave"><?= data_br($pagamento['criado_em'], true) ?></td>
               <td>
                 <form method="post" action="/admin/pagamentos/<?= (int) $pagamento['id'] ?>/confirmar"
-                      onsubmit="return confirm('Confirme que o valor já aparece na sua conta PayPal. Liberar o plano agora?')">
+                      onsubmit="return confirm('Confirme que o valor já aparece na sua conta. Liberar o plano agora?')">
                   <?= csrf_campo() ?>
                   <button class="botao botao-primario botao-pequeno" type="submit">Confirmar pagamento</button>
                 </form>
