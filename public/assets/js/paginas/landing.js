@@ -17,7 +17,7 @@
   const alternarMenu = (abrir) => {
     cabecalho.classList.toggle('menu-aberto', abrir);
     botaoMenu.setAttribute('aria-expanded', String(abrir));
-    botaoMenu.setAttribute('aria-label', abrir ? 'Fechar menu' : 'Abrir menu');
+    botaoMenu.setAttribute('aria-label', abrir ? botaoMenu.dataset.rotuloFechar : botaoMenu.dataset.rotuloAbrir);
   };
 
   botaoMenu?.addEventListener('click', () => alternarMenu(!cabecalho.classList.contains('menu-aberto')));
@@ -40,6 +40,136 @@
     });
   } else {
     elementos.forEach((elemento) => elemento.classList.add('visivel'));
+  }
+
+  // ---------- Números reais que contam de 0 até o valor ao carregar ----------
+  document.querySelectorAll('[data-contar-ate]').forEach((elemento) => {
+    const alvo = Number(elemento.dataset.contarAte) || 0;
+    const formatar = new Intl.NumberFormat(document.documentElement.lang);
+    const inicio = performance.now();
+    const passo = (agora) => {
+      const fracao = Math.min(1, (agora - inicio) / 1200);
+      elemento.textContent = formatar.format(Math.round(alvo * (1 - (1 - fracao) ** 3)));
+      if (fracao < 1) requestAnimationFrame(passo);
+    };
+    requestAnimationFrame(passo);
+  });
+
+  // ---------- Palavra que alterna no título ("Você programa em React." → Python → Java…) ----------
+  const palavra = document.querySelector('.palavra-rotativa');
+  if (palavra) {
+    const palavras = JSON.parse(palavra.dataset.palavras || '[]');
+    // Pré-carrega os logos para a troca não piscar.
+    palavras.forEach(({ icone }) => { new Image().src = icone; });
+    let indicePalavra = 0;
+    setInterval(() => {
+      indicePalavra = (indicePalavra + 1) % palavras.length;
+      const nova = document.createElement('span');
+      const { nome, icone } = palavras[indicePalavra];
+      const logo = document.createElement('img');
+      logo.className = 'palavra-icone';
+      logo.src = icone;
+      logo.alt = '';
+      nova.append(logo, nome);
+      nova.className = 'entrando';
+      const antiga = palavra.firstElementChild;
+      antiga.classList.add('saindo');
+      palavra.appendChild(nova);
+      setTimeout(() => antiga.remove(), 450);
+    }, 2200);
+  }
+
+  // ---------- Vitrine "ao vivo": a vaga do fim da lista volta para o topo, como se tivesse acabado de entrar ----------
+  // A lista é buscada a cada volta porque o HTMX troca a vitrine inteira a cada minuto.
+  if (document.querySelector('.vitrine-lista')) {
+    setInterval(() => {
+      const listaVitrine = document.querySelector('.vitrine-lista');
+      if (!listaVitrine || listaVitrine.children.length < 4) return;
+      const ultima = listaVitrine.lastElementChild;
+      ultima.classList.remove('nova');
+      listaVitrine.prepend(ultima);
+      void ultima.offsetWidth;
+      ultima.classList.add('nova');
+    }, 3600);
+  }
+
+  // ---------- "Como funciona": abas que avançam sozinhas (estilo stories) trocando a tela do celular ----------
+  const demo = document.querySelector('[data-demo-passos]');
+  if (demo) {
+    const abas = [...demo.querySelectorAll('[data-aba]')];
+    const cenas = [...demo.querySelectorAll('[data-cena]')];
+    const duracao = 4800;
+    let atualAba = 0;
+    let temporizador = null;
+    let pausado = false;
+
+    const ativar = (indice) => {
+      atualAba = indice;
+      abas.forEach((aba, posicao) => {
+        aba.classList.toggle('ativa', posicao === indice);
+        aba.setAttribute('aria-pressed', String(posicao === indice));
+        aba.style.setProperty('--duracao', `${duracao}ms`);
+      });
+      cenas.forEach((cena, posicao) => cena.classList.toggle('ativa', posicao === indice));
+      demo.classList.remove('rodando');
+      void demo.offsetWidth;
+      demo.classList.add('rodando');
+      clearTimeout(temporizador);
+      temporizador = setTimeout(() => !pausado && ativar((atualAba + 1) % abas.length), duracao);
+    };
+
+    abas.forEach((aba, indice) => aba.addEventListener('click', () => ativar(indice)));
+    demo.addEventListener('mouseenter', () => { pausado = true; demo.classList.add('pausado'); });
+    demo.addEventListener('mouseleave', () => { pausado = false; demo.classList.remove('pausado'); ativar(atualAba); });
+
+    // Só começa quando a seção aparece na tela.
+    if ('IntersectionObserver' in window) {
+      const observador = new IntersectionObserver(([entrada]) => {
+        if (!entrada.isIntersecting) return;
+        ativar(0);
+        observador.disconnect();
+      }, { threshold: 0.35 });
+      observador.observe(demo);
+    } else {
+      ativar(0);
+    }
+  }
+
+  // ---------- CTA fixo no celular ----------
+  // Regra direta, recalculada a cada rolagem: aparece quando o início do questionário já saiu da tela por cima
+  // e o botão laranja do CTA final não está visível (para não duplicar). O body ganha "com-cta-fixo" para o
+  // rodapé reservar espaço só enquanto o botão está na tela.
+  const ctaFixo = document.querySelector('[data-cta-fixo]');
+  const inicioQuiz = document.querySelector('#comecar');
+  const botaoFinal = document.querySelector('.cta-final .botao-primario');
+  if (ctaFixo && inicioQuiz) {
+    const linkFixo = ctaFixo.querySelector('a');
+    let agendado = false;
+
+    const naTela = (elemento) => {
+      const area = elemento.getBoundingClientRect();
+      return area.bottom > 0 && area.top < window.innerHeight;
+    };
+
+    const atualizar = () => {
+      agendado = false;
+      const passouDoInicio = inicioQuiz.getBoundingClientRect().bottom < 0;
+      const visivel = passouDoInicio && !(botaoFinal && naTela(botaoFinal));
+      ctaFixo.classList.toggle('visivel', visivel);
+      document.body.classList.toggle('com-cta-fixo', visivel);
+      ctaFixo.setAttribute('aria-hidden', String(!visivel));
+      linkFixo.tabIndex = visivel ? 0 : -1;
+    };
+
+    const agendar = () => {
+      if (agendado) return;
+      agendado = true;
+      requestAnimationFrame(atualizar);
+    };
+
+    window.addEventListener('scroll', agendar, { passive: true });
+    window.addEventListener('resize', agendar);
+    atualizar();
   }
 
   // ---------- Holofote que segue o mouse nos cartões ----------
