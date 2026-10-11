@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Controllers\AdminAnalyticsController;
 use App\Controllers\AdminComissaoController;
 use App\Controllers\AdminController;
+use App\Controllers\AdminEmailController;
 use App\Controllers\AdminMigracaoController;
 use App\Controllers\AdminPagamentoController;
 use App\Controllers\AdminVagaController;
@@ -93,6 +94,8 @@ return function (Roteador $rotas): void {
     $rotas->post('/admin/candidaturas/{id}/status', [CandidaturaController::class, 'atualizar'], $admin);
     $rotas->get('/admin/comissoes', [AdminComissaoController::class, 'listar'], $admin);
     $rotas->post('/admin/comissoes/{id}/pagar', [AdminComissaoController::class, 'marcarComoPaga'], $admin);
+    $rotas->get('/admin/email', [AdminEmailController::class, 'painel'], $admin);
+    $rotas->post('/admin/email/testar', [AdminEmailController::class, 'testar'], $admin);
     $rotas->get('/admin/migracoes', [AdminMigracaoController::class, 'painel'], $admin);
     $rotas->post('/admin/migracoes/executar', [AdminMigracaoController::class, 'executar'], $admin);
     $rotas->get('/admin/pagamentos', [AdminPagamentoController::class, 'listar'], $admin);
