@@ -53,6 +53,12 @@ final class VagaService
         $this->vagas->alternarAtiva($id);
     }
 
+    /** @return array<string, array{total: int, ativas: int}> */
+    public function contarPorFonte(): array
+    {
+        return $this->vagas->contarPorFonte();
+    }
+
     /** Mínimo de vagas que a busca tenta mostrar, completando com as vagas reais mais próximas do perfil. */
     private const MINIMO_RESULTADOS = 5;
 

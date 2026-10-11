@@ -52,6 +52,7 @@ final class AdminVagaController
             'titulo' => 'Vagas — Devacancy',
             'usuario' => $this->autenticacao->usuarioAtual(),
             'vagas' => $this->vagas->listar(),
+            'porFonte' => $this->vagas->contarPorFonte(),
             'valores' => $valores,
             'erros' => $erros,
             'sucesso' => $sucesso,

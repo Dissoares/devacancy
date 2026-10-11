@@ -15,6 +15,9 @@ $selecao = function (string $campo, array $opcoes) use ($valores): string {
     return $html;
 };
 $ativas = count(array_filter($vagas, fn ($vaga) => $vaga->ativa));
+$rotuloFonte = fn (string $fonte): string => match ($fonte) {
+    'github' => 'GitHub', 'adzuna' => 'Adzuna', default => 'Manual',
+};
 ?>
 <section class="cabecalho-pagina">
   <div>
@@ -26,6 +29,16 @@ $ativas = count(array_filter($vagas, fn ($vaga) => $vaga->ativa));
 <?php if ($sucesso): ?>
   <div class="alerta alerta-sucesso alerta-topo"><?= icone('check') ?><span><?= e($sucesso) ?></span></div>
 <?php endif; ?>
+
+<section class="indicadores">
+  <?php foreach ($porFonte as $fonte => $contagem): ?>
+    <div class="indicador cartao">
+      <span class="indicador-icone"><?= icone('download', 'icone icone-sm') ?></span>
+      <span class="indicador-rotulo"><?= e($rotuloFonte($fonte)) ?></span>
+      <strong class="indicador-valor"><?= $contagem['total'] ?> <small class="texto-suave">(<?= $contagem['ativas'] ?> ativas)</small></strong>
+    </div>
+  <?php endforeach; ?>
+</section>
 
 <details class="cartao cartao-painel formulario-vaga" <?= $erros ? 'open' : '' ?>>
   <summary><?= icone('maleta', 'icone icone-sm') ?> Cadastrar vaga</summary>
@@ -117,7 +130,7 @@ $ativas = count(array_filter($vagas, fn ($vaga) => $vaga->ativa));
   <div class="tabela-rolagem">
     <table class="tabela tabela-vagas">
       <thead>
-        <tr><th>Vaga</th><th>Nível</th><th>Modelo</th><th>Stack</th><th>Cadastro</th><th>Status</th><th></th></tr>
+        <tr><th>Vaga</th><th>Nível</th><th>Modelo</th><th>Stack</th><th>Fonte</th><th>Cadastro</th><th>Status</th><th></th></tr>
       </thead>
       <tbody>
         <?php foreach ($vagas as $vaga): ?>
@@ -129,6 +142,7 @@ $ativas = count(array_filter($vagas, fn ($vaga) => $vaga->ativa));
             <td><?= e($vaga->senioridade->rotulo()) ?><small><?= e($vaga->area->rotulo()) ?></small></td>
             <td><?= e($vaga->local()) ?><small><?= e($vaga->regiao->rotulo()) ?></small></td>
             <td><?= e(implode(', ', array_slice($vaga->stack, 0, 4))) ?></td>
+            <td><span class="selo selo-neutro"><?= e($rotuloFonte($vaga->fonte)) ?></span></td>
             <td><?= data_br($vaga->criadoEm) ?></td>
             <td><span class="selo <?= $vaga->ativa ? 'selo-sucesso' : 'selo-neutro' ?>"><?= $vaga->ativa ? 'Ativa' : 'Pausada' ?></span></td>
             <td>
@@ -140,7 +154,7 @@ $ativas = count(array_filter($vagas, fn ($vaga) => $vaga->ativa));
           </tr>
         <?php endforeach; ?>
         <?php if ($vagas === []): ?>
-          <tr><td colspan="7" class="texto-suave">Nenhuma vaga cadastrada ainda.</td></tr>
+          <tr><td colspan="8" class="texto-suave">Nenhuma vaga cadastrada ainda.</td></tr>
         <?php endif; ?>
       </tbody>
     </table>
