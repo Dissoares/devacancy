@@ -7,6 +7,8 @@ namespace App\DTOs;
 use App\Core\ListaDeTags;
 use App\Enums\AreaAtuacao;
 use App\Enums\ModeloTrabalho;
+use App\Enums\Moeda;
+use App\Enums\RegiaoVagas;
 use App\Enums\Senioridade;
 
 final class VagaDTO
@@ -24,6 +26,8 @@ final class VagaDTO
         public readonly ?int $salarioMax,
         public readonly ?string $link,
         public readonly ?string $descricao,
+        public readonly RegiaoVagas $regiao,
+        public readonly Moeda $moeda,
     ) {
     }
 
@@ -37,10 +41,12 @@ final class VagaDTO
             'stack' => 'obrigatorio|max:600',
             'modelo_trabalho' => 'obrigatorio|enum:' . ModeloTrabalho::class,
             'cidade' => 'max:120',
-            'salario_min' => 'entre:0,200000',
-            'salario_max' => 'entre:0,200000',
+            'salario_min' => 'entre:0,2000000',
+            'salario_max' => 'entre:0,2000000',
             'link' => 'url|max:500',
             'descricao' => 'max:5000',
+            'regiao' => 'obrigatorio|enum:' . RegiaoVagas::class,
+            'moeda' => 'obrigatorio|enum:' . Moeda::class,
         ];
     }
 
@@ -58,6 +64,8 @@ final class VagaDTO
             salarioMax: self::inteiroOuNulo($dados['salario_max'] ?? null),
             link: self::textoOuNulo($dados['link'] ?? null),
             descricao: self::textoOuNulo($dados['descricao'] ?? null),
+            regiao: RegiaoVagas::from($dados['regiao']),
+            moeda: Moeda::from($dados['moeda']),
         );
     }
 
