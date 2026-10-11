@@ -18,6 +18,13 @@ $indicadores = [
   </div>
 </section>
 
+<?php if (!empty($sucesso)): ?>
+  <div class="alerta alerta-sucesso alerta-topo"><?= icone('check') ?><span><?= e($sucesso) ?></span></div>
+<?php endif; ?>
+<?php if (!empty($erro)): ?>
+  <div class="alerta alerta-erro alerta-topo" role="alert"><?= icone('x') ?><span><?= e($erro) ?></span></div>
+<?php endif; ?>
+
 <section class="indicadores">
   <?php foreach ($indicadores as [$icone, $rotulo, $valor]): ?>
     <div class="indicador cartao">
