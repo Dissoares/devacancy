@@ -155,12 +155,12 @@
     const linkFixo = ctaFixo.querySelector('a');
     let agendado = false;
 
-    // O cartão do CTA final só "esconde" o botão fixo enquanto está bem à vista (quase metade dele na tela).
-    // Se sobrou só uma faixa no topo (a pessoa já está no rodapé), o botão fixo volta: nada fica sem ação.
+    // O cartão do CTA final "esconde" o botão fixo só enquanto a pergunta dele (o topo do cartão) está na tela.
+    // Se o topo já passou por cima, o botão fixo volta: em celular alto o fim da página ainda mostra o cartão
+    // cortado, sem a pergunta, e a pessoa ficaria sem nenhuma chamada visível.
     const bemVisivel = (elemento) => {
-      const area = elemento.getBoundingClientRect();
-      const sobreposto = Math.min(area.bottom, window.innerHeight) - Math.max(area.top, 0);
-      return sobreposto / area.height >= 0.45;
+      const topo = elemento.getBoundingClientRect().top;
+      return topo >= -16 && topo < window.innerHeight - 140;
     };
 
     const atualizar = () => {
