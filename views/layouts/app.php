@@ -25,6 +25,7 @@
           <a class="<?= ativo('/admin/pagamentos') ?>" href="/admin/pagamentos"><?= icone('cadeado', 'icone icone-sm') ?> Pagamentos</a>
           <a class="<?= ativo('/admin/migracoes') ?>" href="/admin/migracoes"><?= icone('raio', 'icone icone-sm') ?> Migrações</a>
           <a class="<?= ativo('/admin/email') ?>" href="/admin/email"><?= icone('email', 'icone icone-sm') ?> E-mail</a>
+          <a class="<?= ativo('/admin/administradores') ?>" href="/admin/administradores"><?= icone('escudo', 'icone icone-sm') ?> Admins</a>
           <a class="<?= ativo('/admin/analytics') ?>" href="/admin/analytics"><?= icone('grafico', 'icone icone-sm') ?> Analytics</a>
         </nav>
       <?php endif; ?>
