@@ -818,3 +818,9 @@
     grid-template-columns: 100px 1fr;
   }
 }
+
+.acoes-cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
