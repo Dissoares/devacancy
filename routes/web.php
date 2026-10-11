@@ -66,11 +66,13 @@ return function (Roteador $rotas): void {
     $rotas->get('/pagamento/{id}', [AssinaturaController::class, 'pagamento'], $perfilCompleto);
     $rotas->get('/pagamento/{id}/status', [AssinaturaController::class, 'statusPagamento'], $perfilCompleto);
     $rotas->post('/pagamento/{id}/simular', [AssinaturaController::class, 'simularPagamento'], $perfilCompleto);
+    $rotas->post('/assinar/paypal-email', [AssinaturaController::class, 'assinarPaypalEmail'], $perfilCompleto);
     $rotas->post('/assinar/paypal', [AssinaturaController::class, 'confirmarPaypal'], $perfilCompleto);
     $rotas->post('/assinar/paypal/simular', [AssinaturaController::class, 'simularPaypal'], $perfilCompleto);
     $rotas->get('/assinatura/paypal/{id}', [AssinaturaController::class, 'aguardandoPaypal'], $perfilCompleto);
     $rotas->get('/assinatura/paypal/{id}/status', [AssinaturaController::class, 'statusPaypal'], $perfilCompleto);
     $rotas->post('/webhooks/expay', [AssinaturaController::class, 'webhook']);
+    $rotas->post('/webhooks/paypal-ipn', [AssinaturaController::class, 'ipnPaypal']);
     $rotas->post('/webhooks/paypal', [AssinaturaController::class, 'webhookPaypal']);
 
     // Migrações pelo navegador, com token do .env (para quem ainda não tem acesso ao admin ou ao terminal)
@@ -103,5 +105,6 @@ return function (Roteador $rotas): void {
     $rotas->get('/admin/migracoes', [AdminMigracaoController::class, 'painel'], $admin);
     $rotas->post('/admin/migracoes/executar', [AdminMigracaoController::class, 'executar'], $admin);
     $rotas->get('/admin/pagamentos', [AdminPagamentoController::class, 'listar'], $admin);
+    $rotas->post('/admin/pagamentos/{id}/confirmar', [AdminPagamentoController::class, 'confirmar'], $admin);
     $rotas->post('/admin/pagamentos/{chave}/alternar', [AdminPagamentoController::class, 'alternar'], $admin);
 };
