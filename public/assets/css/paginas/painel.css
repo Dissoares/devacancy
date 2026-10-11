@@ -442,6 +442,10 @@
   background: var(--acao);
 }
 
+.nota-rodape-tabela {
+  padding: 14px 20px 0;
+}
+
 .botao-perigo {
   color: var(--erro);
 }

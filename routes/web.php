@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Controllers\AdminAnalyticsController;
 use App\Controllers\AdminComissaoController;
 use App\Controllers\AdminController;
+use App\Controllers\AdminPagamentoController;
 use App\Controllers\AdminVagaController;
 use App\Controllers\AssinaturaController;
 use App\Controllers\AutenticacaoController;
@@ -81,4 +82,6 @@ return function (Roteador $rotas): void {
     $rotas->post('/admin/candidaturas/{id}/status', [CandidaturaController::class, 'atualizar'], $admin);
     $rotas->get('/admin/comissoes', [AdminComissaoController::class, 'listar'], $admin);
     $rotas->post('/admin/comissoes/{id}/pagar', [AdminComissaoController::class, 'marcarComoPaga'], $admin);
+    $rotas->get('/admin/pagamentos', [AdminPagamentoController::class, 'listar'], $admin);
+    $rotas->post('/admin/pagamentos/{chave}/alternar', [AdminPagamentoController::class, 'alternar'], $admin);
 };
