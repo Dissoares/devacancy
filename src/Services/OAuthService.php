@@ -39,7 +39,7 @@ final class OAuthService
     {
         $provedor = $this->provedor($nome);
         if (!$provedor->estaConfigurado()) {
-            throw new AutenticacaoException("O login com {$provedor->provedor()->rotulo()} ainda não está disponível. Use seu e-mail por enquanto.");
+            throw new AutenticacaoException(t('auth.provedor_indisponivel', ['provedor' => $provedor->provedor()->rotulo()]));
         }
 
         $estado = bin2hex(random_bytes(20));
@@ -57,10 +57,10 @@ final class OAuthService
         $pendente = Sessao::retirar(self::CHAVE_SESSAO);
 
         if (!$pendente || $pendente['provedor'] !== $nome || !is_string($estado) || !hash_equals($pendente['estado'], $estado)) {
-            throw new AutenticacaoException('Não conseguimos confirmar o login. Tente novamente.');
+            throw new AutenticacaoException(t('auth.falha_confirmar'));
         }
         if (!$codigo) {
-            throw new AutenticacaoException('O login foi cancelado.');
+            throw new AutenticacaoException(t('auth.cancelado'));
         }
 
         try {
@@ -69,7 +69,7 @@ final class OAuthService
             throw $erro;
         } catch (\Throwable $erro) {
             error_log('[' . date('Y-m-d H:i:s') . "] OAuth {$nome}: {$erro->getMessage()}\n", 3, RAIZ . '/storage/logs/erros.log');
-            throw new AutenticacaoException('Não foi possível concluir o login agora. Tente novamente em instantes.');
+            throw new AutenticacaoException(t('auth.falha_concluir'));
         }
 
         return [$usuario, TipoUsuario::tryFrom($pendente['tipo']) ?? TipoUsuario::Profissional];
