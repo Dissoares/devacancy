@@ -2223,24 +2223,6 @@
   to { opacity: 0; transform: translateY(-70%); }
 }
 
-/* Tecnologias flutuando no fundo do hero (desktop) */
-.hero-flutuantes span {
-  position: absolute;
-  left: var(--x);
-  top: var(--y);
-  padding: 6px 12px;
-  border: 1px solid var(--borda);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .7);
-  color: var(--texto-suave);
-  font-family: var(--fonte-mono);
-  font-size: .78rem;
-  box-shadow: var(--sombra);
-  opacity: .55;
-  animation: flutuar 7s ease-in-out infinite;
-  animation-delay: var(--atraso);
-}
-
 @keyframes flutuar {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-14px); }
@@ -2559,10 +2541,6 @@
 }
 
 @media (max-width: 900px) {
-  .hero-flutuantes {
-    display: none;
-  }
-
   .vitrine-item:nth-child(n+4) {
     display: none;
   }
@@ -2609,11 +2587,6 @@
   font-size: clamp(2.4rem, 4.4vw, 3.6rem);
 }
 
-.hero-flutuantes span {
-  z-index: 0;
-  opacity: .45;
-}
-
 .hero-interno {
   z-index: 1;
 }
@@ -2653,12 +2626,6 @@
 .letreiro-item .icone-stack {
   width: 15px;
   height: 15px;
-}
-
-.hero-flutuantes span {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
 }
 
 /* Logo da stack ao lado da palavra que alterna no título (completa a regra em "Palavra que alterna no título"). */
@@ -2930,4 +2897,148 @@ a.celular:active {
   .cta-final-links span[aria-hidden] {
     display: none;
   }
+}
+
+/* ==========================================================================
+   Constelação de tecnologias no fundo do hero
+   Logos grandes em "cartões de vidro" que entram um a um, flutuam em ritmos diferentes
+   e seguem o mouse com profundidade (parallax). No celular, versão menor com as mesmas animações.
+   ========================================================================== */
+.constelacao {
+  --escala: 1;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.constelacao-item {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  /* Camada de fora: só posição + parallax do mouse. A de dentro cuida da entrada e do flutuar. */
+  transform: translate3d(calc(var(--px, 0) * var(--prof) * 26px), calc(var(--py, 0) * var(--prof) * 20px), 0);
+  transition: transform .7s cubic-bezier(.2, .8, .2, 1);
+  will-change: transform;
+}
+
+.constelacao-card {
+  --lado: calc(var(--tam) * var(--escala) * 1px);
+  display: grid;
+  place-items: center;
+  width: var(--lado);
+  height: var(--lado);
+  border-radius: 28%;
+  border: 1px solid rgba(255, 255, 255, .95);
+  background: linear-gradient(145deg, rgba(255, 255, 255, .92), rgba(240, 246, 255, .7));
+  box-shadow:
+    0 22px 40px -16px rgba(37, 99, 235, .38),
+    0 4px 10px -4px rgba(15, 23, 42, .12),
+    inset 0 1px 0 #fff;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation:
+    constelacao-entra .8s cubic-bezier(.2, 1.3, .4, 1) var(--ordem) backwards,
+    constelacao-flutua var(--dur) ease-in-out var(--atraso) infinite alternate;
+}
+
+.constelacao-card .icone-stack {
+  width: 54%;
+  height: 54%;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 5px rgba(15, 23, 42, .18));
+}
+
+/* Alguns brilham de leve, chamando o olho sem competir com o texto. */
+.constelacao-destaque .constelacao-card::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  border: 2px solid rgba(37, 99, 235, .35);
+  animation: constelacao-pulso 3.2s ease-out infinite;
+  animation-delay: var(--atraso);
+  pointer-events: none;
+}
+
+.constelacao-destaque .constelacao-card {
+  position: relative;
+}
+
+/* Etiquetas com o nome (as menores): lembram que são tecnologias de verdade. */
+.constelacao-pilula .constelacao-card {
+  display: inline-flex;
+  gap: 8px;
+  width: auto;
+  height: auto;
+  padding: 8px 14px 8px 10px;
+  border-radius: 999px;
+  font-family: var(--fonte-mono);
+  font-size: .8rem;
+  color: var(--texto-2);
+}
+
+.constelacao-pilula .icone-stack {
+  width: 18px;
+  height: 18px;
+}
+
+.constelacao-pilula b {
+  font-weight: 500;
+}
+
+@keyframes constelacao-entra {
+  from { opacity: 0; transform: scale(.3) rotate(-14deg); }
+}
+
+@keyframes constelacao-flutua {
+  from { transform: translateY(0) rotate(-3deg); }
+  to { transform: translateY(-18px) rotate(3deg); }
+}
+
+@keyframes constelacao-pulso {
+  0% { opacity: .9; transform: scale(.94); }
+  100% { opacity: 0; transform: scale(1.28); }
+}
+
+/* Fora da tela, para de animar (poupa bateria). */
+.hero-fora .constelacao-card,
+.hero-fora .constelacao-card::after {
+  animation-play-state: paused;
+}
+
+/* Celular: menores, mais leves (sem desfoque), só os que têm lugar livre, e sempre atrás do texto. */
+@media (max-width: 900px) {
+  .constelacao {
+    --escala: .72;
+  }
+
+  .constelacao-item {
+    left: var(--xm);
+    top: var(--ym);
+  }
+
+  .constelacao-item.so-desktop {
+    display: none;
+  }
+
+  .constelacao-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: 0 14px 26px -12px rgba(37, 99, 235, .4), inset 0 1px 0 #fff;
+  }
+
+  .constelacao-pilula {
+    display: none;
+  }
+
+  @keyframes constelacao-flutua {
+    from { transform: translateY(0) rotate(-3deg); }
+    to { transform: translateY(-10px) rotate(3deg); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .constelacao-item { transition: none; transform: none; }
+  .constelacao-card, .constelacao-card::after { animation: none; }
 }

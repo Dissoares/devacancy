@@ -11,9 +11,39 @@ $perguntas = array_map(fn (int $n) => [t("landing.faq_{$n}_p"), t("landing.faq_{
 <section class="hero">
   <div class="hero-fundo" aria-hidden="true">
     <div class="hero-grade"></div>
-    <div class="hero-flutuantes">
-      <?php foreach ([['TypeScript', 58, 12, 1.2], ['Python', 90, 18, .6], ['Node.js', 62, 90, 2], ['Docker', 88, 86, .3], ['Kotlin', 76, 6, 2.4], ['React', 54, 52, 1]] as [$nome, $x, $y, $atraso]): ?>
-        <span style="--x: <?= $x ?>%; --y: <?= $y ?>%; --atraso: <?= $atraso ?>s"><?= icone_stack($nome) ?><?= e($nome) ?></span>
+    <!-- Constelação de tecnologias. [nome, x%, y% no desktop, tamanho em px, x%, y% no celular (null = só desktop), profundidade, destaque] -->
+    <div class="constelacao" data-constelacao>
+      <?php
+      $constelacao = [
+          ['React', 46, 13, 76, 83, 16, 1.3, true],
+          ['TypeScript', 91, 19, 64, 74, 10.5, 1.0, false],
+          ['Python', 94, 54, 72, 92, 26, 1.5, true],
+          ['Docker', 3, 63, 66, 5, 78, 0.9, false],
+          ['Node.js', 54, 80, 70, 86, 83, 1.2, true],
+          ['Java', 6, 18, 60, null, null, 0.8, false],
+          ['Kotlin', 29, 10, 52, null, null, 1.1, false],
+          ['Go', 69, 11, 50, 64, 18.2, 0.7, false],
+          ['Flutter', 96, 81, 56, 93, 70, 1.4, false],
+          ['AWS', 19, 90, 54, 62, 92, 0.9, false],
+          ['PostgreSQL', 61, 91, 52, 45, 95, 1.0, false],
+          ['Vue', 2, 41, 50, null, null, 1.3, false],
+          ['Laravel', 38, 93, 48, null, null, 0.8, false],
+          ['Swift', 86, 11, 48, null, null, 1.1, false],
+          ['Angular', 97, 37, 52, null, null, 1.2, false],
+          ['Kubernetes', 77, 90, 54, 72, 95, 0.8, false],
+          ['PHP', 1.5, 29.5, 46, null, null, 0.6, false],
+          ['.NET', 52, 47, 44, null, null, 0.5, false],
+          ['Ruby', 88, 93, 44, null, null, 0.9, false],
+          ['MySQL', 8, 94, 46, null, null, 1.0, false],
+          ['Next.js', 73, 14, 0, null, null, 1.0, false],
+          ['Redis', 3, 78, 0, null, null, 0.7, false],
+      ];
+      foreach ($constelacao as $indice => [$nome, $x, $y, $tamanho, $xm, $ym, $prof, $destaque]):
+          $classes = 'constelacao-item' . ($tamanho === 0 ? ' constelacao-pilula' : '') . ($destaque ? ' constelacao-destaque' : '') . ($xm === null ? ' so-desktop' : '');
+          $estilo = sprintf('--x: %s%%; --y: %s%%; --xm: %s%%; --ym: %s%%; --tam: %d; --prof: %s; --atraso: %.2fs; --dur: %.1fs; --ordem: %.2fs',
+              $x, $y, $xm ?? $x, $ym ?? $y, $tamanho, $prof, ($indice * 37 % 20) / 10, 5.5 + ($indice * 13 % 35) / 10, 0.25 + $indice * 0.07);
+          ?>
+        <span class="<?= $classes ?>" style="<?= $estilo ?>"><span class="constelacao-card"><?= icone_stack($nome) ?><?php if ($tamanho === 0): ?><b><?= e($nome) ?></b><?php endif; ?></span></span>
       <?php endforeach; ?>
     </div>
     <div class="hero-luz hero-luz-1"></div>

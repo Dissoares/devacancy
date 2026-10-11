@@ -273,3 +273,44 @@
     if (evento.target.closest('a[href^="/comecar"]')) marcarVista();
   });
 })();
+
+/**
+ * Constelação do hero: os logos acompanham o mouse com profundidades diferentes (parallax)
+ * e as animações pausam quando o hero sai da tela.
+ */
+(() => {
+  'use strict';
+
+  const hero = document.querySelector('.hero');
+  const constelacao = hero?.querySelector('[data-constelacao]');
+  if (!constelacao) return;
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([entrada]) => hero.classList.toggle('hero-fora', !entrada.isIntersecting)).observe(hero);
+  }
+
+  const semMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (semMovimento || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  let pendente = false;
+  let alvoX = 0;
+  let alvoY = 0;
+
+  const aplicar = () => {
+    pendente = false;
+    constelacao.style.setProperty('--px', alvoX.toFixed(3));
+    constelacao.style.setProperty('--py', alvoY.toFixed(3));
+  };
+
+  hero.addEventListener('pointermove', (evento) => {
+    const area = hero.getBoundingClientRect();
+    alvoX = ((evento.clientX - area.left) / area.width - 0.5) * -2;
+    alvoY = ((evento.clientY - area.top) / area.height - 0.5) * -2;
+    if (!pendente) {
+      pendente = true;
+      requestAnimationFrame(aplicar);
+    }
+  }, { passive: true });
+
+  hero.addEventListener('pointerleave', () => { alvoX = 0; alvoY = 0; requestAnimationFrame(aplicar); });
+})();
