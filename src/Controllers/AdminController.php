@@ -76,6 +76,7 @@ final class AdminController
             'Área', 'Senioridade', 'Cargo desejado', 'Anos de experiência', 'Stack', 'Modelo de trabalho',
             'Cidade', 'Pretensão (R$)', 'LinkedIn', 'GitHub', 'Portfólio',
             'Empresa', 'Site', 'Tamanho', 'Cargo do contato', 'Stacks que contrata', 'Vagas abertas',
+            'Plano assinado', 'Assinatura expira em',
         ], ';');
 
         foreach ($linhas as $linha) {
@@ -104,6 +105,8 @@ final class AdminController
                 $linha['cargo_contato'],
                 implode(', ', json_decode($linha['stacks_contratacao'] ?? '[]', true) ?: []),
                 $linha['vagas_abertas'],
+                $linha['plano_assinatura'] ? t('plano.' . $linha['plano_assinatura']) : '',
+                $linha['assinatura_expira_em'] ? data_br($linha['assinatura_expira_em'], true) : '',
             ]), ';');
         }
 
