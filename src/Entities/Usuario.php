@@ -19,6 +19,8 @@ final class Usuario
         public readonly bool $cadastroCompleto,
         public readonly ?string $ultimoAcessoEm,
         public readonly string $criadoEm,
+        public readonly string $idioma = 'pt',
+        public readonly ?string $pais = null,
     ) {
     }
 
@@ -35,6 +37,8 @@ final class Usuario
             cadastroCompleto: (bool) $linha['cadastro_completo'],
             ultimoAcessoEm: $linha['ultimo_acesso_em'],
             criadoEm: $linha['criado_em'],
+            idioma: $linha['idioma'] ?? 'pt',
+            pais: $linha['pais'] ?? null,
         );
     }
 
