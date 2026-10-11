@@ -17,14 +17,7 @@ enum StatusPagamento: string
 
     public function rotulo(): string
     {
-        return match ($this) {
-            self::Pendente => 'Aguardando pagamento',
-            self::Pago => 'Pago',
-            self::Falhou => 'Recusado',
-            self::Expirado => 'Expirado',
-            self::Cancelado => 'Cancelado',
-            self::Estornado => 'Estornado',
-        };
+        return t('status_pagamento.' . $this->value);
     }
 
     /** Traduz o status da cobrança na ExPay. */
