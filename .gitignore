@@ -6,3 +6,5 @@
 !/storage/logs/.gitkeep
 
 /storage/cache/*
+
+/marketing/anuncios/*.png
