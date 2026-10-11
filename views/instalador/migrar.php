@@ -26,7 +26,7 @@
       <?php endif; ?>
       <p class="texto-suave">Por segurança, <strong>remova <code>MIGRACOES_TOKEN</code> do <code>.env</code></strong> agora: sem ele esta página deixa de existir.</p>
     <?php else: ?>
-      <form class="formulario" method="post" action="/migrar" autocomplete="off">
+      <form class="formulario" method="post" action="/install" autocomplete="off">
         <?= csrf_campo() ?>
         <div class="campo">
           <label class="campo-rotulo" for="token">Token</label>

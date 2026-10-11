@@ -16,7 +16,7 @@ use RuntimeException;
 
 /**
  * Roda as migrações do banco pelo navegador: no painel admin (logado) e, para quem ainda não tem
- * acesso ao admin, em /migrar com um token secreto do .env (MIGRACOES_TOKEN). Sem token no .env, /migrar não existe.
+ * acesso ao admin, em /install com um token secreto do .env (MIGRACOES_TOKEN). Sem token no .env, /install não existe.
  */
 final class AdminMigracaoController
 {
@@ -45,7 +45,7 @@ final class AdminMigracaoController
         return Resposta::redirecionar('/admin/migracoes');
     }
 
-    // ---------------------------------------------------------------- /migrar (token)
+    // ---------------------------------------------------------------- /install (token)
 
     public function formularioToken(): Resposta
     {

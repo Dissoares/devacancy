@@ -10,7 +10,7 @@ use Throwable;
 
 /**
  * Aplica as migrações de database/migrations. Usado pelo terminal (database/instalar.php)
- * e pelo navegador (painel admin e /migrar com token).
+ * e pelo navegador (painel admin e /install com token).
  */
 final class MigracaoService
 {

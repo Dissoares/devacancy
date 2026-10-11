@@ -67,8 +67,8 @@ return function (Roteador $rotas): void {
     $rotas->post('/webhooks/paypal', [AssinaturaController::class, 'webhookPaypal']);
 
     // Migrações pelo navegador, com token do .env (para quem ainda não tem acesso ao admin ou ao terminal)
-    $rotas->get('/migrar', [AdminMigracaoController::class, 'formularioToken']);
-    $rotas->post('/migrar', [AdminMigracaoController::class, 'executarComToken']);
+    $rotas->get('/install', [AdminMigracaoController::class, 'formularioToken']);
+    $rotas->post('/install', [AdminMigracaoController::class, 'executarComToken']);
 
     // Administração
     $rotas->get('/admin', [AdminController::class, 'painel'], $admin);

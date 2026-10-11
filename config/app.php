@@ -95,7 +95,7 @@ return [
         ],
     ],
 
-    // Rodar migrações pelo navegador em /migrar (sem acesso ao terminal). Sem MIGRACOES_TOKEN (16+ caracteres) a rota não existe.
+    // Rodar migrações pelo navegador em /install (sem acesso ao terminal). Sem MIGRACOES_TOKEN (16+ caracteres) a rota não existe.
     'instalador' => [
         'token' => Ambiente::obter('MIGRACOES_TOKEN', ''),
     ],
