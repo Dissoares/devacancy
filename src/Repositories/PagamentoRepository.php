@@ -15,11 +15,28 @@ final class PagamentoRepository implements PagamentoRepositoryInterface
     {
     }
 
-    public function criar(int $usuarioId, string $plano, float $valor, string $metodo): int
+    public function criar(int $usuarioId, string $plano, float $valor, string $metodo, string $moeda = 'BRL'): int
     {
-        $this->pdo->prepare('INSERT INTO pagamentos (usuario_id, plano, valor, metodo) VALUES (?, ?, ?, ?)')
-            ->execute([$usuarioId, $plano, $valor, $metodo]);
+        $this->pdo->prepare('INSERT INTO pagamentos (usuario_id, plano, valor, moeda, metodo) VALUES (?, ?, ?, ?, ?)')
+            ->execute([$usuarioId, $plano, $valor, $moeda, $metodo]);
         return (int) $this->pdo->lastInsertId();
+    }
+
+    public function registrarPagoExterno(int $usuarioId, string $plano, float $valor, string $moeda, string $metodo, string $gatewayId, string $assinaturaExterna): bool
+    {
+        $consulta = $this->pdo->prepare(
+            "INSERT IGNORE INTO pagamentos (usuario_id, plano, valor, moeda, metodo, status, gateway_id, assinatura_externa, pago_em)
+             VALUES (?, ?, ?, ?, ?, 'pago', ?, ?, NOW())"
+        );
+        $consulta->execute([$usuarioId, $plano, $valor, $moeda, $metodo, $gatewayId, $assinaturaExterna]);
+        return $consulta->rowCount() === 1;
+    }
+
+    public function contarPagosDaAssinaturaExterna(string $assinaturaExterna): int
+    {
+        $consulta = $this->pdo->prepare("SELECT COUNT(*) FROM pagamentos WHERE assinatura_externa = ? AND status = 'pago'");
+        $consulta->execute([$assinaturaExterna]);
+        return (int) $consulta->fetchColumn();
     }
 
     public function buscarPorId(int $id): ?Pagamento
