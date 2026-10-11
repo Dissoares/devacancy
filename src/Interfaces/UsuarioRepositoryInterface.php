@@ -32,6 +32,8 @@ interface UsuarioRepositoryInterface
 
     public function registrarAcesso(int $usuarioId): void;
 
+    public function atualizarSenha(int $usuarioId, string $senhaHash): void;
+
     /** Gera e grava um código de indicação só se a conta ainda não tiver um (contas de antes dessa funcionalidade); devolve o código final. */
     public function garantirCodigoIndicacao(int $usuarioId): string;
 
