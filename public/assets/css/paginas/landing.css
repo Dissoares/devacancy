@@ -2199,15 +2199,20 @@
 
 .palavra-rotativa > span {
   grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  gap: .18em;
   white-space: nowrap;
 }
 
+/* A saída (220ms) termina e remove o nó antes da próxima entrar: nunca ficam duas palavras
+   visíveis juntas (palavras de larguras bem diferentes, como "Java" e "Python", se sobrepunham). */
 .palavra-rotativa .entrando {
-  animation: palavra-entra .45s cubic-bezier(.2, .8, .2, 1);
+  animation: palavra-entra .4s cubic-bezier(.2, .8, .2, 1);
 }
 
 .palavra-rotativa .saindo {
-  animation: palavra-sai .45s cubic-bezier(.4, 0, .6, 1) forwards;
+  animation: palavra-sai .22s cubic-bezier(.4, 0, 1, 1) forwards;
 }
 
 @keyframes palavra-entra {
@@ -2656,13 +2661,7 @@
   gap: 6px;
 }
 
-/* Logo da stack ao lado da palavra que alterna no título. */
-.palavra-rotativa > span {
-  display: inline-flex;
-  align-items: center;
-  gap: .18em;
-}
-
+/* Logo da stack ao lado da palavra que alterna no título (completa a regra em "Palavra que alterna no título"). */
 .palavra-icone {
   width: .78em;
   height: .78em;

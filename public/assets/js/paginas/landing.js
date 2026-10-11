@@ -62,21 +62,30 @@
     // Pré-carrega os logos para a troca não piscar.
     palavras.forEach(({ icone }) => { new Image().src = icone; });
     let indicePalavra = 0;
-    setInterval(() => {
+    const duracaoSaida = reduzirMovimento ? 0 : 220;
+
+    const trocar = () => {
       indicePalavra = (indicePalavra + 1) % palavras.length;
-      const nova = document.createElement('span');
-      const { nome, icone } = palavras[indicePalavra];
-      const logo = document.createElement('img');
-      logo.className = 'palavra-icone';
-      logo.src = icone;
-      logo.alt = '';
-      nova.append(logo, nome);
-      nova.className = 'entrando';
       const antiga = palavra.firstElementChild;
       antiga.classList.add('saindo');
-      palavra.appendChild(nova);
-      setTimeout(() => antiga.remove(), 450);
-    }, 2200);
+
+      // Só insere a palavra nova depois que a antiga sumiu por completo: nunca ficam as duas
+      // visíveis juntas (palavras de tamanhos bem diferentes, como "Java" e "Python", se sobrepunham).
+      setTimeout(() => {
+        antiga.remove();
+        const { nome, icone } = palavras[indicePalavra];
+        const nova = document.createElement('span');
+        const logo = document.createElement('img');
+        logo.className = 'palavra-icone';
+        logo.src = icone;
+        logo.alt = '';
+        nova.append(logo, nome);
+        nova.className = 'entrando';
+        palavra.appendChild(nova);
+      }, duracaoSaida);
+    };
+
+    setInterval(trocar, 2200);
   }
 
   // ---------- Vitrine "ao vivo": a vaga do fim da lista volta para o topo, como se tivesse acabado de entrar ----------
