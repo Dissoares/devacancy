@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Core\Idioma;
 use App\Core\Sessao;
 use App\DTOs\UsuarioSocialDTO;
 use App\Entities\Usuario;
@@ -15,7 +16,6 @@ final class AutenticacaoService
 {
     private const LIMITE_TENTATIVAS = 5;
     private const JANELA_SEGUNDOS = 900;
-    private const MENSAGEM_FALHA = 'E-mail ou senha incorretos.';
     private const HASH_FICTICIO = '$2y$10$BI36CAPlsppRrZFT4g5m4OjCvE4rq.Zi0XXOz9qJd3c0OdN4WeQRS';
 
     private ?Usuario $usuarioAtual = null;
@@ -37,7 +37,7 @@ final class AutenticacaoService
 
         if ($usuario === null || $usuario->senhaHash === null || !$senhaConfere) {
             $this->registrarTentativaFalha();
-            throw new AutenticacaoException(self::MENSAGEM_FALHA);
+            throw new AutenticacaoException(t('auth.falha'));
         }
 
         Sessao::remover('tentativas_login');
@@ -48,14 +48,14 @@ final class AutenticacaoService
      * Encontra a conta pelo login social, depois pelo e-mail (vinculando o provedor);
      * se não existir, cria uma nova conta do tipo escolhido na tela de cadastro.
      */
-    public function autenticarComProvedor(UsuarioSocialDTO $social, TipoUsuario $tipoPretendido): Usuario
+    public function autenticarComProvedor(UsuarioSocialDTO $social, TipoUsuario $tipoPretendido, ?string $pais = null): Usuario
     {
         $usuario = $this->usuarios->buscarPorContaSocial($social->provedor, $social->provedorId)
             ?? $this->usuarios->buscarPorEmail($social->email);
 
         if ($usuario === null) {
             $tipo = in_array($tipoPretendido, TipoUsuario::publicos(), true) ? $tipoPretendido : TipoUsuario::Profissional;
-            $usuario = $this->usuarios->criar($tipo, $social->nome, $social->email, null, $social->avatarUrl);
+            $usuario = $this->usuarios->criar($tipo, $social->nome, $social->email, null, $social->avatarUrl, Idioma::atual(), $pais);
         }
 
         $this->usuarios->vincularContaSocial($usuario->id, $social->provedor, $social->provedorId);
@@ -74,6 +74,11 @@ final class AutenticacaoService
         Sessao::definir('usuario', $usuario->resumoSessao());
         $this->usuarios->registrarAcesso($usuario->id);
         $this->usuarioAtual = $usuario;
+    }
+
+    public function recarregar(Usuario $usuario): Usuario
+    {
+        return $this->usuarios->buscarPorId($usuario->id) ?? $usuario;
     }
 
     public function sair(): void
@@ -104,6 +109,7 @@ final class AutenticacaoService
     {
         return match (true) {
             $usuario->ehAdmin() => '/admin',
+            !$usuario->cadastroCompleto && $usuario->ehProfissional() => '/comecar',
             !$usuario->cadastroCompleto => '/completar-perfil',
             default => '/painel',
         };
@@ -118,7 +124,7 @@ final class AutenticacaoService
         Sessao::definir('tentativas_login', array_values($recentes));
 
         if (count($recentes) >= self::LIMITE_TENTATIVAS) {
-            throw new AutenticacaoException('Muitas tentativas seguidas. Aguarde alguns minutos e tente de novo.');
+            throw new AutenticacaoException(t('auth.muitas_tentativas'));
         }
     }
 
