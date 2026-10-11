@@ -34,6 +34,16 @@ interface UsuarioRepositoryInterface
 
     public function atualizarSenha(int $usuarioId, string $senhaHash): void;
 
+    /** Transforma a conta em administradora (e dispensa o preenchimento de perfil). */
+    public function promoverAAdmin(int $usuarioId): void;
+
+    public function excluir(int $usuarioId): void;
+
+    public function contarAdmins(): int;
+
+    /** @return Usuario[] */
+    public function listarAdmins(): array;
+
     /** Gera e grava um código de indicação só se a conta ainda não tiver um (contas de antes dessa funcionalidade); devolve o código final. */
     public function garantirCodigoIndicacao(int $usuarioId): string;
 
