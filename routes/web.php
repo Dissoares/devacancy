@@ -81,7 +81,8 @@ return function (Roteador $rotas): void {
     $rotas->post('/admin/vagas', [AdminVagaController::class, 'cadastrar'], $admin);
     $rotas->post('/admin/vagas/{id}/alternar', [AdminVagaController::class, 'alternar'], $admin);
     $rotas->post('/admin/vagas/{id}/excluir', [AdminVagaController::class, 'excluir'], $admin);
-    $rotas->get('/admin/vagas/adzuna', [AdminVagaController::class, 'buscarAdzuna'], $admin);
+    $rotas->post('/admin/vagas/importar-github', [AdminVagaController::class, 'importarGithub'], $admin);
+    $rotas->get('/admin/vagas/adzuna',[AdminVagaController::class, 'buscarAdzuna'], $admin);
     $rotas->post('/admin/vagas/adzuna/{id}/importar', [AdminVagaController::class, 'importarAdzuna'], $admin);
     $rotas->get('/admin/candidaturas', [CandidaturaController::class, 'fila'], $admin);
     $rotas->post('/admin/candidaturas/{id}/status', [CandidaturaController::class, 'atualizar'], $admin);
