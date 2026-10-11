@@ -20,7 +20,11 @@
     const ctaFixo = document.querySelector('[data-cta-fixo-funil]');
     const mensagens = JSON.parse(status.dataset.mensagens || '[]');
     const totalFinal = contador.textContent;
-    const esperar = (ms) => new Promise((resolver) => setTimeout(resolver, ms));
+    // Um toque ou uma rolagem pulam a animação: quem tem pressa vê tudo na hora.
+    let pular = false;
+    const pularAnimacao = () => { pular = true; };
+    ['pointerdown', 'wheel', 'touchmove', 'keydown'].forEach((evento) => window.addEventListener(evento, pularAnimacao, { once: true, passive: true }));
+    const esperar = (ms) => (pular ? Promise.resolve() : new Promise((resolver) => setTimeout(resolver, ms)));
     const avancarProgresso = (fracao) => { progresso.style.width = `${Math.round(fracao * 100)}%`; };
 
     document.documentElement.classList.add('buscando');
@@ -30,7 +34,7 @@
       for (const [indice, mensagem] of mensagens.entries()) {
         status.textContent = mensagem;
         avancarProgresso(((indice + 1) / mensagens.length) * 0.25);
-        await esperar(900);
+        await esperar(650);
       }
 
       let encontradas = 0;
@@ -38,16 +42,17 @@
         item.classList.add('visivel');
         if (!item.classList.contains('vaga-encontrada-vazia')) contador.textContent = String(++encontradas);
         avancarProgresso(0.25 + ((indice + 1) / itens.length) * 0.75);
-        await esperar(indice === 0 ? 1200 : 950);
+        await esperar(indice === 0 ? 750 : 480);
       }
 
       status.textContent = status.dataset.concluido;
       contador.textContent = totalFinal;
       busca.classList.add('concluida');
       document.documentElement.classList.remove('buscando');
-      await esperar(400);
+      await esperar(300);
       conclusao.classList.add('visivel');
-      conclusao.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Se a pessoa já está rolando por conta própria, não puxa a tela para a conclusão.
+      if (!pular) conclusao.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
       // No celular, o botão fixo aparece só quando a conclusão (que já tem o botão) sai da tela.
       if (ctaFixo && 'IntersectionObserver' in window) {
@@ -112,6 +117,8 @@
         resumo.querySelector('[data-resumo-nome]').textContent = dados.nome;
         resumo.querySelector('[data-resumo-preco]').textContent = dados.preco;
         resumo.querySelector('[data-resumo-periodo]').textContent = dados.periodo;
+        const nota = resumo.querySelector('[data-resumo-nota]');
+        if (nota) nota.textContent = dados.nota || '';
       });
     });
   }

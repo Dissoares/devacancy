@@ -283,7 +283,20 @@
         opcoes = [];
         if (termo.length < 2 || cidades.length === 0) return fechar();
 
-        const encontradas = cidades.filter(([nome]) => semAcento(nome).includes(termo)).slice(0, 8);
+        // Quem começa com o que foi digitado vem primeiro ("Curit" → Curitiba antes de Urucurituba),
+        // depois quem tem uma palavra começando assim, depois o resto.
+        const relevancia = (nome) => {
+          const n = semAcento(nome);
+          if (n.startsWith(termo)) return 0;
+          if (n.includes(' ' + termo)) return 1;
+          return n.includes(termo) ? 2 : -1;
+        };
+        const encontradas = cidades
+          .map((cidade) => [relevancia(cidade[0]), cidade])
+          .filter(([nota]) => nota >= 0)
+          .sort((a, b) => a[0] - b[0])
+          .slice(0, 8)
+          .map(([, cidade]) => cidade);
         if (encontradas.length === 0) return fechar();
 
         encontradas.forEach(([nome, uf], indice) => {
