@@ -817,6 +817,11 @@
     backdrop-filter: blur(12px);
   }
 
+  /* Avisos ("Responda para continuar") aparecem acima da barra fixa, não em cima do botão. */
+  body:has(.questionario.em-passos) .aviso-flutuante {
+    bottom: calc(92px + env(safe-area-inset-bottom));
+  }
+
   /* Espaço no fim pra última opção nunca ficar escondida atrás da barra fixa. */
   .questionario.em-passos {
     padding-bottom: calc(96px + env(safe-area-inset-bottom));
