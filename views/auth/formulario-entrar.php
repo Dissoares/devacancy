@@ -7,23 +7,23 @@
   <?php endif; ?>
 
   <div class="campo">
-    <label class="campo-rotulo" for="email">E-mail</label>
-    <input class="entrada" id="email" name="email" type="email" autocomplete="email" placeholder="voce@email.com"
+    <label class="campo-rotulo" for="email"><?= e(t('auth.email')) ?></label>
+    <input class="entrada" id="email" name="email" type="email" autocomplete="email" placeholder="<?= e(t('auth.email_placeholder')) ?>"
            value="<?= e($email ?? '') ?>" required <?= empty($email) ? 'autofocus' : '' ?>>
   </div>
 
   <div class="campo">
-    <label class="campo-rotulo" for="senha">Senha</label>
+    <label class="campo-rotulo" for="senha"><?= e(t('auth.senha')) ?></label>
     <div class="entrada-grupo">
-      <input class="entrada" id="senha" name="senha" type="password" autocomplete="current-password" placeholder="Sua senha" required
+      <input class="entrada" id="senha" name="senha" type="password" autocomplete="current-password" placeholder="<?= e(t('auth.senha_placeholder')) ?>" required
              <?= !empty($email) ? 'autofocus' : '' ?>>
-      <button class="entrada-acao" type="button" aria-label="Mostrar senha" data-alternar-senha><?= icone('olho') ?></button>
+      <button class="entrada-acao" type="button" aria-label="<?= e(t('auth.mostrar_senha')) ?>" data-alternar-senha><?= icone('olho') ?></button>
     </div>
   </div>
 
   <button class="botao botao-primario botao-grande botao-bloco" type="submit">
     <span class="carregando" aria-hidden="true"></span>
-    <span class="rotulo-botao">Entrar</span>
+    <span class="rotulo-botao"><?= e(t('auth.entrar')) ?></span>
     <?= icone('seta', 'icone icone-seta') ?>
   </button>
 </form>
