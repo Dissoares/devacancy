@@ -2786,3 +2786,148 @@ a.celular:active {
   .celular-dica { animation: none; }
   a.celular:hover, a.celular:focus-visible { transform: none; }
 }
+
+/* ---------- Bloco final: começar com um toque, sem precisar subir ---------- */
+.cta-final .inicio-quiz-final {
+  max-width: 680px;
+  margin: 32px auto 0;
+  color: var(--texto);
+}
+
+.cta-final .inicio-quiz-final .inicio-quiz-titulo {
+  max-width: none;
+  margin: 0 0 14px;
+  color: var(--texto);
+  font-size: 1.02rem;
+}
+
+.cta-final-garantias {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 22px;
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+  color: rgba(255, 255, 255, .92);
+  font-size: .94rem;
+  font-weight: 500;
+}
+
+.cta-final-garantias li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cta-final-garantias .icone {
+  color: #86efac;
+}
+
+.cta-final .cta-final-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 14px;
+  max-width: none;
+  margin-top: 22px;
+  font-size: .9rem;
+}
+
+.cta-final-links a {
+  color: rgba(255, 255, 255, .8);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cta-final-links a:hover {
+  color: #fff;
+}
+
+@media (max-width: 760px) {
+  .cta-final {
+    padding: 56px 20px;
+  }
+}
+
+/* ---------- Aviso de saída ---------- */
+.saida {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.saida[hidden] {
+  display: none;
+}
+
+.saida-fundo {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, .55);
+  backdrop-filter: blur(3px);
+  animation: saida-fundo .25s ease-out;
+}
+
+.saida-caixa {
+  position: relative;
+  width: min(440px, 100%);
+  padding: 34px 30px 26px;
+  border-radius: 24px;
+  background: var(--superficie);
+  box-shadow: 0 40px 90px -30px rgba(15, 23, 42, .6);
+  text-align: center;
+  animation: saida-caixa .35s cubic-bezier(.2, .9, .3, 1.2);
+}
+
+.saida-caixa h2 {
+  font-size: 1.45rem;
+  line-height: 1.2;
+  letter-spacing: -.02em;
+}
+
+.saida-caixa p {
+  margin: 12px 0 22px;
+  color: var(--texto-2);
+}
+
+.saida-x {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: var(--texto-suave);
+}
+
+.saida-x:hover {
+  background: var(--superficie-2);
+  color: var(--texto);
+}
+
+.saida-depois {
+  margin-top: 12px;
+  color: var(--texto-suave);
+  font-size: .9rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@keyframes saida-fundo { from { opacity: 0; } }
+@keyframes saida-caixa { from { opacity: 0; transform: translateY(18px) scale(.96); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .saida-fundo, .saida-caixa { animation: none; }
+}
+
+@media (max-width: 760px) {
+  .cta-final-links span[aria-hidden] {
+    display: none;
+  }
+}

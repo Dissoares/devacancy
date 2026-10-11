@@ -413,14 +413,50 @@ $perguntas = array_map(fn (int $n) => [t("landing.faq_{$n}_p"), t("landing.faq_{
       <div class="cta-final-brilho" aria-hidden="true"></div>
       <h2><?= e(t('landing.final_titulo_1')) ?><br><span class="texto-gradiente"><?= e(t('landing.final_titulo_2')) ?></span></h2>
       <p><?= e(t('landing.final_texto')) ?></p>
-      <div class="hero-acoes">
-        <a class="botao botao-primario botao-grande" href="/comecar"><?= e(t('landing.cta_principal')) ?> <?= icone('seta', 'icone icone-seta') ?></a>
-        <a class="botao botao-secundario botao-grande" href="/cadastro?tipo=empresa"><?= e(t('landing.sou_empresa')) ?></a>
+
+      <!-- Primeira pergunta repetida aqui: quem chegou ao fim não precisa subir, um toque já começa. -->
+      <div class="inicio-quiz inicio-quiz-final">
+        <p class="inicio-quiz-titulo"><span class="inicio-quiz-passo">1/10</span> <?= e(t('landing.quiz_pergunta')) ?></p>
+        <div class="inicio-quiz-opcoes">
+          <?php foreach (\App\Enums\AreaAtuacao::cases() as $area): ?>
+            <a class="inicio-quiz-opcao" href="/comecar?area=<?= e($area->value) ?>">
+              <?= icone($iconesArea[$area->value] ?? 'codigo', 'icone icone-sm') ?>
+              <span><?= e($area->rotulo()) ?></span>
+            </a>
+          <?php endforeach; ?>
+          <a class="inicio-quiz-opcao inicio-quiz-opcao-cta" href="/comecar">
+            <span><?= e(t('landing.quiz_outra')) ?></span> <?= icone('seta', 'icone icone-sm') ?>
+          </a>
+        </div>
       </div>
-      <p class="cta-micro"><?= icone('check', 'icone icone-sm') ?> <?= e(t('landing.cta_micro')) ?></p>
+
+      <!-- As dúvidas que fazem a pessoa hesitar, respondidas aqui mesmo. -->
+      <ul class="cta-final-garantias">
+        <?php foreach (['tempo', 'cartao', 'fidelidade'] as $garantia): ?>
+          <li><?= icone('check', 'icone icone-sm') ?> <?= e(t("landing.final_garantia_{$garantia}")) ?></li>
+        <?php endforeach; ?>
+      </ul>
+
+      <p class="cta-final-links">
+        <a href="#perguntas"><?= e(t('landing.final_duvida')) ?></a>
+        <span aria-hidden="true">·</span>
+        <a href="/cadastro?tipo=empresa"><?= e(t('landing.sou_empresa')) ?></a>
+      </p>
     </div>
   </div>
 </section>
+
+<!-- Aviso de saída (só computador, uma vez por visita): aparece quando o mouse vai em direção à aba/fechar. -->
+<div class="saida" data-saida hidden>
+  <div class="saida-fundo" data-saida-fechar></div>
+  <div class="saida-caixa" role="dialog" aria-modal="true" aria-labelledby="saida-titulo">
+    <button class="saida-x" type="button" data-saida-fechar aria-label="<?= e(t('landing.saida_fechar')) ?>"><?= icone('x', 'icone icone-sm') ?></button>
+    <h2 id="saida-titulo"><?= e(t('landing.saida_titulo')) ?></h2>
+    <p><?= e(t('landing.saida_texto')) ?></p>
+    <a class="botao botao-primario botao-grande botao-bloco" href="/comecar" data-saida-cta><?= e(t('landing.saida_cta')) ?> <?= icone('seta', 'icone icone-seta') ?></a>
+    <button class="saida-depois" type="button" data-saida-fechar><?= e(t('landing.saida_fechar')) ?></button>
+  </div>
+</div>
 
 <!-- Botão fixo no celular: aparece quando o início do questionário sai da tela. -->
 <div class="cta-fixo" data-cta-fixo aria-hidden="true">

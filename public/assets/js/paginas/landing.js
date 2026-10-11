@@ -150,7 +150,7 @@
   // rodapé reservar espaço só enquanto o botão está na tela.
   const ctaFixo = document.querySelector('[data-cta-fixo]');
   const inicioQuiz = document.querySelector('#comecar');
-  const botaoFinal = document.querySelector('.cta-final .botao-primario');
+  const botaoFinal = document.querySelector('.cta-final .inicio-quiz-final');
   if (ctaFixo && inicioQuiz) {
     const linkFixo = ctaFixo.querySelector('a');
     let agendado = false;
@@ -224,4 +224,49 @@
   }
 
   setTimeout(ciclo, 700);
+})();
+
+/**
+ * Aviso de saída (só computador): quando o mouse sobe em direção à barra do navegador, oferece começar.
+ * Regras para não irritar: só depois de 12s na página, só uma vez por visita, nunca para quem já clicou em
+ * começar, e nunca em tela de toque.
+ */
+(() => {
+  'use strict';
+
+  const caixa = document.querySelector('[data-saida]');
+  if (!caixa || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  const CHAVE = 'dv_saida_vista';
+  const jaVista = () => { try { return sessionStorage.getItem(CHAVE) === '1'; } catch { return false; } };
+  const marcarVista = () => { try { sessionStorage.setItem(CHAVE, '1'); } catch { /* sem armazenamento: só não lembra */ } };
+  if (jaVista()) return;
+
+  const inicio = Date.now();
+  let anterior = null;
+
+  function abrir() {
+    if (!caixa.hidden || jaVista() || Date.now() - inicio < 12000) return;
+    marcarVista();
+    anterior = document.activeElement;
+    caixa.hidden = false;
+    caixa.querySelector('[data-saida-cta]').focus();
+  }
+
+  function fechar() {
+    caixa.hidden = true;
+    anterior?.focus?.();
+  }
+
+  document.addEventListener('mouseout', (evento) => {
+    if (!evento.relatedTarget && evento.clientY <= 0) abrir();
+  });
+
+  caixa.querySelectorAll('[data-saida-fechar]').forEach((el) => el.addEventListener('click', fechar));
+  document.addEventListener('keydown', (evento) => { if (evento.key === 'Escape' && !caixa.hidden) fechar(); });
+
+  // Quem já foi para o questionário não precisa ser interrompido depois.
+  document.addEventListener('click', (evento) => {
+    if (evento.target.closest('a[href^="/comecar"]')) marcarVista();
+  });
 })();
