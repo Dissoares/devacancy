@@ -72,6 +72,29 @@ final class AssinaturaController
         return Resposta::redirecionarHtmx('/pagamento/' . $pagamento->id);
     }
 
+    /** PIX manual: gera o copia e cola com o valor do plano e leva para a página do QR code. */
+    public function assinarPixManual(Requisicao $requisicao): Resposta
+    {
+        $usuario = $this->autenticacao->usuarioAtual();
+
+        try {
+            $pagamento = $this->assinaturas->iniciarPixManual($usuario, $requisicao->todos());
+        } catch (ValidacaoException $erro) {
+            return Resposta::html(Visao::parcial('assinatura/partials/formulario-pix-manual', ['erros' => $erro->erros()]));
+        }
+
+        return Resposta::redirecionarHtmx('/pagamento/' . $pagamento->id);
+    }
+
+    /** "Já paguei": avisa a equipe para conferir o recebimento. */
+    public function avisarPagamento(Requisicao $requisicao): Resposta
+    {
+        $usuario = $this->autenticacao->usuarioAtual();
+        $avisado = $this->assinaturas->avisarPagamentoManual($usuario, (int) $requisicao->parametro('id'));
+
+        return Resposta::html('<p class="alerta alerta-sucesso" role="status">' . icone('check') . '<span>' . e(t($avisado ? 'pagamento.aviso_enviado' : 'pagamento.aviso_indisponivel')) . '</span></p>');
+    }
+
     /** PayPal só com e-mail: registra o pagamento pendente e leva para a página com o botão "Pagar no PayPal". */
     public function assinarPaypalEmail(Requisicao $requisicao): Resposta
     {
@@ -101,6 +124,7 @@ final class AssinaturaController
             'usuario' => $usuario,
             'pagamento' => $pagamento,
             'simulacao' => $this->assinaturas->simulacaoPix(),
+            'pixManual' => $pagamento->metodo === 'pix_manual' && $pagamento->estaPendente(),
             'paypalEmail' => $pagamento->metodo === 'paypal_email' && $pagamento->estaPendente()
                 ? $this->assinaturas->formularioPaypalEmail($pagamento)
                 : null,

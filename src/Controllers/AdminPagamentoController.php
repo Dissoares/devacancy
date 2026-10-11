@@ -26,15 +26,16 @@ final class AdminPagamentoController
             'titulo' => 'Pagamentos — Devacancy',
             'usuario' => $this->autenticacao->usuarioAtual(),
             'metodos' => $this->assinaturas->catalogoDeMetodos(),
-            'pendentes' => $this->assinaturas->paypalEmailPendentes(),
+            'pendentes' => $this->assinaturas->pagamentosManuaisPendentes(),
             'sucesso' => Sessao::obterFlash('sucesso'),
+            'pixProblema' => $this->assinaturas->pixManualProblema(),
         ], 'app'));
     }
 
     /** O admin conferiu no app do PayPal que o dinheiro chegou e libera o plano. */
     public function confirmar(Requisicao $requisicao): Resposta
     {
-        $this->assinaturas->confirmarPaypalEmailManualmente((int) $requisicao->parametro('id'));
+        $this->assinaturas->confirmarManualmente((int) $requisicao->parametro('id'));
         Sessao::flash('sucesso', 'Pagamento confirmado: o plano foi liberado.');
         return Resposta::redirecionar('/admin/pagamentos');
     }
