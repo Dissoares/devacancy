@@ -53,14 +53,57 @@ final class UsuarioRepository implements UsuarioRepositoryInterface
         return (bool) $consulta->fetchColumn();
     }
 
-    public function criar(TipoUsuario $tipo, string $nome, string $email, ?string $senhaHash, ?string $avatarUrl = null, string $idioma = 'pt', ?string $pais = null): Usuario
+    public function criar(TipoUsuario $tipo, string $nome, string $email, ?string $senhaHash, ?string $avatarUrl = null, string $idioma = 'pt', ?string $pais = null, ?string $codigoIndicacaoUsado = null): Usuario
     {
+        $indicadoPor = $codigoIndicacaoUsado !== null ? $this->buscarIdPorCodigoIndicacao($codigoIndicacaoUsado) : null;
+
         $consulta = $this->pdo->prepare(
-            'INSERT INTO usuarios (tipo, nome, email, senha_hash, avatar_url, idioma, pais) VALUES (?, ?, ?, ?, ?, ?, ?)'
+            'INSERT INTO usuarios (tipo, nome, email, senha_hash, avatar_url, idioma, pais, codigo_indicacao, indicado_por)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
         );
-        $consulta->execute([$tipo->value, $nome, mb_strtolower($email), $senhaHash, $avatarUrl, $idioma, $pais]);
+        $consulta->execute([$tipo->value, $nome, mb_strtolower($email), $senhaHash, $avatarUrl, $idioma, $pais, $this->gerarCodigoIndicacaoUnico(), $indicadoPor]);
 
         return $this->buscarPorId((int) $this->pdo->lastInsertId());
+    }
+
+    /** Código curto e único pra essa pessoa indicar amigos (ex: ?ref=A1B2C3D4). */
+    private function gerarCodigoIndicacaoUnico(): string
+    {
+        do {
+            $codigo = strtoupper(bin2hex(random_bytes(4)));
+        } while ($this->buscarIdPorCodigoIndicacao($codigo) !== null);
+
+        return $codigo;
+    }
+
+    public function garantirCodigoIndicacao(int $usuarioId): string
+    {
+        $consulta = $this->pdo->prepare('SELECT codigo_indicacao FROM usuarios WHERE id = ?');
+        $consulta->execute([$usuarioId]);
+        $codigo = $consulta->fetchColumn();
+        if ($codigo) {
+            return $codigo;
+        }
+
+        $novo = $this->gerarCodigoIndicacaoUnico();
+        $atualizado = $this->pdo->prepare('UPDATE usuarios SET codigo_indicacao = ? WHERE id = ? AND codigo_indicacao IS NULL');
+        $atualizado->execute([$novo, $usuarioId]);
+        if ($atualizado->rowCount() === 1) {
+            return $novo;
+        }
+
+        // Duas requisições chegaram juntas e a outra já gravou um código: usa o que ficou salvo.
+        $consulta->execute([$usuarioId]);
+        return (string) $consulta->fetchColumn();
+    }
+
+    private function buscarIdPorCodigoIndicacao(string $codigo): ?int
+    {
+        $consulta = $this->pdo->prepare('SELECT id FROM usuarios WHERE codigo_indicacao = ?');
+        $consulta->execute([mb_strtoupper(trim($codigo))]);
+        $id = $consulta->fetchColumn();
+
+        return $id !== false ? (int) $id : null;
     }
 
     public function vincularContaSocial(int $usuarioId, ProvedorSocial $provedor, string $provedorId): void
