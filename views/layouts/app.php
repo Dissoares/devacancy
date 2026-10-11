@@ -21,6 +21,7 @@
           <a class="<?= ativo('/admin') ?>" href="/admin"><?= icone('usuarios', 'icone icone-sm') ?> Cadastros</a>
           <a class="<?= ativo('/admin/vagas') ?>" href="/admin/vagas"><?= icone('maleta', 'icone icone-sm') ?> Vagas</a>
           <a class="<?= ativo('/admin/candidaturas') ?>" href="/admin/candidaturas"><?= icone('raio', 'icone icone-sm') ?> Candidaturas</a>
+          <a class="<?= ativo('/admin/analytics') ?>" href="/admin/analytics"><?= icone('grafico', 'icone icone-sm') ?> Analytics</a>
         </nav>
       <?php endif; ?>
 
