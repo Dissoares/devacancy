@@ -69,6 +69,14 @@ return [
         'token_webhook' => Ambiente::obter('EXPAY_WEBHOOK_TOKEN', ''),
     ],
 
+    // Cartão por assinatura recorrente (Stripe Checkout). Webhook: {APP_URL}/webhooks/stripe com os eventos
+    // checkout.session.completed e invoice.paid; o segredo (whsec_...) vai em STRIPE_WEBHOOK_SECRET.
+    'stripe' => [
+        'url' => Ambiente::obter('STRIPE_URL', 'https://api.stripe.com'),
+        'chave_secreta' => Ambiente::obter('STRIPE_SECRET_KEY', ''),
+        'segredo_webhook' => Ambiente::obter('STRIPE_WEBHOOK_SECRET', ''),
+    ],
+
     'paypal' => [
         'modo' => Ambiente::obter('PAYPAL_MODO', 'sandbox'),
         // Conta que recebe pagamentos avulsos "só com e-mail" (sem API); o PayPal avisa o site por IPN.
