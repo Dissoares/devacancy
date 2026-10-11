@@ -30,18 +30,18 @@ final class PerfilProfissionalRepository implements PerfilProfissionalRepository
                 (usuario_id, area, senioridade, cargo_desejado, anos_experiencia, stack, modelo_trabalho, cidade,
                  pretensao_salarial, linkedin_url, github_url, portfolio_url, curriculo_arquivo, curriculo_nome_original, resumo,
                  regiao_vagas, moeda_pretensao, idiomas, ultima_remuneracao, nivel_ingles)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) AS novo
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
              ON DUPLICATE KEY UPDATE
-                area = novo.area, senioridade = novo.senioridade, cargo_desejado = novo.cargo_desejado,
-                anos_experiencia = novo.anos_experiencia, stack = novo.stack, modelo_trabalho = novo.modelo_trabalho,
-                cidade = novo.cidade, pretensao_salarial = novo.pretensao_salarial, linkedin_url = novo.linkedin_url,
-                github_url = novo.github_url, portfolio_url = novo.portfolio_url, resumo = novo.resumo,
-                regiao_vagas = novo.regiao_vagas, moeda_pretensao = novo.moeda_pretensao,
-                idiomas = COALESCE(novo.idiomas, perfis_profissionais.idiomas),
-                ultima_remuneracao = COALESCE(novo.ultima_remuneracao, perfis_profissionais.ultima_remuneracao),
-                nivel_ingles = COALESCE(novo.nivel_ingles, perfis_profissionais.nivel_ingles),
-                curriculo_arquivo = COALESCE(novo.curriculo_arquivo, perfis_profissionais.curriculo_arquivo),
-                curriculo_nome_original = COALESCE(novo.curriculo_nome_original, perfis_profissionais.curriculo_nome_original)'
+                area = VALUES(area), senioridade = VALUES(senioridade), cargo_desejado = VALUES(cargo_desejado),
+                anos_experiencia = VALUES(anos_experiencia), stack = VALUES(stack), modelo_trabalho = VALUES(modelo_trabalho),
+                cidade = VALUES(cidade), pretensao_salarial = VALUES(pretensao_salarial), linkedin_url = VALUES(linkedin_url),
+                github_url = VALUES(github_url), portfolio_url = VALUES(portfolio_url), resumo = VALUES(resumo),
+                regiao_vagas = VALUES(regiao_vagas), moeda_pretensao = VALUES(moeda_pretensao),
+                idiomas = COALESCE(VALUES(idiomas), perfis_profissionais.idiomas),
+                ultima_remuneracao = COALESCE(VALUES(ultima_remuneracao), perfis_profissionais.ultima_remuneracao),
+                nivel_ingles = COALESCE(VALUES(nivel_ingles), perfis_profissionais.nivel_ingles),
+                curriculo_arquivo = COALESCE(VALUES(curriculo_arquivo), perfis_profissionais.curriculo_arquivo),
+                curriculo_nome_original = COALESCE(VALUES(curriculo_nome_original), perfis_profissionais.curriculo_nome_original)'
         )->execute([
             $usuarioId,
             $dados->area->value,

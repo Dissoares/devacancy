@@ -53,7 +53,7 @@ if ($email && $senha) {
     }
     $pdo->prepare(
         "INSERT INTO usuarios (tipo, nome, email, senha_hash, cadastro_completo) VALUES ('admin', 'Administrador', ?, ?, 1)
-         AS novo ON DUPLICATE KEY UPDATE tipo = 'admin', senha_hash = novo.senha_hash, cadastro_completo = 1"
+         ON DUPLICATE KEY UPDATE tipo = 'admin', senha_hash = VALUES(senha_hash), cadastro_completo = 1"
     )->execute([mb_strtolower($email), password_hash($senha, PASSWORD_DEFAULT)]);
     echo "Administrador pronto: {$email}\n";
 }

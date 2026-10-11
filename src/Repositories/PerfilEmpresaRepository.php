@@ -28,11 +28,11 @@ final class PerfilEmpresaRepository implements PerfilEmpresaRepositoryInterface
         $this->pdo->prepare(
             'INSERT INTO perfis_empresas
                 (usuario_id, nome_empresa, site, tamanho, cargo_contato, stacks_contratacao, vagas_abertas, mensagem)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?) AS novo
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
              ON DUPLICATE KEY UPDATE
-                nome_empresa = novo.nome_empresa, site = novo.site, tamanho = novo.tamanho,
-                cargo_contato = novo.cargo_contato, stacks_contratacao = novo.stacks_contratacao,
-                vagas_abertas = novo.vagas_abertas, mensagem = novo.mensagem'
+                nome_empresa = VALUES(nome_empresa), site = VALUES(site), tamanho = VALUES(tamanho),
+                cargo_contato = VALUES(cargo_contato), stacks_contratacao = VALUES(stacks_contratacao),
+                vagas_abertas = VALUES(vagas_abertas), mensagem = VALUES(mensagem)'
         )->execute([
             $usuarioId,
             $dados->nomeEmpresa,

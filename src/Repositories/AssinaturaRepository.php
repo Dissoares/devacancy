@@ -24,9 +24,9 @@ final class AssinaturaRepository implements AssinaturaRepositoryInterface
     public function estender(int $usuarioId, string $plano, int $dias): void
     {
         $this->pdo->prepare(
-            'INSERT INTO assinaturas (usuario_id, plano, expira_em) VALUES (?, ?, NOW() + INTERVAL ? DAY) AS novo
+            'INSERT INTO assinaturas (usuario_id, plano, expira_em) VALUES (?, ?, NOW() + INTERVAL ? DAY)
              ON DUPLICATE KEY UPDATE
-                plano = novo.plano,
+                plano = VALUES(plano),
                 expira_em = GREATEST(assinaturas.expira_em, NOW()) + INTERVAL ? DAY'
         )->execute([$usuarioId, $plano, $dias, $dias]);
     }
