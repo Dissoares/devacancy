@@ -1,5 +1,5 @@
 <?php
-/** @var \App\Entities\Vaga[] $vagas @var array $valores @var array<string, string> $erros @var ?string $sucesso */
+/** @var \App\Entities\Vaga[] $vagas @var array $valores @var array<string, string> $erros @var ?string $sucesso @var string $statusAtual */
 use App\Enums\AreaAtuacao;
 use App\Enums\ModeloTrabalho;
 use App\Enums\Moeda;
@@ -18,17 +18,29 @@ $ativas = count(array_filter($vagas, fn ($vaga) => $vaga->ativa));
 $rotuloFonte = fn (string $fonte): string => match ($fonte) {
     'github' => 'GitHub', 'adzuna' => 'Adzuna', default => 'Manual',
 };
+$totalGeral = array_sum(array_column($porFonte, 'total'));
+$totalAtivas = array_sum(array_column($porFonte, 'ativas'));
+$abas = ['' => ['Todas', $totalGeral], 'ativas' => ['Ativas', $totalAtivas], 'pausadas' => ['Pausadas', $totalGeral - $totalAtivas]];
 ?>
 <section class="cabecalho-pagina">
   <div>
     <h1>Vagas</h1>
     <p>Vagas da curadoria interna. Elas alimentam o match e o contador de "vagas compatíveis" dos profissionais.</p>
   </div>
+  <a class="botao botao-primario" href="/admin/vagas/adzuna"><?= icone('busca', 'icone icone-sm') ?> Importar da Adzuna</a>
 </section>
 
 <?php if ($sucesso): ?>
   <div class="alerta alerta-sucesso alerta-topo"><?= icone('check') ?><span><?= e($sucesso) ?></span></div>
 <?php endif; ?>
+
+<nav class="abas-status">
+  <?php foreach ($abas as $valorAba => [$rotulo, $contagem]): ?>
+    <a class="<?= $statusAtual === $valorAba ? 'ativo' : '' ?>" href="/admin/vagas<?= $valorAba !== '' ? '?status=' . $valorAba : '' ?>">
+      <?= e($rotulo) ?> <span><?= $contagem ?></span>
+    </a>
+  <?php endforeach; ?>
+</nav>
 
 <section class="indicadores">
   <?php foreach ($porFonte as $fonte => $contagem): ?>
@@ -145,10 +157,16 @@ $rotuloFonte = fn (string $fonte): string => match ($fonte) {
             <td><span class="selo selo-neutro"><?= e($rotuloFonte($vaga->fonte)) ?></span></td>
             <td><?= data_br($vaga->criadoEm) ?></td>
             <td><span class="selo <?= $vaga->ativa ? 'selo-sucesso' : 'selo-neutro' ?>"><?= $vaga->ativa ? 'Ativa' : 'Pausada' ?></span></td>
-            <td>
+            <td class="acoes-linha">
               <form method="post" action="/admin/vagas/<?= $vaga->id ?>/alternar">
                 <?= csrf_campo() ?>
+                <input type="hidden" name="status" value="<?= e($statusAtual) ?>">
                 <button class="botao botao-fantasma botao-pequeno" type="submit"><?= $vaga->ativa ? 'Pausar' : 'Reativar' ?></button>
+              </form>
+              <form method="post" action="/admin/vagas/<?= $vaga->id ?>/excluir" onsubmit="return confirm('Excluir esta vaga? As candidaturas já enviadas pra ela também somem. Essa ação não pode ser desfeita.')">
+                <?= csrf_campo() ?>
+                <input type="hidden" name="status" value="<?= e($statusAtual) ?>">
+                <button class="botao botao-fantasma botao-pequeno botao-perigo" type="submit" aria-label="Excluir vaga"><?= icone('x', 'icone icone-sm') ?></button>
               </form>
             </td>
           </tr>
