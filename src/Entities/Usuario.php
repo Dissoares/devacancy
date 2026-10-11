@@ -21,6 +21,8 @@ final class Usuario
         public readonly string $criadoEm,
         public readonly string $idioma = 'pt',
         public readonly ?string $pais = null,
+        public readonly ?string $codigoIndicacao = null,
+        public readonly ?int $indicadoPor = null,
     ) {
     }
 
@@ -39,6 +41,8 @@ final class Usuario
             criadoEm: $linha['criado_em'],
             idioma: $linha['idioma'] ?? 'pt',
             pais: $linha['pais'] ?? null,
+            codigoIndicacao: $linha['codigo_indicacao'] ?? null,
+            indicadoPor: isset($linha['indicado_por']) ? (int) $linha['indicado_por'] : null,
         );
     }
 
