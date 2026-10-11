@@ -1,6 +1,8 @@
 <?php
-/** @var string $titulo @var ?string $descricao @var string[] $estilos */
+/** @var string $titulo @var ?string $descricao @var string[] $estilos @var ?string $imagemOg @var ?string $urlCanonica */
 $descricao ??= t('landing.descricao_pagina');
+$imagemOg ??= url('/assets/img/og-padrao.png');
+$urlCanonica ??= null;
 ?>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -13,6 +15,17 @@ $descricao ??= t('landing.descricao_pagina');
 <meta property="og:site_name" content="Devacancy">
 <meta property="og:title" content="<?= e($titulo ?? 'Devacancy') ?>">
 <meta property="og:description" content="<?= e($descricao) ?>">
+<meta property="og:image" content="<?= e($imagemOg) ?>">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<?= e($titulo ?? 'Devacancy') ?>">
+<meta name="twitter:description" content="<?= e($descricao) ?>">
+<meta name="twitter:image" content="<?= e($imagemOg) ?>">
+<?php if ($urlCanonica): ?>
+<meta property="og:url" content="<?= e($urlCanonica) ?>">
+<link rel="canonical" href="<?= e($urlCanonica) ?>">
+<?php endif; ?>
 <meta property="og:locale" content="<?= \App\Core\Idioma::atual() === 'pt' ? 'pt_BR' : 'en_US' ?>">
 <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,3 +39,4 @@ $descricao ??= t('landing.descricao_pagina');
 <script>window.TEXTOS = <?= json_encode(textos_js(), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?>; window.ICONES_STACK = <?= json_encode(\App\Core\IconesStack::mapaParaScripts(), JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) ?>;</script>
 <script src="<?= asset('js/vendor/htmx.min.js') ?>" defer></script>
 <script src="<?= asset('js/app.js') ?>" defer></script>
+<script src="<?= asset('js/componentes/compartilhar.js') ?>" defer></script>
