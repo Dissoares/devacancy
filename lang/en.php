@@ -643,4 +643,11 @@ return [
     'pagamento.paypal_email_nota' => 'One-time payment through PayPal, no automatic renewal. You come back here and the plan is unlocked as soon as PayPal confirms.',
     'pagamento.paypal_pagar' => 'Pay :valor with PayPal',
     'pagamento.paypal_depois' => 'After paying, come back to this page: your plan unlocks by itself, usually in under a minute. If it takes more than 15 minutes, contact suporte@devacancy.online.',
+    'planos.metodo_stripe' => 'Card',
+    'planos.stripe_continuar' => 'Pay by card',
+    'planos.stripe_simular' => 'Simulate card payment',
+    'planos.stripe_simulacao' => 'Test mode: with no Stripe key, this button unlocks the plan as if the card had been charged.',
+    'planos.stripe_nota' => 'Secure payment by Stripe, billed on a recurring basis. Cancel anytime. We never store your card details.',
+    'pagamento.falha_stripe' => "We couldn't open the card payment right now. Please try again in a moment.",
+    'pagamento.stripe_processando' => 'We received your payment! Unlocking your plan may take a few moments.',
 ];
