@@ -13,6 +13,7 @@ use App\Controllers\AutenticacaoController;
 use App\Controllers\CandidaturaController;
 use App\Controllers\FunilController;
 use App\Controllers\LandingController;
+use App\Controllers\RecuperacaoSenhaController;
 use App\Controllers\UsuarioController;
 use App\Core\Roteador;
 use App\Middlewares\AdminMiddleware;
@@ -43,6 +44,10 @@ return function (Roteador $rotas): void {
     $rotas->post('/cadastro/verificar-email', [UsuarioController::class, 'verificarEmail']);
     $rotas->get('/entrar', [AutenticacaoController::class, 'formularioEntrar'], $visitante);
     $rotas->post('/entrar', [AutenticacaoController::class, 'entrar'], $visitante);
+    $rotas->get('/esqueci-senha', [RecuperacaoSenhaController::class, 'formularioPedido']);
+    $rotas->post('/esqueci-senha', [RecuperacaoSenhaController::class, 'pedir']);
+    $rotas->get('/redefinir-senha/{token}', [RecuperacaoSenhaController::class, 'formularioNovaSenha']);
+    $rotas->post('/redefinir-senha/{token}', [RecuperacaoSenhaController::class, 'redefinir']);
     $rotas->post('/sair', [AutenticacaoController::class, 'sair']);
     $rotas->get('/auth/{provedor}', [AutenticacaoController::class, 'redirecionarParaProvedor'], $visitante);
     $rotas->get('/auth/{provedor}/retorno', [AutenticacaoController::class, 'retornoDoProvedor']);
