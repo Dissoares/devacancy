@@ -15,6 +15,7 @@ use App\Enums\TipoUsuario;
 use App\Exceptions\ValidacaoException;
 use App\Services\AssinaturaService;
 use App\Services\AutenticacaoService;
+use App\Services\CandidaturaService;
 use App\Services\UsuarioService;
 use App\Services\VagaService;
 
@@ -25,6 +26,7 @@ final class UsuarioController
         private readonly AutenticacaoService $autenticacao,
         private readonly VagaService $vagas,
         private readonly AssinaturaService $assinaturas,
+        private readonly CandidaturaService $candidaturas,
     ) {
     }
 
@@ -32,8 +34,13 @@ final class UsuarioController
     {
         $tipo = TipoUsuario::tryFrom((string) $requisicao->consulta('tipo', '')) ?? TipoUsuario::Profissional;
 
+        // Profissionais entram pelo questionário; este formulário fica para empresas.
+        if ($tipo === TipoUsuario::Profissional) {
+            return Resposta::redirecionar('/comecar');
+        }
+
         return Resposta::html(Visao::renderizar('auth/cadastro', [
-            'titulo' => 'Criar conta — Devacancy',
+            'titulo' => t('cadastro.titulo_pagina'),
             'tipoLateral' => $tipo->value,
             'tipo' => $tipo,
             'valores' => ['tipo' => $tipo->value],
@@ -71,8 +78,8 @@ final class UsuarioController
         $mensagem = match (true) {
             $email === '' => '',
             !filter_var($email, FILTER_VALIDATE_EMAIL) => '',
-            !$this->usuarios->emailDisponivel($email) => '<span class="dica-campo dica-erro">Este e-mail já tem cadastro. <a href="/entrar">Entrar</a></span>',
-            default => '<span class="dica-campo dica-ok">' . icone('check', 'icone icone-sm') . ' E-mail disponível</span>',
+            !$this->usuarios->emailDisponivel($email) => '<span class="dica-campo dica-erro">' . e(t('cadastro.email_existe_curto')) . ' <a href="/entrar">' . e(t('auth.entrar')) . '</a></span>',
+            default => '<span class="dica-campo dica-ok">' . icone('check', 'icone icone-sm') . ' ' . e(t('cadastro.email_disponivel')) . '</span>',
         };
 
         return Resposta::html($mensagem);
@@ -88,7 +95,7 @@ final class UsuarioController
         $perfil = $this->usuarios->perfilDe($usuario);
 
         return Resposta::html(Visao::renderizar('profile/completar', [
-            'titulo' => 'Seu perfil — Devacancy',
+            'titulo' => t('perfil.titulo_pagina'),
             'tipoLateral' => $usuario->tipo->value,
             'usuario' => $usuario,
             'valores' => $this->valoresIniciaisDoPerfil($usuario, $perfil),
@@ -124,7 +131,7 @@ final class UsuarioController
             return Resposta::redirecionarHtmx('/vagas-compativeis');
         }
 
-        Sessao::flash('sucesso', $usuario->cadastroCompleto ? 'Perfil atualizado.' : 'Cadastro concluído! Bem-vindo(a) à Devacancy.');
+        Sessao::flash('sucesso', t($usuario->cadastroCompleto ? 'perfil.atualizado' : 'perfil.concluido'));
         return Resposta::redirecionarHtmx('/painel');
     }
 
@@ -135,12 +142,13 @@ final class UsuarioController
         $compativeis = $perfil instanceof PerfilProfissional ? $this->vagas->compativeis($perfil) : [];
 
         return Resposta::html(Visao::renderizar('dashboard/inicio', [
-            'titulo' => 'Meu painel — Devacancy',
+            'titulo' => t('painel.titulo_pagina'),
             'usuario' => $usuario,
             'perfil' => $perfil,
             'compativeis' => $compativeis,
             'recentes' => $this->vagas->contarRecentes($compativeis),
             'assinaturaAte' => $usuario->ehProfissional() ? $this->assinaturas->vigenteAte($usuario) : null,
+            'statusCandidaturas' => $usuario->ehProfissional() ? $this->candidaturas->statusPorVaga($usuario) : [],
             'sucesso' => Sessao::obterFlash('sucesso'),
         ], 'app'));
     }
@@ -165,6 +173,9 @@ final class UsuarioController
                 'github_url' => $perfil->githubUrl,
                 'portfolio_url' => $perfil->portfolioUrl,
                 'resumo' => $perfil->resumo,
+                'regiao_vagas' => $perfil->regiaoVagas->value,
+                'moeda_pretensao' => $perfil->moedaPretensao,
+                'idiomas' => $perfil->idiomas,
             ];
         }
 
