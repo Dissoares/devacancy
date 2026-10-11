@@ -242,6 +242,39 @@
   word-break: break-word;
 }
 
+.secao-indicacao {
+  margin-bottom: 16px;
+}
+
+.secao-indicacao .campo-rotulo {
+  margin-top: 16px;
+}
+
+.indicadores-indicacao {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.lista-indicacoes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+}
+
+.lista-indicacoes li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  font-size: .9rem;
+}
+
 .estado-vazio {
   display: grid;
   justify-items: center;
