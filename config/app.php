@@ -95,6 +95,11 @@ return [
         ],
     ],
 
+    // Rodar migrações pelo navegador em /migrar (sem acesso ao terminal). Sem MIGRACOES_TOKEN (16+ caracteres) a rota não existe.
+    'instalador' => [
+        'token' => Ambiente::obter('MIGRACOES_TOKEN', ''),
+    ],
+
     // Importação automática via Adzuna (agregador de vagas, grátis para uso básico). Cadastro gratuito em developer.adzuna.com.
     'adzuna' => [
         'url' => Ambiente::obter('ADZUNA_URL', 'https://api.adzuna.com/v1/api'),
