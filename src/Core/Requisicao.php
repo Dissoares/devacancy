@@ -34,12 +34,23 @@ final class Requisicao
         return new self(
             strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET'),
             $caminho,
-            $_GET,
-            $_POST,
+            self::utf8Valido($_GET),
+            self::utf8Valido($_POST),
             $_FILES,
             $cabecalhos,
             $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0',
         );
+    }
+
+    /** Troca bytes que não são UTF-8 válido, para que um texto malformado não derrube o banco. */
+    private static function utf8Valido(array $dados): array
+    {
+        array_walk_recursive($dados, function (mixed &$valor): void {
+            if (is_string($valor) && !mb_check_encoding($valor, 'UTF-8')) {
+                $valor = mb_convert_encoding($valor, 'UTF-8', 'UTF-8');
+            }
+        });
+        return $dados;
     }
 
     public function metodo(): string
@@ -61,6 +72,12 @@ final class Requisicao
     {
         $valor = $this->consulta[$chave] ?? $padrao;
         return is_string($valor) ? trim($valor) : $valor;
+    }
+
+    /** Toda a query string (com arrays, como modelos[]=...). */
+    public function consultas(): array
+    {
+        return $this->consulta;
     }
 
     public function entrada(string $chave, mixed $padrao = null): mixed
