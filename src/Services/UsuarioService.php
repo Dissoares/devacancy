@@ -39,10 +39,10 @@ final class UsuarioService
         $cadastro = CadastroUsuarioDTO::deArray($dados);
 
         if (!in_array($cadastro->tipo, TipoUsuario::publicos(), true)) {
-            throw new ValidacaoException(['tipo' => 'Selecione profissional ou empresa.']);
+            throw new ValidacaoException(['tipo' => t('cadastro.tipo_invalido')]);
         }
         if ($this->usuarios->emailExiste($cadastro->email)) {
-            throw new ValidacaoException(['email' => 'Este e-mail já tem cadastro. Que tal entrar na sua conta?']);
+            throw new ValidacaoException(['email' => t('cadastro.email_existe')]);
         }
 
         return $this->usuarios->criar(
@@ -50,6 +50,37 @@ final class UsuarioService
             $cadastro->nome,
             $cadastro->email,
             password_hash($cadastro->senha, PASSWORD_DEFAULT),
+        );
+    }
+
+    /**
+     * Cadastro do profissional no fim do questionário: só e-mail e senha.
+     * O nome começa como a parte do e-mail antes do @ e pode ser trocado depois.
+     * @throws ValidacaoException
+     */
+    public function cadastrarProfissional(array $dados, string $idioma, ?string $pais): Usuario
+    {
+        Validador::validar($dados, [
+            'email' => 'obrigatorio|email|max:190',
+            'senha' => 'obrigatorio|min:8|max:72',
+        ]);
+
+        $email = mb_strtolower(trim($dados['email']));
+        if ($this->usuarios->emailExiste($email)) {
+            throw new ValidacaoException(['email' => t('cadastro.email_existe')]);
+        }
+
+        $apelido = preg_replace('/[._\-+\d]+/', ' ', strstr($email, '@', true));
+        $nome = mb_convert_case(trim($apelido) ?: 'Dev', MB_CASE_TITLE);
+
+        return $this->usuarios->criar(
+            TipoUsuario::Profissional,
+            mb_substr($nome, 0, 120),
+            $email,
+            password_hash((string) $dados['senha'], PASSWORD_DEFAULT),
+            null,
+            $idioma,
+            $pais,
         );
     }
 
@@ -79,7 +110,7 @@ final class UsuarioService
         $perfil = PerfilProfissionalDTO::deArray($dados);
 
         if ($perfil->stack === []) {
-            throw new ValidacaoException(['stack' => 'Adicione pelo menos uma tecnologia.']);
+            throw new ValidacaoException(['stack' => t('perfil.stack_vazia')]);
         }
 
         $anterior = $this->perfisProfissionais->buscarPorUsuario($usuario->id);
@@ -113,7 +144,7 @@ final class UsuarioService
         $perfil = PerfilEmpresaDTO::deArray($dados);
 
         if ($perfil->stacksContratacao === []) {
-            throw new ValidacaoException(['stacks_contratacao' => 'Adicione pelo menos uma tecnologia.']);
+            throw new ValidacaoException(['stacks_contratacao' => t('perfil.stack_vazia')]);
         }
 
         $this->transacao->executar(function () use ($usuario, $perfil): void {
