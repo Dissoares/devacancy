@@ -24,7 +24,7 @@ final class PerfilCompletoMiddleware implements MiddlewareInterface
             return Resposta::redirecionar('/admin');
         }
         if (!$usuario->cadastroCompleto) {
-            return Resposta::redirecionar('/completar-perfil');
+            return Resposta::redirecionar($usuario->ehProfissional() ? '/comecar' : '/completar-perfil');
         }
 
         return $proximo($requisicao);
