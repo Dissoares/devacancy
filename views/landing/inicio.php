@@ -11,37 +11,37 @@ $perguntas = array_map(fn (int $n) => [t("landing.faq_{$n}_p"), t("landing.faq_{
 <section class="hero">
   <div class="hero-fundo" aria-hidden="true">
     <div class="hero-grade"></div>
-    <!-- Constelação de tecnologias. [nome, x%, y% no desktop, tamanho em px, x%, y% no celular (null = só desktop), profundidade, destaque] -->
+    <!-- Constelação de tecnologias. [nome, x%, y%, tamanho em px (0 = etiqueta com nome), profundidade, destaque] -->
     <div class="constelacao" data-constelacao>
       <?php
       $constelacao = [
-          ['React', 46, 13, 76, 83, 16, 1.3, true],
-          ['TypeScript', 91, 19, 64, 74, 10.5, 1.0, false],
-          ['Python', 94, 54, 72, 92, 26, 1.5, true],
-          ['Docker', 3, 63, 66, 5, 78, 0.9, false],
-          ['Node.js', 54, 80, 70, 86, 83, 1.2, true],
-          ['Java', 6, 18, 60, null, null, 0.8, false],
-          ['Kotlin', 29, 10, 52, null, null, 1.1, false],
-          ['Go', 69, 11, 50, 64, 18.2, 0.7, false],
-          ['Flutter', 96, 81, 56, 93, 70, 1.4, false],
-          ['AWS', 19, 90, 54, 62, 92, 0.9, false],
-          ['PostgreSQL', 61, 91, 52, 45, 95, 1.0, false],
-          ['Vue', 2, 41, 50, null, null, 1.3, false],
-          ['Laravel', 38, 93, 48, null, null, 0.8, false],
-          ['Swift', 86, 11, 48, null, null, 1.1, false],
-          ['Angular', 97, 37, 52, null, null, 1.2, false],
-          ['Kubernetes', 77, 90, 54, 72, 95, 0.8, false],
-          ['PHP', 1.5, 29.5, 46, null, null, 0.6, false],
-          ['.NET', 52, 47, 44, null, null, 0.5, false],
-          ['Ruby', 88, 93, 44, null, null, 0.9, false],
-          ['MySQL', 8, 94, 46, null, null, 1.0, false],
-          ['Next.js', 73, 14, 0, null, null, 1.0, false],
-          ['Redis', 3, 78, 0, null, null, 0.7, false],
+          ['React', 46, 13, 76, 1.3, true],
+          ['TypeScript', 91, 19, 64, 1.0, false],
+          ['Python', 94, 54, 72, 1.5, true],
+          ['Docker', 3, 63, 66, 0.9, false],
+          ['Node.js', 54, 80, 70, 1.2, true],
+          ['Java', 6, 18, 60, 0.8, false],
+          ['Kotlin', 29, 10, 52, 1.1, false],
+          ['Go', 69, 11, 50, 0.7, false],
+          ['Flutter', 96, 81, 56, 1.4, false],
+          ['AWS', 19, 90, 54, 0.9, false],
+          ['PostgreSQL', 61, 91, 52, 1.0, false],
+          ['Vue', 2, 41, 50, 1.3, false],
+          ['Laravel', 38, 93, 48, 0.8, false],
+          ['Swift', 86, 11, 48, 1.1, false],
+          ['Angular', 97, 37, 52, 1.2, false],
+          ['Kubernetes', 77, 90, 54, 0.8, false],
+          ['PHP', 1.5, 29.5, 46, 0.6, false],
+          ['.NET', 52, 47, 44, 0.5, false],
+          ['Ruby', 88, 93, 44, 0.9, false],
+          ['MySQL', 8, 94, 46, 1.0, false],
+          ['Next.js', 73, 14, 0, 1.0, false],
+          ['Redis', 3, 78, 0, 0.7, false],
       ];
-      foreach ($constelacao as $indice => [$nome, $x, $y, $tamanho, $xm, $ym, $prof, $destaque]):
-          $classes = 'constelacao-item' . ($tamanho === 0 ? ' constelacao-pilula' : '') . ($destaque ? ' constelacao-destaque' : '') . ($xm === null ? ' so-desktop' : '');
-          $estilo = sprintf('--x: %s%%; --y: %s%%; --xm: %s%%; --ym: %s%%; --tam: %d; --prof: %s; --atraso: %.2fs; --dur: %.1fs; --ordem: %.2fs',
-              $x, $y, $xm ?? $x, $ym ?? $y, $tamanho, $prof, ($indice * 37 % 20) / 10, 5.5 + ($indice * 13 % 35) / 10, 0.25 + $indice * 0.07);
+      foreach ($constelacao as $indice => [$nome, $x, $y, $tamanho, $prof, $destaque]):
+          $classes = 'constelacao-item' . ($tamanho === 0 ? ' constelacao-pilula' : '') . ($destaque ? ' constelacao-destaque' : '');
+          $estilo = sprintf('--x: %s%%; --y: %s%%; --tam: %d; --prof: %s; --atraso: %.2fs; --dur: %.1fs; --ordem: %.2fs',
+              $x, $y, $tamanho, $prof, ($indice * 37 % 20) / 10, 5.5 + ($indice * 13 % 35) / 10, 0.25 + $indice * 0.07);
           ?>
         <span class="<?= $classes ?>" style="<?= $estilo ?>"><span class="constelacao-card"><?= icone_stack($nome) ?><?php if ($tamanho === 0): ?><b><?= e($nome) ?></b><?php endif; ?></span></span>
       <?php endforeach; ?>
@@ -58,12 +58,20 @@ $perguntas = array_map(fn (int $n) => [t("landing.faq_{$n}_p"), t("landing.faq_{
         <?= icone('chevron-dir', 'icone icone-sm') ?>
       </a>
 
+      <div class="hero-titulo-caixa">
       <h1 class="hero-titulo">
         <?= e(t('landing.programa_em')) ?>
         <?php $palavras = array_map(fn (string $nome) => ['nome' => $nome, 'icone' => asset('img/stacks/' . \App\Core\IconesStack::arquivo($nome) . '.svg')], ['React', 'Python', 'Java', 'Node.js', 'PHP', 'Flutter', '.NET', 'Go']); ?>
         <span class="palavra-rotativa" data-palavras="<?= e(json_encode($palavras, JSON_UNESCAPED_SLASHES)) ?>"><span><img class="palavra-icone" src="<?= e($palavras[0]['icone']) ?>" alt="">React</span></span>.<br>
         <span class="texto-gradiente"><?= e(t('marca.slogan_2')) ?></span>
       </h1>
+      <!-- Celular: 4 logos alinhados ao lado do título (no desktop vale a constelação do fundo). -->
+      <div class="hero-logos-movel" aria-hidden="true">
+        <?php foreach (['TypeScript', 'React', 'Docker', 'Node.js'] as $i => $nomeLogo): ?>
+          <span class="hero-logo-movel" style="--i: <?= $i ?>"><?= icone_stack($nomeLogo) ?></span>
+        <?php endforeach; ?>
+      </div>
+      </div>
 
       <p class="hero-subtitulo"><?= t('landing.subtitulo', ['stack' => '<strong>' . e(t('landing.stack')) . '</strong>', 'nivel' => '<strong>' . e(t('landing.nivel')) . '</strong>']) ?></p>
 
