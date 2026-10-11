@@ -6,6 +6,7 @@ namespace App\Entities;
 
 use App\Enums\AreaAtuacao;
 use App\Enums\ModeloTrabalho;
+use App\Enums\RegiaoVagas;
 use App\Enums\Senioridade;
 
 final class Vaga
@@ -26,6 +27,8 @@ final class Vaga
         public readonly ?string $descricao,
         public readonly bool $ativa,
         public readonly string $criadoEm,
+        public readonly RegiaoVagas $regiao = RegiaoVagas::Brasil,
+        public readonly string $moeda = 'BRL',
     ) {
     }
 
@@ -46,23 +49,26 @@ final class Vaga
             descricao: $linha['descricao'],
             ativa: (bool) $linha['ativa'],
             criadoEm: $linha['criado_em'],
+            regiao: RegiaoVagas::tryFrom($linha['regiao'] ?? '') ?? RegiaoVagas::Brasil,
+            moeda: $linha['moeda'] ?? 'BRL',
         );
     }
 
     public function faixaSalarial(): ?string
     {
-        $formatar = fn (int $valor): string => 'R$ ' . number_format($valor, 0, ',', '.');
+        $formatar = fn (int $valor): string => moeda($valor, $this->moeda, 0);
 
         return match (true) {
             $this->salarioMin && $this->salarioMax => $formatar($this->salarioMin) . ' – ' . $formatar($this->salarioMax),
-            (bool) $this->salarioMin => 'A partir de ' . $formatar($this->salarioMin),
-            (bool) $this->salarioMax => 'Até ' . $formatar($this->salarioMax),
+            (bool) $this->salarioMin => t('vaga.a_partir_de', ['valor' => $formatar($this->salarioMin)]),
+            (bool) $this->salarioMax => t('vaga.ate', ['valor' => $formatar($this->salarioMax)]),
             default => null,
         };
     }
 
     public function local(): string
     {
-        return $this->modeloTrabalho->rotulo() . ($this->cidade ? ' · ' . $this->cidade : '');
+        $local = $this->cidade ?? ($this->regiao === RegiaoVagas::Internacional ? t('regiao.internacional') : null);
+        return $this->modeloTrabalho->rotulo() . ($local ? ' · ' . $local : '');
     }
 }
