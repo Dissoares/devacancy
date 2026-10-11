@@ -31,11 +31,12 @@ final class Aplicacao
     {
         Sessao::iniciar();
         $requisicao = Requisicao::capturar();
+        Idioma::detectar($requisicao);
 
         try {
             $resposta = $this->protegerContraCsrf($requisicao) ?? $this->roteador->despachar($requisicao);
         } catch (NaoEncontradoException) {
-            $resposta = Resposta::html(Visao::renderizar('errors/404', ['titulo' => 'Página não encontrada'], 'site'), 404);
+            $resposta = Resposta::html(Visao::renderizar('errors/404', ['titulo' => t('erro.404_titulo')], 'site'), 404);
         } catch (Throwable $erro) {
             $resposta = $this->tratarErro($erro);
         }
@@ -55,7 +56,7 @@ final class Aplicacao
             return null;
         }
 
-        return Resposta::texto('Sua sessão expirou. Atualize a página e tente novamente.', 403);
+        return Resposta::texto(t('erro.sessao_expirada'), 403);
     }
 
     private function tratarErro(Throwable $erro): Resposta
@@ -74,7 +75,7 @@ final class Aplicacao
         $detalhe = configuracao('app.ambiente') === 'local' ? $erro->getMessage() : null;
 
         return Resposta::html(
-            Visao::renderizar('errors/500', ['titulo' => 'Algo deu errado', 'detalhe' => $detalhe], 'site'),
+            Visao::renderizar('errors/500', ['titulo' => t('erro.500_titulo'), 'detalhe' => $detalhe], 'site'),
             500,
         );
     }
