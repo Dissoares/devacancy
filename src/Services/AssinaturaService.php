@@ -26,6 +26,7 @@ final class AssinaturaService
     /** Catálogo fixo (nome, região, moedas) de cada forma de pagamento, pra tela admin. O "ativo" vem do banco. */
     private const CATALOGO = [
         'pix' => ['nome' => 'PIX (ExPay)', 'regiao' => 'Brasil', 'moedas' => ['BRL']],
+        'stripe' => ['nome' => 'Stripe (cartão, assinatura)', 'regiao' => 'Brasil e internacional', 'moedas' => ['BRL', 'USD']],
         'paypal' => ['nome' => 'PayPal (assinatura, conta Business)', 'regiao' => 'Brasil e internacional', 'moedas' => ['BRL', 'USD']],
         'paypal_email' => ['nome' => 'PayPal (só e-mail, pagamento avulso)', 'regiao' => 'Brasil e internacional', 'moedas' => ['BRL', 'USD']],
     ];
@@ -36,6 +37,7 @@ final class AssinaturaService
         private readonly MetodoPagamentoRepositoryInterface $metodosPagamento,
         private readonly ExpayService $expay,
         private readonly PaypalService $paypal,
+        private readonly StripeService $stripe,
         private readonly ComissaoService $comissoes,
         private readonly Transacao $transacao,
     ) {
@@ -61,6 +63,9 @@ final class AssinaturaService
         if ($noBrasil && ($ativos['pix'] ?? true) && ($this->expay->configurado() || $this->simulacaoPix())) {
             $metodos[] = 'pix';
         }
+        if (($ativos['stripe'] ?? true) && ($this->stripe->configurado() || $this->simulacaoStripe())) {
+            $metodos[] = 'stripe';
+        }
         if (($ativos['paypal'] ?? true) && ($this->paypal->configurado() || $this->simulacaoPaypal())) {
             $metodos[] = 'paypal';
         }
@@ -77,6 +82,7 @@ final class AssinaturaService
         $ativos = $this->metodosPagamento->ativos();
         $configurado = [
             'pix' => $this->expay->configurado(),
+            'stripe' => $this->stripe->configurado(),
             'paypal' => $this->paypal->configurado(),
             'paypal_email' => $this->paypal->pagamentoPorEmailConfigurado(),
         ];
@@ -311,6 +317,159 @@ final class AssinaturaService
                 $this->assinaturas->estender($usuarioId, $plano, $config['dias']);
                 $pagamento = $this->pagamentos->buscarPorGatewayId($gatewayId);
                 $this->comissoes->registrarSeElegivel($usuarioId, $pagamento->id, $config['precos'][$moeda], $moeda);
+            }
+        });
+    }
+
+    // ---------------------------------------------------------------- Stripe (cartão, assinatura recorrente)
+
+    /** Sem chave do Stripe em ambiente local, o botão de cartão vira um botão de simulação. */
+    public function simulacaoStripe(): bool
+    {
+        return !$this->stripe->configurado() && configuracao('app.ambiente') === 'local';
+    }
+
+    /**
+     * Cria a página de pagamento do Stripe e devolve o endereço para onde mandar o cliente.
+     * @throws ValidacaoException
+     */
+    public function iniciarCheckoutStripe(Usuario $usuario, array $dados, bool $noBrasil, string $idioma): string
+    {
+        $plano = $this->planos()[$dados['plano'] ?? ''] ?? null;
+        if ($plano === null) {
+            throw new ValidacaoException(['plano' => t('pagamento.escolha_plano')]);
+        }
+        if (!in_array('stripe', $this->metodosPara($noBrasil), true) || !$this->stripe->configurado()) {
+            throw new ValidacaoException(['geral' => t('pagamento.indisponivel')]);
+        }
+
+        $moeda = $this->moedaPara($noBrasil);
+        [$unidade, $quantidade] = $plano['periodo'] === 'semana' ? ['week', 1] : ['month', $plano['divisor']];
+
+        try {
+            $checkout = $this->stripe->criarCheckout(
+                configuracao('app.nome') . ' — ' . t('plano.' . $dados['plano']),
+                (int) round($plano['precos'][$moeda] * 100),
+                $moeda,
+                $unidade,
+                $quantidade,
+                $usuario->email,
+                ['usuario_id' => $usuario->id, 'plano' => $dados['plano'], 'moeda' => $moeda],
+                url('/assinatura/stripe/retorno') . '?session_id={CHECKOUT_SESSION_ID}',
+                url('/planos?plano=' . $dados['plano']),
+                $idioma === 'pt' ? 'pt-BR' : 'en',
+            );
+        } catch (RuntimeException $erro) {
+            $this->registrarErro('Stripe', $erro);
+            throw new ValidacaoException(['geral' => t('pagamento.falha_stripe')]);
+        }
+
+        return $checkout['url'];
+    }
+
+    /** Volta do Stripe: confere a sessão direto na API (nunca confia no navegador) e libera o plano. */
+    public function concluirCheckoutStripe(Usuario $usuario, string $sessaoId): bool
+    {
+        if (!preg_match('/^cs_[A-Za-z0-9_]{6,200}$/', $sessaoId)) {
+            throw new NaoEncontradoException();
+        }
+
+        try {
+            $sessao = $this->stripe->sessao($sessaoId);
+        } catch (RuntimeException $erro) {
+            $this->registrarErro('Stripe', $erro);
+            return false;
+        }
+        if ((string) ($sessao['client_reference_id'] ?? '') !== (string) $usuario->id) {
+            throw new NaoEncontradoException();
+        }
+
+        $assinaturaId = (string) ($sessao['subscription'] ?? '');
+        if ($assinaturaId === '' || ($sessao['payment_status'] ?? '') !== 'paid') {
+            return false;
+        }
+
+        $this->sincronizarStripe($assinaturaId);
+        return $this->vigenteAte($usuario) !== null;
+    }
+
+    /**
+     * Garante o registro do pagamento de uma fatura paga (idempotente: o mesmo aviso, ou a volta do
+     * checkout somada ao webhook, não duplica). Dono e plano vêm dos metadados que nós mesmos gravamos.
+     */
+    public function sincronizarStripe(string $assinaturaId, ?string $faturaId = null): void
+    {
+        try {
+            $assinatura = $this->stripe->assinatura($assinaturaId);
+            $fatura = $faturaId !== null ? $this->stripe->fatura($faturaId) : ($assinatura['latest_invoice'] ?? null);
+        } catch (RuntimeException $erro) {
+            $this->registrarErro('Stripe', $erro);
+            return;
+        }
+
+        $usuarioId = (int) ($assinatura['metadata']['usuario_id'] ?? 0);
+        $chavePlano = (string) ($assinatura['metadata']['plano'] ?? '');
+        $plano = $this->planos()[$chavePlano] ?? null;
+        if ($usuarioId === 0 || $plano === null || !is_array($fatura) || ($fatura['status'] ?? '') !== 'paid') {
+            return;
+        }
+
+        $valor = ((int) ($fatura['amount_paid'] ?? 0)) / 100;
+        $moeda = strtoupper((string) ($fatura['currency'] ?? ''));
+        if ($valor <= 0 || !isset($plano['precos'][$moeda])) {
+            return;
+        }
+
+        $this->registrarCicloStripe($usuarioId, $chavePlano, $valor, $moeda, 'stripe-' . $fatura['id'], $assinaturaId);
+    }
+
+    /** O webhook só serve de gatilho: o que vale é o que a API do Stripe responde. */
+    public function processarWebhookStripe(string $corpo, string $cabecalhoAssinatura): bool
+    {
+        if (!$this->stripe->avisoAutentico($corpo, $cabecalhoAssinatura)) {
+            return false;
+        }
+
+        $evento = json_decode($corpo, true) ?: [];
+        $objeto = $evento['data']['object'] ?? [];
+
+        switch ($evento['type'] ?? '') {
+            case 'checkout.session.completed':
+                if (!empty($objeto['subscription'])) {
+                    $this->sincronizarStripe((string) $objeto['subscription']);
+                }
+                break;
+            case 'invoice.paid':
+                $assinaturaId = (string) ($objeto['subscription'] ?? $objeto['parent']['subscription_details']['subscription'] ?? '');
+                if ($assinaturaId !== '' && !empty($objeto['id'])) {
+                    $this->sincronizarStripe($assinaturaId, (string) $objeto['id']);
+                }
+                break;
+        }
+
+        return true;
+    }
+
+    /** Modo simulação (local, sem chave): ativa o plano como se o Stripe tivesse cobrado o primeiro ciclo. */
+    public function simularStripe(Usuario $usuario, string $plano, string $moeda): void
+    {
+        if (!$this->simulacaoStripe() || !isset($this->planos()[$plano]['precos'][$moeda])) {
+            throw new NaoEncontradoException();
+        }
+        $this->registrarCicloStripe(
+            $usuario->id, $plano, $this->planos()[$plano]['precos'][$moeda], $moeda,
+            'stripe-SIMULADO-' . strtoupper(bin2hex(random_bytes(6))), 'sub_SIMULADO',
+        );
+    }
+
+    private function registrarCicloStripe(int $usuarioId, string $chavePlano, float $valor, string $moeda, string $gatewayId, string $assinaturaId): void
+    {
+        $config = $this->planos()[$chavePlano];
+
+        $this->transacao->executar(function () use ($usuarioId, $chavePlano, $valor, $moeda, $gatewayId, $assinaturaId, $config): void {
+            if ($this->pagamentos->registrarPagoExterno($usuarioId, $chavePlano, $valor, $moeda, 'stripe', $gatewayId, $assinaturaId)) {
+                $this->assinaturas->estender($usuarioId, $chavePlano, $config['dias']);
+                $this->comissoes->registrarSeElegivel($usuarioId, $this->pagamentos->buscarPorGatewayId($gatewayId)->id, $valor, $moeda);
             }
         });
     }
