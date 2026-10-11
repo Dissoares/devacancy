@@ -141,7 +141,7 @@ $cabecalho = fn (string $pergunta, string $titulo, ?string $subtitulo = null): s
     <div class="<?= classe_campo($erros, 'cidade') ?>">
       <div class="entrada-icone">
         <?= icone('local', 'icone icone-sm') ?>
-        <input class="entrada entrada-grande" name="cidade" maxlength="120" autocomplete="address-level2"
+        <input class="entrada entrada-grande" name="cidade" maxlength="120" autocomplete="off" data-cidade-autocomplete
                placeholder="<?= e(t('funil.p_cidade_placeholder')) ?>" value="<?= e($valores['cidade'] ?? '') ?>">
       </div>
       <?= erro_campo($erros, 'cidade') ?>

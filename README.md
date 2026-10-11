@@ -78,3 +78,5 @@ Preencha `EXPAY_API_KEY` e `EXPAY_WEBHOOK_TOKEN` no `.env` e configure no painel
 ## Vagas reais (importação automática)
 
 `php database/importar-vagas.php` importa as vagas abertas dos repositórios de vagas da comunidade no GitHub (lista em `config/app.php`, chave `github`): cargo, nível, modelo, cidade, salário, stack e resumo da descrição. Vagas repetidas, antigas (mais de 45 dias) ou restritas a moradores dos EUA/Canadá são puladas. Agende para rodar 1x por dia; com `GITHUB_TOKEN` no `.env` o limite da API sobe de 60 para 5.000 consultas por hora.
+
+`php database/baixar-cidades.php` baixa a lista oficial de municípios do Brasil (API do IBGE) e salva em `public/assets/data/cidades-br.json`, usada pelo autocomplete de cidade no cadastro e no perfil. Só é preciso rodar de novo se o IBGE criar algum município.

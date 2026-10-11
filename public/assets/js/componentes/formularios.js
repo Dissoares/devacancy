@@ -229,6 +229,87 @@
     });
   }
 
+  // ---------- Autocomplete de cidade (lista oficial do IBGE, carregada uma vez e filtrada no navegador) ----------
+  let promessaCidades = null;
+  function carregarCidades() {
+    promessaCidades ??= fetch('/assets/data/cidades-br.json')
+      .then((resposta) => (resposta.ok ? resposta.json() : []))
+      .catch(() => []);
+    return promessaCidades;
+  }
+
+  /** "São Paulo" -> "sao paulo", para comparar sem acento e sem diferenciar maiúsculas. */
+  const semAcento = (texto) => texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+  function iniciarAutocompleteCidade(raiz) {
+    raiz.querySelectorAll('[data-cidade-autocomplete]').forEach((campo) => {
+      if (campo.dataset.autocompleteLigado) return;
+      campo.dataset.autocompleteLigado = '1';
+
+      const lista = document.createElement('ul');
+      lista.className = 'sugestoes-cidade';
+      lista.hidden = true;
+      lista.setAttribute('role', 'listbox');
+      campo.insertAdjacentElement('afterend', lista);
+      campo.setAttribute('role', 'combobox');
+      campo.setAttribute('aria-expanded', 'false');
+      campo.setAttribute('aria-autocomplete', 'list');
+
+      let cidades = [];
+      let opcoes = [];
+      let realce = -1;
+
+      const fechar = () => {
+        lista.hidden = true;
+        campo.setAttribute('aria-expanded', 'false');
+        realce = -1;
+      };
+
+      const realcar = (indice) => {
+        opcoes.forEach((opcao, posicao) => opcao.classList.toggle('realcada', posicao === indice));
+        realce = indice;
+        opcoes[indice]?.scrollIntoView({ block: 'nearest' });
+      };
+
+      const escolher = (indice) => {
+        campo.value = opcoes[indice].textContent;
+        fechar();
+        campo.dispatchEvent(new Event('change', { bubbles: true }));
+      };
+
+      const filtrar = () => {
+        const termo = semAcento(campo.value.trim());
+        lista.replaceChildren();
+        opcoes = [];
+        if (termo.length < 2 || cidades.length === 0) return fechar();
+
+        const encontradas = cidades.filter(([nome]) => semAcento(nome).includes(termo)).slice(0, 8);
+        if (encontradas.length === 0) return fechar();
+
+        encontradas.forEach(([nome, uf], indice) => {
+          const opcao = document.createElement('li');
+          opcao.className = 'sugestao-cidade';
+          opcao.setAttribute('role', 'option');
+          opcao.textContent = `${nome}, ${uf}`;
+          opcao.addEventListener('mousedown', (evento) => { evento.preventDefault(); escolher(indice); });
+          lista.appendChild(opcao);
+          opcoes.push(opcao);
+        });
+        lista.hidden = false;
+        campo.setAttribute('aria-expanded', 'true');
+        realce = -1;
+      };
+
+      campo.addEventListener('focus', () => { carregarCidades().then((dados) => { cidades = dados; filtrar(); }); });
+      campo.addEventListener('input', filtrar);
+      campo.addEventListener('blur', () => setTimeout(fechar, 150));
+      campo.addEventListener('keydown', (evento) => {
+        if (lista.hidden && evento.key !== 'ArrowDown') return;
+        if (evento.key === 'ArrowDown') { evento.preventDefault(); realcar(Math.min(realce + 1, opcoes.length - 1)); } else if (evento.key === 'ArrowUp') { evento.preventDefault(); realcar(Math.max(realce - 1, 0)); } else if (evento.key === 'Enter' && realce >= 0) { evento.preventDefault(); escolher(realce); } else if (evento.key === 'Escape') { fechar(); }
+      });
+    });
+  }
+
   function iniciar(raiz) {
     iniciarSeletorDeTipo(raiz);
     iniciarAlternarSenha(raiz);
@@ -236,6 +317,7 @@
     iniciarCampoTags(raiz);
     iniciarZonaArquivo(raiz);
     iniciarMascaraTelefone(raiz);
+    iniciarAutocompleteCidade(raiz);
   }
 
   // O HTMX dispara htmx:load para o documento inicial e para cada trecho novo inserido.

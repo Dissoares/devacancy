@@ -596,6 +596,42 @@
   display: none;
 }
 
+/* Autocomplete de cidade */
+.campo:has([data-cidade-autocomplete]) {
+  position: relative;
+}
+
+.sugestoes-cidade {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin-top: 4px;
+  padding: 6px;
+  background: var(--fundo-cartao, #fff);
+  border: 1px solid var(--borda-forte);
+  border-radius: var(--raio-lg);
+  box-shadow: var(--sombra-lg, 0 12px 24px rgba(15, 23, 42, .12));
+  max-height: 220px;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.sugestao-cidade {
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: .9rem;
+  color: var(--texto);
+  cursor: pointer;
+}
+
+.sugestao-cidade:hover,
+.sugestao-cidade.realcada {
+  background: var(--primaria-suave);
+  color: var(--primaria-forte);
+}
+
 /* Zona de upload */
 .zona-arquivo {
   position: relative;

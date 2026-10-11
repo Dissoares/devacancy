@@ -108,7 +108,7 @@ $idiomasMarcados = (array) ($valores['idiomas'] ?? []);
   <div class="linha-campos">
     <div class="<?= classe_campo($erros, 'cidade') ?>">
       <label class="campo-rotulo" for="cidade"><?= e(t('perfil.cidade')) ?> <small><?= e(t('perfil.opcional')) ?></small></label>
-      <input class="entrada" id="cidade" name="cidade" maxlength="120" autocomplete="address-level2" placeholder="<?= e(t('funil.p_cidade_placeholder')) ?>" value="<?= $valor('cidade') ?>">
+      <input class="entrada" id="cidade" name="cidade" maxlength="120" autocomplete="off" data-cidade-autocomplete placeholder="<?= e(t('funil.p_cidade_placeholder')) ?>" value="<?= $valor('cidade') ?>">
       <?= erro_campo($erros, 'cidade') ?>
     </div>
     <div class="<?= classe_campo($erros, 'pretensao_salarial') ?>">
