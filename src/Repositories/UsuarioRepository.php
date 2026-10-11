@@ -140,6 +140,27 @@ final class UsuarioRepository implements UsuarioRepositoryInterface
         $this->pdo->prepare('UPDATE usuarios SET senha_hash = ? WHERE id = ?')->execute([$senhaHash, $usuarioId]);
     }
 
+    public function promoverAAdmin(int $usuarioId): void
+    {
+        $this->pdo->prepare("UPDATE usuarios SET tipo = 'admin', cadastro_completo = 1 WHERE id = ?")->execute([$usuarioId]);
+    }
+
+    public function excluir(int $usuarioId): void
+    {
+        $this->pdo->prepare('DELETE FROM usuarios WHERE id = ?')->execute([$usuarioId]);
+    }
+
+    public function contarAdmins(): int
+    {
+        return (int) $this->pdo->query("SELECT COUNT(*) FROM usuarios WHERE tipo = 'admin'")->fetchColumn();
+    }
+
+    public function listarAdmins(): array
+    {
+        $linhas = $this->pdo->query("SELECT * FROM usuarios WHERE tipo = 'admin' ORDER BY criado_em")->fetchAll();
+        return array_map(Usuario::deLinha(...), $linhas);
+    }
+
     public function registrarAcesso(int $usuarioId): void
     {
         $this->pdo->prepare('UPDATE usuarios SET ultimo_acesso_em = NOW() WHERE id = ?')->execute([$usuarioId]);
