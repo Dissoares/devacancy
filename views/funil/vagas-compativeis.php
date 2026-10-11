@@ -101,6 +101,11 @@ $textoBotao = $usuario
             <?php endforeach; ?>
           </div>
         <?php endif; ?>
+
+        <div class="vaga-encontrada-acoes">
+          <a class="botao botao-primario" href="/vaga/<?= (int) $vaga->id ?>/aplicar"><?= icone('raio', 'icone icone-sm') ?> <?= e(t('vaga.aplicar_esta')) ?></a>
+          <?= parcial('partials/botao-compartilhar', ['vaga' => $vaga, 'classe' => 'botao-secundario']) ?>
+        </div>
       </li>
     <?php endforeach; ?>
 
