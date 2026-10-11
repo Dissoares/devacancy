@@ -637,4 +637,10 @@ return [
     'recuperar.link_invalido_titulo' => 'Link expired',
     'recuperar.link_invalido' => 'This link was already used or has expired. Request a new one to continue.',
     'recuperar.pedir_outro' => 'Request a new link',
+    'planos.metodo_paypal_email' => 'PayPal',
+    'pagamento.paypal_titulo' => 'Pay with PayPal',
+    'pagamento.paypal_continuar' => 'Continue to PayPal',
+    'pagamento.paypal_email_nota' => 'One-time payment through PayPal, no automatic renewal. You come back here and the plan is unlocked as soon as PayPal confirms.',
+    'pagamento.paypal_pagar' => 'Pay :valor with PayPal',
+    'pagamento.paypal_depois' => 'After paying, come back to this page: your plan unlocks by itself, usually in under a minute. If it takes more than 15 minutes, contact suporte@devacancy.online.',
 ];
