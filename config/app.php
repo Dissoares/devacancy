@@ -5,12 +5,14 @@ declare(strict_types=1);
 use App\Core\Ambiente;
 use App\Core\Conexao;
 use App\Interfaces\AssinaturaRepositoryInterface;
+use App\Interfaces\CandidaturaRepositoryInterface;
 use App\Interfaces\PagamentoRepositoryInterface;
 use App\Interfaces\PerfilEmpresaRepositoryInterface;
 use App\Interfaces\PerfilProfissionalRepositoryInterface;
 use App\Interfaces\UsuarioRepositoryInterface;
 use App\Interfaces\VagaRepositoryInterface;
 use App\Repositories\AssinaturaRepository;
+use App\Repositories\CandidaturaRepository;
 use App\Repositories\PagamentoRepository;
 use App\Repositories\PerfilEmpresaRepository;
 use App\Repositories\PerfilProfissionalRepository;
@@ -47,16 +49,46 @@ return [
         ],
     ],
 
-    // Planos de assinatura do profissional. Valor em reais, duração em dias.
+    // Planos de assinatura do profissional. Preço em reais (Brasil: PIX e PayPal) e em dólar (resto do mundo: PayPal).
+    // 'paypal' traz o ID do plano criado no PayPal para cada moeda (php database/paypal-planos.php gera os IDs).
     'planos' => [
-        'mensal' => ['nome' => 'Mensal', 'valor' => 49.90, 'dias' => 30, 'meses' => 1],
-        'trimestral' => ['nome' => 'Trimestral', 'valor' => 119.70, 'dias' => 90, 'meses' => 3, 'destaque' => true],
+        'semanal' => ['dias' => 7, 'periodo' => 'semana', 'divisor' => 1, 'precos' => ['BRL' => 19.90, 'USD' => 9.99]],
+        'mensal' => ['dias' => 30, 'periodo' => 'mes', 'divisor' => 1, 'precos' => ['BRL' => 49.90, 'USD' => 24.99]],
+        'trimestral' => ['dias' => 90, 'periodo' => 'mes', 'divisor' => 3, 'destaque' => true, 'precos' => ['BRL' => 119.70, 'USD' => 59.99]],
     ],
 
     'expay' => [
         'url' => Ambiente::obter('EXPAY_URL', 'https://api.expay.com.br/v1'),
         'chave' => Ambiente::obter('EXPAY_API_KEY', ''),
         'token_webhook' => Ambiente::obter('EXPAY_WEBHOOK_TOKEN', ''),
+    ],
+
+    'paypal' => [
+        'modo' => Ambiente::obter('PAYPAL_MODO', 'sandbox'),
+        'cliente_id' => Ambiente::obter('PAYPAL_CLIENT_ID', ''),
+        'segredo' => Ambiente::obter('PAYPAL_SECRET', ''),
+        'token_webhook' => Ambiente::obter('PAYPAL_WEBHOOK_TOKEN', ''),
+        'planos' => [
+            'semanal' => ['BRL' => Ambiente::obter('PAYPAL_PLANO_SEMANAL_BRL', ''), 'USD' => Ambiente::obter('PAYPAL_PLANO_SEMANAL_USD', '')],
+            'mensal' => ['BRL' => Ambiente::obter('PAYPAL_PLANO_MENSAL_BRL', ''), 'USD' => Ambiente::obter('PAYPAL_PLANO_MENSAL_USD', '')],
+            'trimestral' => ['BRL' => Ambiente::obter('PAYPAL_PLANO_TRIMESTRAL_BRL', ''), 'USD' => Ambiente::obter('PAYPAL_PLANO_TRIMESTRAL_USD', '')],
+        ],
+    ],
+
+    // Importação automática de vagas reais publicadas nos repositórios de vagas da comunidade (issues do GitHub).
+    // Repositório => área padrão (o título da vaga pode trocar a área).
+    'github' => [
+        'token' => Ambiente::obter('GITHUB_TOKEN', ''),
+        'repositorios' => [
+            'frontendbr/vagas' => 'frontend',
+            'react-brasil/vagas' => 'frontend',
+            'backend-br/vagas' => 'backend',
+            'soujava/vagas-java' => 'backend',
+            'dotnetdevbr/vagas' => 'backend',
+            'qa-brasil/vagas' => 'qa',
+            'androiddevbr/vagas' => 'mobile',
+            'cocoaheadsbrasil/vagas' => 'mobile',
+        ],
     ],
 
     // Interface => implementação, resolvidas pelo Container.
@@ -68,5 +100,6 @@ return [
         VagaRepositoryInterface::class => VagaRepository::class,
         AssinaturaRepositoryInterface::class => AssinaturaRepository::class,
         PagamentoRepositoryInterface::class => PagamentoRepository::class,
+        CandidaturaRepositoryInterface::class => CandidaturaRepository::class,
     ],
 ];
