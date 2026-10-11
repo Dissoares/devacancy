@@ -11,6 +11,8 @@ use App\Core\Visao;
 use App\Enums\TipoUsuario;
 use App\Exceptions\AutenticacaoException;
 use App\Services\AutenticacaoService;
+use App\Services\FunilService;
+use App\Services\LocalizacaoService;
 use App\Services\OAuthService;
 
 final class AutenticacaoController
@@ -18,13 +20,15 @@ final class AutenticacaoController
     public function __construct(
         private readonly AutenticacaoService $autenticacao,
         private readonly OAuthService $oauth,
+        private readonly FunilService $funil,
+        private readonly LocalizacaoService $localizacao,
     ) {
     }
 
     public function formularioEntrar(Requisicao $requisicao): Resposta
     {
         return Resposta::html(Visao::renderizar('auth/entrar', [
-            'titulo' => 'Entrar — Devacancy',
+            'titulo' => t('auth.entrar_titulo_pagina'),
             'erro' => Sessao::obterFlash('erro'),
             'aviso' => Sessao::obterFlash('aviso'),
             'email' => '',
@@ -62,7 +66,11 @@ final class AutenticacaoController
             return Resposta::redirecionar($this->oauth->iniciar((string) $requisicao->parametro('provedor'), $tipo));
         } catch (AutenticacaoException $erro) {
             Sessao::flash('erro', $erro->getMessage());
-            $origem = $requisicao->consulta('origem') === 'entrar' ? '/entrar' : '/cadastro?tipo=' . $tipo->value;
+            $origem = match ($requisicao->consulta('origem')) {
+                'entrar' => '/entrar',
+                'funil' => '/criar-conta',
+                default => '/cadastro?tipo=' . $tipo->value,
+            };
             return Resposta::redirecionar($origem);
         }
     }
@@ -80,7 +88,13 @@ final class AutenticacaoController
             return Resposta::redirecionar('/entrar');
         }
 
-        $usuario = $this->autenticacao->autenticarComProvedor($social, $tipo);
+        $usuario = $this->autenticacao->autenticarComProvedor($social, $tipo, $this->localizacao->pais($requisicao));
+
+        // Quem veio do questionário ganha o perfil com as respostas.
+        if ($this->funil->concluirCadastro($usuario)) {
+            $usuario = $this->autenticacao->recarregar($usuario);
+            Sessao::flash('sucesso', t('funil.conta_criada'));
+        }
         $this->autenticacao->iniciarSessao($usuario);
 
         return Resposta::redirecionar($this->autenticacao->destinoInicial($usuario));
