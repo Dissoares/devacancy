@@ -31,19 +31,12 @@ $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$nomeBanco}` CHARACTER SET utf8mb4 C
 $pdo->exec("USE `{$nomeBanco}`");
 echo "Banco `{$nomeBanco}` pronto.\n";
 
-$pdo->exec('CREATE TABLE IF NOT EXISTS migracoes (arquivo VARCHAR(190) PRIMARY KEY, executada_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)');
-$executadas = $pdo->query('SELECT arquivo FROM migracoes')->fetchAll(PDO::FETCH_COLUMN);
-
-$arquivos = glob(__DIR__ . '/migrations/*.sql');
-sort($arquivos);
-foreach ($arquivos as $arquivo) {
-    $nome = basename($arquivo);
-    if (in_array($nome, $executadas, true)) {
-        continue;
-    }
-    $pdo->exec(file_get_contents($arquivo));
-    $pdo->prepare('INSERT INTO migracoes (arquivo) VALUES (?)')->execute([$nome]);
+$resultado = (new \App\Services\MigracaoService($pdo, __DIR__ . '/migrations'))->executarPendentes();
+foreach ($resultado['executadas'] as $nome) {
     echo "Migração executada: {$nome}\n";
+}
+if ($resultado['erro'] !== null) {
+    exit("Falha em {$resultado['erro']['arquivo']}: {$resultado['erro']['mensagem']}\n");
 }
 
 [$email, $senha] = [$argv[1] ?? null, $argv[2] ?? null];
