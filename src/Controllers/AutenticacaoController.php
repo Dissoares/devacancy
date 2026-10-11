@@ -31,6 +31,7 @@ final class AutenticacaoController
             'titulo' => t('auth.entrar_titulo_pagina'),
             'erro' => Sessao::obterFlash('erro'),
             'aviso' => Sessao::obterFlash('aviso'),
+            'sucesso' => Sessao::obterFlash('sucesso'),
             'email' => '',
         ], 'auth'));
     }
