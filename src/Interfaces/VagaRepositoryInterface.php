@@ -9,17 +9,26 @@ use App\Entities\Vaga;
 
 interface VagaRepositoryInterface
 {
-    public function criar(VagaDTO $dados): int;
+    /** $criadoEm nulo usa agora (vagas importadas guardam a data original do anúncio). */
+    public function criar(VagaDTO $dados, ?string $criadoEm = null): int;
+
+    public function existeLink(string $link): bool;
+
+    /** Mesma vaga (título e empresa) já cadastrada nos últimos N dias. */
+    public function existeSemelhante(string $titulo, string $empresa, int $dias): bool;
 
     public function alternarAtiva(int $id): void;
 
     /** @return Vaga[] mais recentes primeiro */
     public function listar(int $limite = 200): array;
 
+    /** @return Vaga[] todas as vagas ativas cadastradas nos últimos N dias */
+    public function listarAtivas(int $diasRecentes, int $limite = 2000): array;
+
     /**
      * Vagas ativas que passam no filtro grosso do match (o refinamento por stack fica no service).
-     * @param string[] $areas @param string[] $senioridades @param string[] $modelos
+     * @param string[] $areas @param string[] $senioridades @param string[] $modelos @param string[] $regioes
      * @return Vaga[]
      */
-    public function buscarCandidatas(array $areas, array $senioridades, array $modelos, int $diasRecentes): array;
+    public function buscarCandidatas(array $areas, array $senioridades, array $modelos, array $regioes, int $diasRecentes): array;
 }
