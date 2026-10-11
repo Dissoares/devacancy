@@ -19,6 +19,9 @@ interface VagaRepositoryInterface
 
     public function alternarAtiva(int $id): void;
 
+    /** @return array<string, array{total: int, ativas: int}> contagem por fonte (manual, github, adzuna...) */
+    public function contarPorFonte(): array;
+
     /** @return Vaga[] mais recentes primeiro */
     public function listar(int $limite = 200): array;
 

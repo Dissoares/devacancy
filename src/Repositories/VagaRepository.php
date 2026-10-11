@@ -19,11 +19,12 @@ final class VagaRepository implements VagaRepositoryInterface
     {
         $this->pdo->prepare(
             'INSERT INTO vagas
-                (titulo, empresa, area, senioridade, stack, modelo_trabalho, regiao, cidade, salario_min, salario_max, moeda, link, descricao, criado_em)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, NOW()))'
+                (titulo, empresa, fonte, area, senioridade, stack, modelo_trabalho, regiao, cidade, salario_min, salario_max, moeda, link, descricao, criado_em)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, NOW()))'
         )->execute([
             $dados->titulo,
             $dados->empresa,
+            $dados->fonte,
             $dados->area->value,
             $dados->senioridade->value,
             json_encode($dados->stack, JSON_UNESCAPED_UNICODE),
@@ -58,6 +59,20 @@ final class VagaRepository implements VagaRepositoryInterface
     public function alternarAtiva(int $id): void
     {
         $this->pdo->prepare('UPDATE vagas SET ativa = 1 - ativa WHERE id = ?')->execute([$id]);
+    }
+
+    public function contarPorFonte(): array
+    {
+        $linhas = $this->pdo->query(
+            'SELECT fonte, COUNT(*) AS total, SUM(ativa) AS ativas FROM vagas GROUP BY fonte ORDER BY total DESC'
+        )->fetchAll();
+
+        $porFonte = [];
+        foreach ($linhas as $linha) {
+            $porFonte[$linha['fonte']] = ['total' => (int) $linha['total'], 'ativas' => (int) $linha['ativas']];
+        }
+
+        return $porFonte;
     }
 
     public function listar(int $limite = 200): array

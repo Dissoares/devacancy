@@ -28,6 +28,7 @@ final class VagaDTO
         public readonly ?string $descricao,
         public readonly RegiaoVagas $regiao,
         public readonly Moeda $moeda,
+        public readonly string $fonte = 'manual',
     ) {
     }
 
@@ -66,6 +67,7 @@ final class VagaDTO
             descricao: self::textoOuNulo($dados['descricao'] ?? null),
             regiao: RegiaoVagas::from($dados['regiao']),
             moeda: Moeda::from($dados['moeda']),
+            fonte: 'manual',
         );
     }
 
