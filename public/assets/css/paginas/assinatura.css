@@ -1088,3 +1088,33 @@
     font-size: 1.7rem;
   }
 }
+
+.instalador {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 56px 0;
+}
+
+.instalador h1 {
+  margin-bottom: 8px;
+}
+
+.instalador .formulario {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.instalador-admin {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0;
+  padding: 16px;
+  border: 1px solid var(--borda, #e2e8f0);
+  border-radius: 12px;
+}
+
+.instalador-admin legend {
+  padding: 0 6px;
+  font-weight: 650;
+}
