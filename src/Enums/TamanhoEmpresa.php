@@ -16,12 +16,6 @@ enum TamanhoEmpresa: string
 
     public function rotulo(): string
     {
-        return match ($this) {
-            self::Startup => 'Até 10 pessoas',
-            self::Pequena => '11 a 50',
-            self::Media => '51 a 200',
-            self::Grande => '201 a 1.000',
-            self::Corporacao => 'Mais de 1.000',
-        };
+        return t('tamanho.' . $this->value);
     }
 }
