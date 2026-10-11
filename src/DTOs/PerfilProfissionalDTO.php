@@ -7,11 +7,12 @@ namespace App\DTOs;
 use App\Core\ListaDeTags;
 use App\Enums\AreaAtuacao;
 use App\Enums\ModeloTrabalho;
+use App\Enums\RegiaoVagas;
 use App\Enums\Senioridade;
 
 final class PerfilProfissionalDTO
 {
-    /** @param string[] $stack */
+    /** @param string[] $stack @param string[] $idiomas */
     public function __construct(
         public readonly AreaAtuacao $area,
         public readonly Senioridade $senioridade,
@@ -21,11 +22,15 @@ final class PerfilProfissionalDTO
         public readonly ModeloTrabalho $modeloTrabalho,
         public readonly ?string $cidade,
         public readonly ?int $pretensaoSalarial,
-        public readonly string $telefone,
+        public readonly ?string $telefone,
         public readonly ?string $linkedinUrl,
         public readonly ?string $githubUrl,
         public readonly ?string $portfolioUrl,
         public readonly ?string $resumo,
+        public readonly RegiaoVagas $regiaoVagas = RegiaoVagas::Brasil,
+        public readonly string $moedaPretensao = 'BRL',
+        public readonly array $idiomas = [],
+        public readonly ?int $ultimaRemuneracao = null,
     ) {
     }
 
@@ -39,12 +44,16 @@ final class PerfilProfissionalDTO
             'stack' => 'obrigatorio|max:600',
             'modelo_trabalho' => 'obrigatorio|enum:' . ModeloTrabalho::class,
             'cidade' => 'max:120',
-            'pretensao_salarial' => 'entre:0,200000',
-            'telefone' => 'obrigatorio|min:10|max:30',
+            'pretensao_salarial' => 'entre:0,2000000',
+            'telefone' => 'min:10|max:30',
+            'regiao_vagas' => 'enum:' . RegiaoVagas::class,
+            'moeda_pretensao' => 'enum:' . \App\Enums\Moeda::class,
             'linkedin_url' => 'url|max:255',
             'github_url' => 'url|max:255',
             'portfolio_url' => 'url|max:255',
             'resumo' => 'max:1500',
+            'idiomas' => 'enum:' . \App\Enums\IdiomaFalado::class,
+            'ultima_remuneracao' => 'entre:0,2000000',
         ];
     }
 
@@ -59,11 +68,15 @@ final class PerfilProfissionalDTO
             modeloTrabalho: ModeloTrabalho::from($dados['modelo_trabalho']),
             cidade: self::textoOuNulo($dados['cidade'] ?? null),
             pretensaoSalarial: ($dados['pretensao_salarial'] ?? '') !== '' ? (int) $dados['pretensao_salarial'] : null,
-            telefone: preg_replace('/[^\d+]/', '', (string) $dados['telefone']),
+            telefone: self::textoOuNulo(preg_replace('/[^\d+]/', '', (string) ($dados['telefone'] ?? ''))),
             linkedinUrl: self::textoOuNulo($dados['linkedin_url'] ?? null),
             githubUrl: self::textoOuNulo($dados['github_url'] ?? null),
             portfolioUrl: self::textoOuNulo($dados['portfolio_url'] ?? null),
             resumo: self::textoOuNulo($dados['resumo'] ?? null),
+            regiaoVagas: RegiaoVagas::tryFrom((string) ($dados['regiao_vagas'] ?? '')) ?? RegiaoVagas::Brasil,
+            moedaPretensao: \App\Enums\Moeda::tryFrom((string) ($dados['moeda_pretensao'] ?? ''))?->value ?? 'BRL',
+            idiomas: array_values(array_unique((array) ($dados['idiomas'] ?? []))),
+            ultimaRemuneracao: ($dados['ultima_remuneracao'] ?? '') !== '' ? (int) $dados['ultima_remuneracao'] : null,
         );
     }
 
