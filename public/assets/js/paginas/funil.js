@@ -160,6 +160,47 @@
     comemoracao.classList.add('visivel');
   }
 
+  // ---------- Barra de rolagem própria (celular) ----------
+  // O navegador do celular esconde a barra nativa, e a pessoa não percebe que há mais opções abaixo.
+  // Aqui o trilho fino na lateral mostra onde ela está na página, e o degradê do rodapé aparece enquanto falta rolar.
+  const trilho = document.createElement('div');
+  trilho.className = 'rolagem-trilho';
+  trilho.setAttribute('aria-hidden', 'true');
+  trilho.hidden = true;
+  const polegar = document.createElement('div');
+  polegar.className = 'rolagem-polegar';
+  trilho.appendChild(polegar);
+  document.body.appendChild(trilho);
+
+  let desenhando = false;
+  function desenharRolagem() {
+    desenhando = false;
+    const raiz = document.documentElement;
+    const visivel = window.innerHeight;
+    const total = raiz.scrollHeight;
+    const falta = total - (window.scrollY + visivel);
+
+    raiz.classList.toggle('tem-mais-abaixo', falta > 12);
+    trilho.hidden = total <= visivel + 4;
+    if (trilho.hidden) return;
+
+    const alturaTrilho = trilho.clientHeight;
+    const alturaPolegar = Math.max(40, (visivel / total) * alturaTrilho);
+    const progresso = window.scrollY / (total - visivel);
+    polegar.style.height = `${alturaPolegar}px`;
+    polegar.style.transform = `translateY(${progresso * (alturaTrilho - alturaPolegar)}px)`;
+  }
+  const pedirDesenho = () => {
+    if (!desenhando) {
+      desenhando = true;
+      requestAnimationFrame(desenharRolagem);
+    }
+  };
+  window.addEventListener('scroll', pedirDesenho, { passive: true });
+  window.addEventListener('resize', pedirDesenho);
+  if ('ResizeObserver' in window) new ResizeObserver(pedirDesenho).observe(document.body);
+  pedirDesenho();
+
   formulario.addEventListener('change', atualizarPerfil);
   formulario.addEventListener('input', atualizarPerfil);
   atualizarPerfil();

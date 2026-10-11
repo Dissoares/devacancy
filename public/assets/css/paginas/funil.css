@@ -876,6 +876,24 @@
     padding-top: 0;
   }
 
+  /* Degradê na borda de cima do rodapé: aparece enquanto ainda falta rolar, dizendo "tem mais aqui embaixo". */
+  .em-passos .questionario-rodape::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    height: 36px;
+    background: linear-gradient(to top, var(--fundo), rgba(246, 248, 252, 0));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s;
+  }
+
+  .tem-mais-abaixo .em-passos .questionario-rodape::before {
+    opacity: 1;
+  }
+
   /* Telas baixas: o rodapé não pode tomar um terço da tela, a nota de privacidade sai (o resto fica). */
   @media (max-height: 640px) {
     .em-passos .questionario-rodape .questionario-nota {
@@ -1193,4 +1211,44 @@
 
 @keyframes radar-pop {
   from { transform: scale(.4); opacity: 0; }
+}
+
+/* ==========================================================================
+   Barra de rolagem própria
+   ========================================================================== */
+/* Computador: barra nativa fina e na cor da marca. */
+html:has(.pagina-funil) {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(37, 99, 235, .5) transparent;
+}
+
+/* Celular: o navegador esconde a barra nativa, então o trilho abaixo faz esse papel. */
+.rolagem-trilho {
+  position: fixed;
+  top: 68px;
+  right: 3px;
+  bottom: calc(var(--rodape-altura, 120px) + 10px);
+  z-index: 45;
+  width: 5px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, .07);
+  pointer-events: none;
+}
+
+.rolagem-polegar {
+  width: 100%;
+  border-radius: inherit;
+  background: var(--gradiente);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .6);
+  will-change: transform;
+}
+
+.rolagem-trilho[hidden] {
+  display: none;
+}
+
+@media (min-width: 761px) {
+  .rolagem-trilho {
+    display: none;
+  }
 }
