@@ -2,6 +2,8 @@
 /** @var \App\Entities\Vaga[] $vagas @var array $valores @var array<string, string> $erros @var ?string $sucesso */
 use App\Enums\AreaAtuacao;
 use App\Enums\ModeloTrabalho;
+use App\Enums\Moeda;
+use App\Enums\RegiaoVagas;
 use App\Enums\Senioridade;
 
 $valor = fn (string $campo): string => e($valores[$campo] ?? '');
@@ -58,6 +60,24 @@ $ativas = count(array_filter($vagas, fn ($vaga) => $vaga->ativa));
         </select>
         <?= erro_campo($erros, 'modelo_trabalho') ?>
       </div>
+      <div class="<?= classe_campo($erros, 'regiao') ?>">
+        <label class="campo-rotulo" for="regiao">Região</label>
+        <select class="selecao" id="regiao" name="regiao">
+          <?php foreach (RegiaoVagas::deVagas() as $regiao): ?>
+            <option value="<?= $regiao->value ?>" <?= ($valores['regiao'] ?? 'brasil') === $regiao->value ? 'selected' : '' ?>><?= e($regiao->rotulo()) ?></option>
+          <?php endforeach; ?>
+        </select>
+        <?= erro_campo($erros, 'regiao') ?>
+      </div>
+      <div class="<?= classe_campo($erros, 'moeda') ?>">
+        <label class="campo-rotulo" for="moeda">Moeda do salário</label>
+        <select class="selecao" id="moeda" name="moeda">
+          <?php foreach (Moeda::cases() as $opcao): ?>
+            <option value="<?= $opcao->value ?>" <?= ($valores['moeda'] ?? 'BRL') === $opcao->value ? 'selected' : '' ?>><?= e($opcao->rotulo()) ?></option>
+          <?php endforeach; ?>
+        </select>
+        <?= erro_campo($erros, 'moeda') ?>
+      </div>
       <div class="<?= classe_campo($erros, 'stack', 'coluna-dupla') ?>">
         <label class="campo-rotulo" for="stack">Stack (separada por vírgula)</label>
         <input class="entrada" id="stack" name="stack" maxlength="600" placeholder="PHP, Laravel, MySQL" value="<?= $valor('stack') ?>">
@@ -69,12 +89,12 @@ $ativas = count(array_filter($vagas, fn ($vaga) => $vaga->ativa));
         <?= erro_campo($erros, 'cidade') ?>
       </div>
       <div class="<?= classe_campo($erros, 'salario_min') ?>">
-        <label class="campo-rotulo" for="salario_min">Salário mínimo (R$)</label>
+        <label class="campo-rotulo" for="salario_min">Salário mínimo</label>
         <input class="entrada" id="salario_min" name="salario_min" type="number" min="0" value="<?= $valor('salario_min') ?>">
         <?= erro_campo($erros, 'salario_min') ?>
       </div>
       <div class="<?= classe_campo($erros, 'salario_max') ?>">
-        <label class="campo-rotulo" for="salario_max">Salário máximo (R$)</label>
+        <label class="campo-rotulo" for="salario_max">Salário máximo</label>
         <input class="entrada" id="salario_max" name="salario_max" type="number" min="0" value="<?= $valor('salario_max') ?>">
         <?= erro_campo($erros, 'salario_max') ?>
       </div>
@@ -107,7 +127,7 @@ $ativas = count(array_filter($vagas, fn ($vaga) => $vaga->ativa));
               <small><?= e($vaga->empresa) ?><?= $vaga->faixaSalarial() ? ' · ' . e($vaga->faixaSalarial()) : '' ?></small>
             </td>
             <td><?= e($vaga->senioridade->rotulo()) ?><small><?= e($vaga->area->rotulo()) ?></small></td>
-            <td><?= e($vaga->local()) ?></td>
+            <td><?= e($vaga->local()) ?><small><?= e($vaga->regiao->rotulo()) ?></small></td>
             <td><?= e(implode(', ', array_slice($vaga->stack, 0, 4))) ?></td>
             <td><?= data_br($vaga->criadoEm) ?></td>
             <td><span class="selo <?= $vaga->ativa ? 'selo-sucesso' : 'selo-neutro' ?>"><?= $vaga->ativa ? 'Ativa' : 'Pausada' ?></span></td>
