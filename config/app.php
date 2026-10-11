@@ -11,6 +11,7 @@ use App\Interfaces\MetodoPagamentoRepositoryInterface;
 use App\Interfaces\PagamentoRepositoryInterface;
 use App\Interfaces\PerfilEmpresaRepositoryInterface;
 use App\Interfaces\PerfilProfissionalRepositoryInterface;
+use App\Interfaces\RedefinicaoSenhaRepositoryInterface;
 use App\Interfaces\UsuarioRepositoryInterface;
 use App\Interfaces\VagaRepositoryInterface;
 use App\Repositories\AssinaturaRepository;
@@ -20,6 +21,7 @@ use App\Repositories\MetodoPagamentoRepository;
 use App\Repositories\PagamentoRepository;
 use App\Repositories\PerfilEmpresaRepository;
 use App\Repositories\PerfilProfissionalRepository;
+use App\Repositories\RedefinicaoSenhaRepository;
 use App\Repositories\UsuarioRepository;
 use App\Repositories\VagaRepository;
 
@@ -95,6 +97,18 @@ return [
         ],
     ],
 
+    // E-mails do sistema (recuperação de senha). Com MAIL_SMTP_HOST usa SMTP; sem, usa o mail() do PHP.
+    // MAIL_DE precisa ser um endereço do seu domínio (ex.: nao-responda@devacancy.online) para não cair no spam.
+    'email' => [
+        'de' => Ambiente::obter('MAIL_DE', 'nao-responda@' . (parse_url(Ambiente::obter('APP_URL', 'http://devacancy.test'), PHP_URL_HOST) ?: 'devacancy.test')),
+        'nome' => Ambiente::obter('APP_NOME', 'Devacancy'),
+        'smtp_host' => Ambiente::obter('MAIL_SMTP_HOST', ''),
+        'smtp_porta' => Ambiente::obter('MAIL_SMTP_PORTA', '465'),
+        'smtp_seguranca' => Ambiente::obter('MAIL_SMTP_SEGURANCA', 'ssl'),
+        'smtp_usuario' => Ambiente::obter('MAIL_SMTP_USUARIO', ''),
+        'smtp_senha' => Ambiente::obter('MAIL_SMTP_SENHA', ''),
+    ],
+
     // Rodar migrações pelo navegador em /install (sem acesso ao terminal). Sem MIGRACOES_TOKEN (16+ caracteres) a rota não existe.
     'instalador' => [
         'token' => Ambiente::obter('MIGRACOES_TOKEN', ''),
@@ -120,5 +134,6 @@ return [
         CandidaturaRepositoryInterface::class => CandidaturaRepository::class,
         ComissaoRepositoryInterface::class => ComissaoRepository::class,
         MetodoPagamentoRepositoryInterface::class => MetodoPagamentoRepository::class,
+        RedefinicaoSenhaRepositoryInterface::class => RedefinicaoSenhaRepository::class,
     ],
 ];
