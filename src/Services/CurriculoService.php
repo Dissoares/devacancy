@@ -20,20 +20,20 @@ final class CurriculoService
     public function armazenar(array $upload): array
     {
         if (($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file($upload['tmp_name'])) {
-            throw new ValidacaoException(['curriculo' => 'Não foi possível receber o arquivo. Tente novamente.']);
+            throw new ValidacaoException(['curriculo' => t('curriculo.falha_recebimento')]);
         }
         if ($upload['size'] > self::TAMANHO_MAXIMO) {
-            throw new ValidacaoException(['curriculo' => 'O currículo deve ter no máximo 5 MB.']);
+            throw new ValidacaoException(['curriculo' => t('curriculo.tamanho')]);
         }
 
         $tipo = (new finfo(FILEINFO_MIME_TYPE))->file($upload['tmp_name']);
         if ($tipo !== self::TIPO_PERMITIDO) {
-            throw new ValidacaoException(['curriculo' => 'Envie o currículo em PDF.']);
+            throw new ValidacaoException(['curriculo' => t('curriculo.formato')]);
         }
 
         $arquivo = bin2hex(random_bytes(16)) . '.pdf';
         if (!move_uploaded_file($upload['tmp_name'], $this->diretorio() . '/' . $arquivo)) {
-            throw new ValidacaoException(['curriculo' => 'Não foi possível salvar o arquivo. Tente novamente.']);
+            throw new ValidacaoException(['curriculo' => t('curriculo.falha_salvar')]);
         }
 
         $nomeOriginal = mb_substr(preg_replace('/[^\p{L}\p{N}._ -]/u', '', basename((string) $upload['name'])) ?: 'curriculo.pdf', 0, 200);
