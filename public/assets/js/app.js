@@ -5,6 +5,7 @@
   'use strict';
 
   const tokenCsrf = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+  const textos = window.TEXTOS ?? {};
 
   // Todo pedido HTMX leva o token CSRF no cabeçalho.
   document.addEventListener('htmx:configRequest', (evento) => {
@@ -22,13 +23,11 @@
   // Erros de rede/servidor em requisições HTMX viram um aviso discreto.
   document.addEventListener('htmx:responseError', (evento) => {
     const status = evento.detail.xhr.status;
-    const mensagem = status === 403
-      ? 'Sua sessão expirou. Atualize a página e tente novamente.'
-      : 'Algo deu errado. Tente novamente em instantes.';
+    const mensagem = status === 403 ? textos.sessao_expirada : textos.erro_generico;
     mostrarAviso(mensagem);
   });
 
-  document.addEventListener('htmx:sendError', () => mostrarAviso('Sem conexão. Verifique sua internet.'));
+  document.addEventListener('htmx:sendError', () => mostrarAviso(textos.sem_conexao));
 
   function mostrarAviso(mensagem, tipo = 'erro') {
     let aviso = document.querySelector('.aviso-flutuante');
@@ -45,5 +44,5 @@
     aviso.temporizador = setTimeout(() => aviso.classList.remove('visivel'), 4500);
   }
 
-  window.Devacancy = { mostrarAviso };
+  window.Devacancy = { ...(window.Devacancy ?? {}), mostrarAviso };
 })();
