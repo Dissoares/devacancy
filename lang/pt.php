@@ -643,4 +643,11 @@ return [
     'pagamento.paypal_email_nota' => 'Pagamento único pelo PayPal, sem renovação automática. Você volta aqui e o plano é liberado assim que o PayPal confirmar.',
     'pagamento.paypal_pagar' => 'Pagar :valor no PayPal',
     'pagamento.paypal_depois' => 'Depois de pagar, volte para esta página: o plano é liberado sozinho, em geral em menos de um minuto. Se passar de 15 minutos, fale com suporte@devacancy.online.',
+    'planos.metodo_stripe' => 'Cartão',
+    'planos.stripe_continuar' => 'Pagar com cartão',
+    'planos.stripe_simular' => 'Simular pagamento com cartão',
+    'planos.stripe_simulacao' => 'Modo de teste: sem chave do Stripe, este botão ativa o plano como se o cartão tivesse sido cobrado.',
+    'planos.stripe_nota' => 'Pagamento seguro pelo Stripe, com cobrança recorrente. Cancele quando quiser. Não guardamos os dados do seu cartão.',
+    'pagamento.falha_stripe' => 'Não conseguimos abrir o pagamento com cartão agora. Tente novamente em instantes.',
+    'pagamento.stripe_processando' => 'Recebemos o seu pagamento! A liberação do plano pode levar alguns instantes.',
 ];
