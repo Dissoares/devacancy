@@ -23,6 +23,7 @@
           <a class="<?= ativo('/admin/candidaturas') ?>" href="/admin/candidaturas"><?= icone('raio', 'icone icone-sm') ?> Candidaturas</a>
           <a class="<?= ativo('/admin/comissoes') ?>" href="/admin/comissoes"><?= icone('usuarios', 'icone icone-sm') ?> Comissões</a>
           <a class="<?= ativo('/admin/pagamentos') ?>" href="/admin/pagamentos"><?= icone('cadeado', 'icone icone-sm') ?> Pagamentos</a>
+          <a class="<?= ativo('/admin/migracoes') ?>" href="/admin/migracoes"><?= icone('raio', 'icone icone-sm') ?> Migrações</a>
           <a class="<?= ativo('/admin/analytics') ?>" href="/admin/analytics"><?= icone('grafico', 'icone icone-sm') ?> Analytics</a>
         </nav>
       <?php endif; ?>
