@@ -669,4 +669,13 @@ return [
     'vaga_publica.aplicar_logado' => 'Ver no meu painel',
     'funil.vaga_escolhida' => 'Você escolheu: :titulo',
     'funil.vaga_escolhida_nota' => 'Crie sua conta para a nossa equipe se candidatar por você. A empresa é liberada para assinantes.',
+    'planos.metodo_pix_manual' => 'PIX',
+    'pagamento.pix_manual_continuar' => 'Gerar PIX',
+    'pagamento.pix_manual_nota' => 'Você recebe o código PIX já com o valor do plano. Depois de pagar, avise e a gente libera o plano assim que confirmar o recebimento.',
+    'pagamento.pix_manual_passos' => 'Abra o app do seu banco, escolha Pix, depois Pix copia e cola (ou leia o QR code) e pague :valor.',
+    'pagamento.qr_leia' => 'Ou leia o QR code com a câmera do app do seu banco',
+    'pagamento.pix_manual_depois' => 'Pagou? Toque no botão para a nossa equipe conferir. A liberação é manual e costuma levar poucos minutos; esta página atualiza sozinha.',
+    'pagamento.ja_paguei' => 'Já paguei',
+    'pagamento.aviso_enviado' => 'Aviso enviado! Nossa equipe vai conferir o PIX e liberar o seu plano, em geral em poucos minutos.',
+    'pagamento.aviso_indisponivel' => 'Este pagamento não está mais aguardando.',
 ];
