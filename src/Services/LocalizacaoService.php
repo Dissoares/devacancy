@@ -28,7 +28,7 @@ final class LocalizacaoService
     public function detectar(Requisicao $requisicao): array
     {
         $simulado = strtoupper((string) $requisicao->consulta('pais', ''));
-        if (configuracao('app.ambiente') === 'local' && preg_match('/^[A-Z]{2}$/', $simulado)) {
+        if (ambiente_local() && preg_match('/^[A-Z]{2}$/', $simulado)) {
             Sessao::definir(self::CHAVE_SESSAO, ['ip' => $requisicao->ip(), 'cidade' => null, 'estado' => null, 'pais' => $simulado]);
         }
 

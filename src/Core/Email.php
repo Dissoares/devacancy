@@ -39,7 +39,7 @@ final class Email
             return $this->viaSmtp($para, $de, $assuntoCodificado, $cabecalhos, $corpo);
         }
 
-        if (configuracao('app.ambiente') === 'local') {
+        if (ambiente_local()) {
             $this->registrar("Para: {$para}\nAssunto: {$assunto}\n\n{$texto}\n");
             return true;
         }

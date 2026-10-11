@@ -125,13 +125,13 @@ final class AssinaturaService
     /** Sem chave da ExPay em ambiente local, o PIX gera cobranças de mentira para testar o fluxo. */
     public function simulacaoPix(): bool
     {
-        return !$this->expay->configurado() && configuracao('app.ambiente') === 'local';
+        return !$this->expay->configurado() && ambiente_local();
     }
 
     /** Sem credenciais do PayPal em ambiente local, o botão do PayPal vira um botão de simulação. */
     public function simulacaoPaypal(): bool
     {
-        return !$this->paypal->configurado() && configuracao('app.ambiente') === 'local';
+        return !$this->paypal->configurado() && ambiente_local();
     }
 
     public function paypalClienteId(): string
@@ -336,7 +336,7 @@ final class AssinaturaService
     /** Sem chave do Stripe em ambiente local, o botão de cartão vira um botão de simulação. */
     public function simulacaoStripe(): bool
     {
-        return !$this->stripe->configurado() && configuracao('app.ambiente') === 'local';
+        return !$this->stripe->configurado() && ambiente_local();
     }
 
     /**

@@ -53,7 +53,7 @@ final class PaypalService
     public function ipnVerdadeiro(string $corpo): bool
     {
         parse_str($corpo, $campos);
-        if (configuracao('app.ambiente') === 'local' && ($campos['ipn_teste'] ?? '') === '1') {
+        if (ambiente_local() && ($campos['ipn_teste'] ?? '') === '1') {
             return true;
         }
 

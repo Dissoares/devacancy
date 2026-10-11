@@ -73,7 +73,7 @@ final class Aplicacao
         );
         error_log($registro, 3, RAIZ . '/storage/logs/erros.log');
 
-        $detalhe = configuracao('app.ambiente') === 'local' ? $erro->getMessage() : null;
+        $detalhe = ambiente_local() ? $erro->getMessage() : null;
 
         return Resposta::html(
             Visao::renderizar('errors/500', ['titulo' => t('erro.500_titulo'), 'detalhe' => $detalhe], 'site'),

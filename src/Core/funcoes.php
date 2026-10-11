@@ -199,3 +199,18 @@ function url_vaga(\App\Entities\Vaga $vaga): string
     $slug = trim(mb_substr($slug, 0, 60), '-');
     return url('/vaga/' . $vaga->id . ($slug !== '' ? '-' . $slug : ''));
 }
+
+/**
+ * Modo de desenvolvimento: só vale com APP_AMBIENTE=local E com o APP_URL apontando para uma máquina local
+ * (.test, localhost, 127.0.0.1). Assim, um APP_AMBIENTE=local esquecido no servidor não liga simulações de
+ * pagamento, avisos de teste nem detalhes de erro para o público. O endereço vem da configuração, nunca do navegador.
+ */
+function ambiente_local(): bool
+{
+    if (configuracao('app.ambiente') !== 'local') {
+        return false;
+    }
+
+    $host = strtolower((string) parse_url((string) configuracao('app.url'), PHP_URL_HOST));
+    return $host === 'localhost' || $host === '127.0.0.1' || str_ends_with($host, '.test') || str_ends_with($host, '.localhost');
+}
