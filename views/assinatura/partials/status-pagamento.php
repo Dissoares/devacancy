@@ -9,35 +9,35 @@ use App\Enums\StatusPagamento;
 
   <?php if ($pagamento->estaPendente()): ?>
     <?php if ($pagamento->pixQrBase64): ?>
-      <img class="qr-pix" src="data:image/png;base64,<?= e($pagamento->pixQrBase64) ?>" alt="QR code do PIX" width="220" height="220">
+      <img class="qr-pix" src="data:image/png;base64,<?= e($pagamento->pixQrBase64) ?>" alt="<?= e(t('pagamento.qr_alt')) ?>" width="220" height="220">
     <?php endif; ?>
 
     <?php if ($pagamento->pixCopiaCola): ?>
-      <label class="campo-rotulo" for="pix-copia-cola">PIX copia e cola</label>
+      <label class="campo-rotulo" for="pix-copia-cola"><?= e(t('pagamento.copia_cola')) ?></label>
       <div class="copia-cola">
         <input class="entrada mono" id="pix-copia-cola" value="<?= e($pagamento->pixCopiaCola) ?>" readonly>
-        <button class="botao botao-secundario" type="button" data-copiar="#pix-copia-cola"><?= icone('arquivo', 'icone icone-sm') ?> Copiar</button>
+        <button class="botao botao-secundario" type="button" data-copiar="#pix-copia-cola" data-mensagem="<?= e(t('pagamento.copiado')) ?>"><?= icone('arquivo', 'icone icone-sm') ?> <?= e(t('pagamento.copiar')) ?></button>
       </div>
     <?php endif; ?>
 
-    <p class="aguardando"><span class="carregando" aria-hidden="true"></span> Aguardando a confirmação do pagamento…</p>
+    <p class="aguardando"><span class="carregando" aria-hidden="true"></span> <?= e(t('pagamento.aguardando')) ?></p>
     <?php if ($pagamento->expiraEm): ?>
-      <small class="texto-suave">O código vale até <?= data_br($pagamento->expiraEm, true) ?>.</small>
+      <small class="texto-suave"><?= e(t('pagamento.vale_ate', ['data' => data_br($pagamento->expiraEm, true)])) ?></small>
     <?php endif; ?>
 
     <?php if ($simulacao): ?>
       <div class="alerta alerta-aviso">
         <?= icone('ajustes') ?>
-        <span>Modo simulação (ambiente local, sem chave da ExPay).
-          <button class="link" type="button" hx-post="/pagamento/<?= $pagamento->id ?>/simular" hx-target="#status-pagamento" hx-swap="outerHTML">Simular pagamento aprovado</button>
+        <span><?= e(t('pagamento.simulacao')) ?>
+          <button class="link" type="button" hx-post="/pagamento/<?= $pagamento->id ?>/simular" hx-target="#status-pagamento" hx-swap="outerHTML"><?= e(t('pagamento.simular')) ?></button>
         </span>
       </div>
     <?php endif; ?>
   <?php else: ?>
     <div class="alerta <?= $pagamento->status === StatusPagamento::Pago ? 'alerta-sucesso' : 'alerta-erro' ?>">
       <?= icone($pagamento->status === StatusPagamento::Pago ? 'check' : 'x') ?>
-      <span>Pagamento <?= e(mb_strtolower($pagamento->status->rotulo())) ?>.</span>
+      <span><?= e(t('pagamento.status', ['status' => $pagamento->status->rotulo()])) ?></span>
     </div>
-    <a class="botao botao-primario" href="/planos?plano=<?= e($pagamento->plano) ?>">Gerar um novo PIX</a>
+    <a class="botao botao-primario" href="/planos?plano=<?= e($pagamento->plano) ?>"><?= e(t('pagamento.novo_pix')) ?></a>
   <?php endif; ?>
 </div>
