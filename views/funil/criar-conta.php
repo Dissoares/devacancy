@@ -1,4 +1,4 @@
-<?php /** @var int $total @var array $valores @var array $erros @var ?string $erro */ ?>
+<?php /** @var int $total @var array $valores @var array $erros @var ?string $erro @var ?\App\Entities\Vaga $vagaEscolhida */ ?>
 <section class="criar-conta cartao">
   <span class="selo selo-sucesso selo-ponto"><?= e(t('funil.conta_selo')) ?></span>
   <h1>
@@ -7,6 +7,16 @@
         : e(t('funil.conta_titulo_sem_vagas')) ?>
   </h1>
   <p class="texto-suave"><?= e(t('funil.conta_texto')) ?></p>
+
+  <?php if (!empty($vagaEscolhida)): ?>
+    <div class="vaga-escolhida">
+      <?= icone('check', 'icone icone-sm') ?>
+      <div>
+        <strong><?= e(t('funil.vaga_escolhida', ['titulo' => $vagaEscolhida->titulo])) ?></strong>
+        <small><?= e(t('funil.vaga_escolhida_nota')) ?></small>
+      </div>
+    </div>
+  <?php endif; ?>
 
   <?php if (!empty($erro)): ?>
     <div class="alerta alerta-aviso"><?= icone('relogio') ?><span><?= e($erro) ?></span></div>

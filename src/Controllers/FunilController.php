@@ -10,7 +10,9 @@ use App\Core\Resposta;
 use App\Core\Sessao;
 use App\Core\Visao;
 use App\Entities\PerfilProfissional;
+use App\Entities\Vaga;
 use App\Enums\AreaAtuacao;
+use App\Exceptions\NaoEncontradoException;
 use App\Exceptions\ValidacaoException;
 use App\Services\AutenticacaoService;
 use App\Services\FunilService;
@@ -128,6 +130,7 @@ final class FunilController
             'valores' => [],
             'erros' => [],
             'erro' => Sessao::obterFlash('erro'),
+            'vagaEscolhida' => $this->vagaEscolhida(),
         ], 'funil'));
     }
 
@@ -146,10 +149,26 @@ final class FunilController
         }
 
         $this->funil->concluirCadastro($usuario);
+        Sessao::remover(VagaPublicaController::CHAVE_SESSAO_VAGA);
         $this->autenticacao->iniciarSessao($this->usuarios->buscarPorId($usuario->id));
         Sessao::flash('sucesso', t('funil.conta_criada'));
 
         return Resposta::redirecionarHtmx('/painel');
+    }
+
+    /** A vaga em que a pessoa clicou "Aplicar" (no feed ou num link compartilhado), se ainda estiver aberta. */
+    private function vagaEscolhida(): ?Vaga
+    {
+        $id = (int) Sessao::obter(VagaPublicaController::CHAVE_SESSAO_VAGA, 0);
+        if ($id === 0) {
+            return null;
+        }
+
+        try {
+            return $this->vagas->publica($id);
+        } catch (NaoEncontradoException) {
+            return null;
+        }
     }
 
     private function paginaQuestionario(Requisicao $requisicao, array $valores, array $erros, int $passoInicial = 0): Resposta
