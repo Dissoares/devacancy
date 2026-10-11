@@ -22,8 +22,10 @@ interface VagaRepositoryInterface
     /** @return array<string, array{total: int, ativas: int}> contagem por fonte (manual, github, adzuna...) */
     public function contarPorFonte(): array;
 
-    /** @return Vaga[] mais recentes primeiro */
-    public function listar(int $limite = 200): array;
+    /** @return Vaga[] mais recentes primeiro; $ativa filtra por status (null = todas) */
+    public function listar(?bool $ativa = null, int $limite = 200): array;
+
+    public function excluir(int $id): void;
 
     /** @return Vaga[] todas as vagas ativas cadastradas nos últimos N dias */
     public function listarAtivas(int $diasRecentes, int $limite = 2000): array;

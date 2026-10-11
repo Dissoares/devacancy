@@ -43,14 +43,19 @@ final class VagaService
     }
 
     /** @return Vaga[] */
-    public function listar(): array
+    public function listar(?bool $ativa = null): array
     {
-        return $this->vagas->listar();
+        return $this->vagas->listar($ativa);
     }
 
     public function alternarAtiva(int $id): void
     {
         $this->vagas->alternarAtiva($id);
+    }
+
+    public function excluir(int $id): void
+    {
+        $this->vagas->excluir($id);
     }
 
     /** @return array<string, array{total: int, ativas: int}> */

@@ -75,12 +75,20 @@ final class VagaRepository implements VagaRepositoryInterface
         return $porFonte;
     }
 
-    public function listar(int $limite = 200): array
+    public function listar(?bool $ativa = null, int $limite = 200): array
     {
-        $consulta = $this->pdo->prepare('SELECT * FROM vagas ORDER BY criado_em DESC, id DESC LIMIT ?');
+        $consulta = $this->pdo->prepare(sprintf(
+            'SELECT * FROM vagas %s ORDER BY criado_em DESC, id DESC LIMIT ?',
+            $ativa === null ? '' : 'WHERE ativa = ' . ($ativa ? '1' : '0'),
+        ));
         $consulta->bindValue(1, $limite, PDO::PARAM_INT);
         $consulta->execute();
         return array_map(Vaga::deLinha(...), $consulta->fetchAll());
+    }
+
+    public function excluir(int $id): void
+    {
+        $this->pdo->prepare('DELETE FROM vagas WHERE id = ?')->execute([$id]);
     }
 
     public function listarAtivas(int $diasRecentes, int $limite = 2000): array
