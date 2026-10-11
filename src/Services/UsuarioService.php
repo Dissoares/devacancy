@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Core\Indicacao;
 use App\Core\Transacao;
 use App\Core\Validador;
 use App\DTOs\CadastroUsuarioDTO;
@@ -45,12 +46,16 @@ final class UsuarioService
             throw new ValidacaoException(['email' => t('cadastro.email_existe')]);
         }
 
-        return $this->usuarios->criar(
+        $usuario = $this->usuarios->criar(
             $cadastro->tipo,
             $cadastro->nome,
             $cadastro->email,
             password_hash($cadastro->senha, PASSWORD_DEFAULT),
+            codigoIndicacaoUsado: Indicacao::codigoCapturado(),
         );
+        Indicacao::limpar();
+
+        return $usuario;
     }
 
     /**
@@ -73,7 +78,7 @@ final class UsuarioService
         $apelido = preg_replace('/[._\-+\d]+/', ' ', strstr($email, '@', true));
         $nome = mb_convert_case(trim($apelido) ?: 'Dev', MB_CASE_TITLE);
 
-        return $this->usuarios->criar(
+        $usuario = $this->usuarios->criar(
             TipoUsuario::Profissional,
             mb_substr($nome, 0, 120),
             $email,
@@ -81,12 +86,22 @@ final class UsuarioService
             null,
             $idioma,
             $pais,
+            Indicacao::codigoCapturado(),
         );
+        Indicacao::limpar();
+
+        return $usuario;
     }
 
     public function emailDisponivel(string $email): bool
     {
         return !$this->usuarios->emailExiste(mb_strtolower(trim($email)));
+    }
+
+    /** Contas criadas antes do programa de indicação não tinham código; gera na primeira vez que precisar. */
+    public function garantirCodigoIndicacao(Usuario $usuario): string
+    {
+        return $this->usuarios->garantirCodigoIndicacao($usuario->id);
     }
 
     public function buscarPorId(int $id): Usuario

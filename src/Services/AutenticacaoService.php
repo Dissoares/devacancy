@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\Idioma;
+use App\Core\Indicacao;
 use App\Core\Sessao;
 use App\DTOs\UsuarioSocialDTO;
 use App\Entities\Usuario;
@@ -55,7 +56,8 @@ final class AutenticacaoService
 
         if ($usuario === null) {
             $tipo = in_array($tipoPretendido, TipoUsuario::publicos(), true) ? $tipoPretendido : TipoUsuario::Profissional;
-            $usuario = $this->usuarios->criar($tipo, $social->nome, $social->email, null, $social->avatarUrl, Idioma::atual(), $pais);
+            $usuario = $this->usuarios->criar($tipo, $social->nome, $social->email, null, $social->avatarUrl, Idioma::atual(), $pais, Indicacao::codigoCapturado());
+            Indicacao::limpar();
         }
 
         $this->usuarios->vincularContaSocial($usuario->id, $social->provedor, $social->provedorId);
