@@ -8,6 +8,16 @@
 use App\Core\Idioma;
 
 $escolhido = $valores['plano'] ?? 'trimestral';
+
+$resumoPlanos = [];
+foreach ($planos as $chave => $plano) {
+    $precoBruto = $plano['precos'][$moeda];
+    $resumoPlanos[$chave] = [
+        'nome' => t('plano.' . $chave),
+        'preco' => moeda($precoBruto / $plano['divisor'], $moeda),
+        'periodo' => t('planos.por_' . $plano['periodo']),
+    ];
+}
 ?>
 <section class="cabecalho-planos">
   <?php if ($reservadas > 0): ?>
@@ -53,6 +63,16 @@ $escolhido = $valores['plano'] ?? 'trimestral';
         <?php endforeach; ?>
       </div>
       <?= erro_campo($erros, 'plano') ?>
+    </div>
+
+    <div class="resumo-plano" data-resumo-plano data-planos="<?= e(json_encode($resumoPlanos)) ?>">
+      <div>
+        <span class="resumo-plano-rotulo"><?= e(t('planos.resumo_total')) ?></span>
+        <strong class="resumo-plano-nome" data-resumo-nome><?= e($resumoPlanos[$escolhido]['nome']) ?></strong>
+      </div>
+      <div class="resumo-plano-valor">
+        <strong data-resumo-preco><?= e($resumoPlanos[$escolhido]['preco']) ?></strong><small>/<span data-resumo-periodo><?= e($resumoPlanos[$escolhido]['periodo']) ?></span></small>
+      </div>
     </div>
 
     <?php if ($metodos === []): ?>

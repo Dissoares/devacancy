@@ -98,6 +98,8 @@ return [
     'js.adicionar_mais' => 'Add more…',
     'js.limite_arquivo' => 'the limit is 5 MB',
     'js.pronto_para_enviar' => 'ready to upload',
+    'js.cpf_valido' => 'Valid CPF',
+    'js.cpf_invalido' => 'Check the CPF you entered',
 
     // ---------- Login and sign-up ----------
     'auth.entrar' => 'Log in',
@@ -335,6 +337,7 @@ return [
     'planos.ja_ativa' => 'Your subscription is active until :data. Paying now adds the new period to the current one.',
     'planos.escolha' => 'Choose your plan',
     'planos.mais_escolhido' => 'Most popular',
+    'planos.resumo_total' => 'Total',
     'planos.por_semana' => 'week',
     'planos.por_mes' => 'month',
     'planos.cobrado_semana' => 'Billed weekly',

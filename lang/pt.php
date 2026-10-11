@@ -98,6 +98,8 @@ return [
     'js.adicionar_mais' => 'Adicionar mais…',
     'js.limite_arquivo' => 'o limite é 5 MB',
     'js.pronto_para_enviar' => 'pronto para enviar',
+    'js.cpf_valido' => 'CPF válido',
+    'js.cpf_invalido' => 'Confira o CPF digitado',
 
     // ---------- Login e cadastro ----------
     'auth.entrar' => 'Entrar',
@@ -335,6 +337,7 @@ return [
     'planos.ja_ativa' => 'Sua assinatura está ativa até :data. Pagar agora soma o novo período ao atual.',
     'planos.escolha' => 'Escolha o plano',
     'planos.mais_escolhido' => 'Mais escolhido',
+    'planos.resumo_total' => 'Total',
     'planos.por_semana' => 'semana',
     'planos.por_mes' => 'mês',
     'planos.cobrado_semana' => 'Cobrado por semana',
