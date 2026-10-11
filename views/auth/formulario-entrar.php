@@ -21,6 +21,8 @@
     </div>
   </div>
 
+  <a class="link-esqueci" href="/esqueci-senha<?= !empty($email) ? '?email=' . urlencode($email) : '' ?>"><?= e(t('recuperar.link')) ?></a>
+
   <button class="botao botao-primario botao-grande botao-bloco" type="submit">
     <span class="carregando" aria-hidden="true"></span>
     <span class="rotulo-botao"><?= e(t('auth.entrar')) ?></span>
