@@ -91,7 +91,7 @@ As duas fontes usam o mesmo classificador (`App\Core\ClassificadorVaga`) para ad
 O que precisa estar certo antes de divulgar. Depois de subir os arquivos, abra **Admin → Sistema → Saúde do sistema**: a página confere quase tudo abaixo sozinha.
 
 1. **Arquivos**: suba o projeto inteiro (inclusive `vendor/`, `storage/fontes/` e `public/assets/js/vendor/pdfjs/`). Não suba o `.env` do seu computador nem a pasta `storage/logs/`.
-2. **`.env` mínimo no servidor**: só a conexão com o banco (`DB_*`). Todo o resto é configurado em **Admin → Configurações**.
+2. **`.env` mínimo no servidor**: `APP_URL`, `APP_AMBIENTE=producao` e a conexão com o banco (`DB_*`). Todo o resto (pagamentos, e-mail, login social, vagas) é configurado em **Admin → Configurações**, e o que for salvo lá vale no lugar do `.env`.
 3. **Banco**: rode as migrações em **Admin → Banco de dados**. Sem acesso ao admin ainda, use `/install` com `MIGRACOES_TOKEN` no `.env` (e remova o token depois).
 4. **Site**: em Configurações → Site, endereço `https://seudominio` e ambiente **Produção**.
 5. **Pagamentos**: configure ao menos uma forma para o Brasil (Asaas, ou PIX manual enquanto isso) e uma para o exterior (Stripe ou PayPal). Cadastre os webhooks nos provedores, usando os endereços mostrados nos cartões.
