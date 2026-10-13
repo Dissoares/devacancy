@@ -22,7 +22,7 @@ final class VagaService
 {
     /** Só entram no match vagas cadastradas nos últimos N dias. */
     /** Vagas criadas há mais dias que isto saem do site (a vaga provavelmente já foi preenchida). */
-    public const DIAS_VALIDADE = 30;
+    public const DIAS_VALIDADE = 60;
 
     public function __construct(private readonly VagaRepositoryInterface $vagas)
     {
