@@ -31,6 +31,7 @@ $imagemAlt ??= $titulo ?? 'Devacancy';
 <link rel="canonical" href="<?= e($urlCanonica) ?>">
 <?php endif; ?>
 <meta property="og:locale" content="<?= \App\Core\Idioma::atual() === 'pt' ? 'pt_BR' : 'en_US' ?>">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
 <?php if ($dadosEstruturados): ?>
