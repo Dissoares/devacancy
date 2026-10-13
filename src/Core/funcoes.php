@@ -243,3 +243,39 @@ function provedores_sociais(): array
             && configuracao("oauth.{$provedor->value}.cliente_segredo") !== '',
     ));
 }
+
+/** "mar 2021 – atual" a partir de "2021-03" e do fim (ou atual). */
+function periodo_experiencia(?string $inicio, ?string $fim, bool $atual): string
+{
+    $meses = Idioma::atual() === 'pt'
+        ? ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
+        : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    $formatar = fn (string $anoMes): string => $meses[max(0, min(11, (int) substr($anoMes, 5, 2) - 1))] . ' ' . substr($anoMes, 0, 4);
+
+    if ($inicio === null) {
+        return '';
+    }
+    return $formatar($inicio) . ' – ' . ($atual || $fim === null ? t('perfilpg.atual') : $formatar($fim));
+}
+
+/** "3 anos 7 meses" entre dois "AAAA-MM" (o fim vazio vale hoje). */
+function duracao_experiencia(?string $inicio, ?string $fim): string
+{
+    if ($inicio === null) {
+        return '';
+    }
+    $total = ((int) ($fim === null ? date('Y') : substr($fim, 0, 4)) * 12 + (int) ($fim === null ? date('n') : substr($fim, 5, 2)))
+        - ((int) substr($inicio, 0, 4) * 12 + (int) substr($inicio, 5, 2)) + 1;
+    $total = max(1, $total);
+    $anos = intdiv($total, 12);
+    $meses = $total % 12;
+
+    $partes = [];
+    if ($anos > 0) {
+        $partes[] = $anos . ' ' . t($anos === 1 ? 'perfilpg.ano' : 'perfilpg.anos');
+    }
+    if ($meses > 0) {
+        $partes[] = $meses . ' ' . t($meses === 1 ? 'perfilpg.mes' : 'perfilpg.meses');
+    }
+    return implode(' ', $partes);
+}
