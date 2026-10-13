@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\LimiteDeTentativas;
 use App\Core\Requisicao;
 use App\Core\Resposta;
 use App\Core\Sessao;
@@ -39,16 +40,26 @@ final class AutenticacaoController
     public function entrar(Requisicao $requisicao): Resposta
     {
         $email = (string) $requisicao->entrada('email', '');
+        $chaveIp = 'login-ip:' . $requisicao->ip();
+        $chaveEmail = 'login-email:' . mb_strtolower(trim($email));
+
+        // Freio por IP e por e-mail: vale mesmo para quem apaga o cookie a cada tentativa.
+        if (LimiteDeTentativas::excedeu($chaveIp, 30) || LimiteDeTentativas::excedeu($chaveEmail, 8)) {
+            return Resposta::html(Visao::parcial('auth/formulario-entrar', ['erro' => t('auth.muitas_tentativas'), 'email' => $email]));
+        }
 
         try {
             $usuario = $this->autenticacao->entrar($email, (string) $requisicao->entrada('senha', ''));
         } catch (AutenticacaoException $erro) {
+            LimiteDeTentativas::registrar($chaveIp, 900);
+            LimiteDeTentativas::registrar($chaveEmail, 900);
             return Resposta::html(Visao::parcial('auth/formulario-entrar', [
                 'erro' => $erro->getMessage(),
                 'email' => $email,
             ]));
         }
 
+        LimiteDeTentativas::limpar($chaveEmail);
         $this->autenticacao->iniciarSessao($usuario);
         return Resposta::redirecionarHtmx($this->autenticacao->destinoInicial($usuario));
     }

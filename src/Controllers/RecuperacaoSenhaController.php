@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\LimiteDeTentativas;
 use App\Core\Requisicao;
 use App\Core\Resposta;
 use App\Core\Sessao;
@@ -26,6 +27,12 @@ final class RecuperacaoSenhaController
     public function pedir(Requisicao $requisicao): Resposta
     {
         $email = trim((string) $requisicao->entrada('email', ''));
+        $chaveIp = 'senha-ip:' . $requisicao->ip();
+
+        if (LimiteDeTentativas::excedeu($chaveIp, 10)) {
+            return $this->paginaPedido(['email' => $email, 'erro' => t('auth.muitas_tentativas')], 429);
+        }
+        LimiteDeTentativas::registrar($chaveIp, 3600);
 
         try {
             $this->recuperacao->solicitar($email);

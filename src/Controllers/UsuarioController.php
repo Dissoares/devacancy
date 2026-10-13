@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\LimiteDeTentativas;
 use App\Core\Requisicao;
 use App\Core\Resposta;
 use App\Core\Sessao;
@@ -54,6 +55,16 @@ final class UsuarioController
     public function cadastrar(Requisicao $requisicao): Resposta
     {
         $dados = $requisicao->todos();
+        $chaveIp = 'cadastro-ip:' . $requisicao->ip();
+
+        if (LimiteDeTentativas::excedeu($chaveIp, 20)) {
+            return Resposta::html(Visao::parcial('auth/formulario-cadastro', [
+                'tipo' => TipoUsuario::tryFrom((string) ($dados['tipo'] ?? '')) ?? TipoUsuario::Profissional,
+                'valores' => array_diff_key($dados, ['senha' => 1]),
+                'erros' => ['email' => t('auth.muitas_tentativas')],
+            ]));
+        }
+        LimiteDeTentativas::registrar($chaveIp, 3600);
 
         try {
             $usuario = $this->usuarios->cadastrar($dados);
