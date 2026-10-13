@@ -80,7 +80,7 @@ Preencha a chave e o token do webhook da ExPay no painel e configure no painel d
 `php database/importar-vagas.php` importa vagas reais de duas fontes gratuitas, sempre pulando repetidas e anúncios com mais de 45 dias:
 
 - **GitHub**: vagas abertas dos repositórios de vagas da comunidade (lista em `config/app.php`, chave `github`), interpretando o título e a descrição da issue. Vagas restritas a moradores dos EUA/Canadá são puladas. Sem `GITHUB_TOKEN` no `.env`, o limite da API é 60 consultas por hora (sobe para 5.000 com o token).
-- **Adzuna**: agregador de vagas com API gratuita. Crie uma conta em [developer.adzuna.com/signup](https://developer.adzuna.com/signup) e preencha `ADZUNA_APP_ID`/`ADZUNA_APP_KEY` no `.env`; sem essas chaves, esse importador é pulado e só o do GitHub roda. Já vem filtrado para vagas no Brasil (`config/app.php`, chave `adzuna`).
+- **Adzuna**: agregador de vagas com API gratuita. Crie uma conta em [developer.adzuna.com/signup](https://developer.adzuna.com/signup) e preencha o App ID e a App Key em Admin → Configurações → Importação de vagas; sem essas chaves, esse importador é pulado e só o do GitHub roda. Já vem filtrado para vagas no Brasil (`config/app.php`, chave `adzuna`).
 
 As duas fontes usam o mesmo classificador (`App\Core\ClassificadorVaga`) para adivinhar área, senioridade, modelo de trabalho e stack a partir do texto. Agende o script para rodar 1x por dia.
 
