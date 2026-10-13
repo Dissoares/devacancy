@@ -6,7 +6,7 @@ Plataforma de candidaturas para desenvolvedores. PHP 8.3 puro + MySQL + HTMX, se
 
 ```bash
 composer dump-autoload -o
-cp .env.exemplo .env          # ajuste só o banco; o resto é no painel
+# crie um arquivo .env só com DB_HOST, DB_PORTA, DB_NOME, DB_USUARIO e DB_SENHA; o resto é no painel
 php database/instalar.php seu@email.com "SenhaForte123"   # cria banco, tabelas e o admin
 ```
 
