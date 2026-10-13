@@ -1,15 +1,15 @@
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
     <linearGradient id="gradiente-marca" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#2f6df6"/>
-      <stop offset="1" stop-color="#1c46c4"/>
+      <stop offset="0" stop-color="#1e40af"/>
+      <stop offset="1" stop-color="#12266b"/>
     </linearGradient>
   </defs>
 
   <symbol id="i-marca" viewBox="0 0 32 32">
     <rect width="32" height="32" rx="8" fill="url(#gradiente-marca)"/>
     <path d="M7.3 9.5 14 16l-6.7 6.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="m17.4 18.3 2.8 2.8 5.7-8.8" fill="none" stroke="#ff8a1f" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="m17.4 18.3 2.8 2.8 5.7-8.8" fill="none" stroke="#a9c4ff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
   </symbol>
 
   <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

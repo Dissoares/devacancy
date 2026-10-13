@@ -37,7 +37,7 @@ final class ImagemVagaService
             'local' => $vaga->local(),
             'salario' => $vaga->faixaSalarial(),
             'stack' => array_slice($vaga->stack, 0, 5),
-            'versao' => 3, // muda quando o desenho muda, para refazer as imagens guardadas
+            'versao' => 4, // muda quando o desenho muda, para refazer as imagens guardadas
             'rodape' => t('compartilhar.imagem_rodape'),
             'selo' => t('compartilhar.imagem_selo'),
         ];
@@ -164,11 +164,11 @@ final class ImagemVagaService
     /** O símbolo da marca (chevron + check) desenhado na grade de 32 unidades do favicon, na posição e tamanho dados. */
     private function simbolo(GdImage $imagem, int $x, int $y, int $lado): void
     {
-        $this->retanguloArredondado($imagem, $x, $y, $lado, $lado, (int) round($lado / 4), imagecolorallocate($imagem, 38, 104, 240));
+        $this->retanguloArredondado($imagem, $x, $y, $lado, $lado, (int) round($lado / 4), imagecolorallocate($imagem, 30, 64, 175));
         $k = $lado / 32;
         $traco = fn (array $pontos, int $cor) => $this->traco($imagem, array_map(fn (array $p) => [$x + $p[0] * $k, $y + $p[1] * $k], $pontos), 3.2 * $k, $cor);
         $traco([[7.3, 9.5], [14, 16], [7.3, 22.5]], imagecolorallocate($imagem, 255, 255, 255));
-        $traco([[17.4, 18.3], [20.2, 21.1], [25.9, 12.3]], imagecolorallocate($imagem, 255, 138, 31));
+        $traco([[17.4, 18.3], [20.2, 21.1], [25.9, 12.3]], imagecolorallocate($imagem, 169, 196, 255));
     }
 
     /** Linha grossa de pontas redondas ligando os pontos (coordenadas em px já na escala 1x). */
