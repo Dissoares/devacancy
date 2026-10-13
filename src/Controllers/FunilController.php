@@ -77,8 +77,7 @@ final class FunilController
     public function radar(Requisicao $requisicao): Resposta
     {
         return Resposta::html(Visao::parcial('funil/radar', [
-            'total' => $this->vagas->contarParaRespostas($requisicao->consultas(), $this->localizacao->noBrasil($requisicao)),
-        ]));
+        ] + $this->dadosDoRadar($requisicao->consultas(), $this->localizacao->noBrasil($requisicao))));
     }
 
     /** Análise animada e resultado. Funciona para visitantes (respostas na sessão) e para profissionais logados. */
@@ -179,6 +178,33 @@ final class FunilController
         }
     }
 
+    /**
+     * Número do radar e o que ele está contando: sem resposta nenhuma, todas as vagas abertas na região; com a área,
+     * as vagas da área; com mais respostas, as que combinam com o resumo (área · nível · tecnologias).
+     * @return array{total: int, noBrasil: bool, resumo: string, filtrado: bool}
+     */
+    private function dadosDoRadar(array $valores, bool $noBrasil): array
+    {
+        $partes = [];
+        if ($area = AreaAtuacao::tryFrom((string) ($valores['area'] ?? ''))) {
+            $partes[] = $area->rotulo();
+        }
+        $nivel = \App\Enums\Senioridade::tryFrom((string) ($valores['senioridade'] ?? ''));
+        if ($nivel) {
+            $partes[] = $nivel->rotulo();
+        }
+        $tecnologias = array_slice(\App\Core\ListaDeTags::normalizar((string) ($valores['stack'] ?? '')), 0, 2);
+        $extras = $nivel !== null || $tecnologias !== [] || !empty($valores['modelos']) || !empty($valores['regiao_vagas']);
+
+        return [
+            'total' => $this->vagas->contarParaRespostas($valores, $noBrasil),
+            'noBrasil' => $noBrasil,
+            'resumo' => implode(' · ', [...$partes, ...$tecnologias]),
+            'filtrado' => $extras,
+            'porArea' => $area !== null,
+        ];
+    }
+
     private function paginaQuestionario(Requisicao $requisicao, array $valores, array $erros, int $passoInicial = 0): Resposta
     {
         $local = $this->localizacao->detectar($requisicao);
@@ -191,7 +217,7 @@ final class FunilController
             'erros' => $erros,
             'noBrasil' => $noBrasil,
             'moeda' => $noBrasil ? 'BRL' : 'USD',
-            'radarTotal' => $this->vagas->contarParaRespostas($valores, $noBrasil),
+            'radar' => $this->dadosDoRadar($valores, $noBrasil),
             'passoInicial' => $passoInicial,
         ], 'funil'), $erros ? 422 : 200);
     }

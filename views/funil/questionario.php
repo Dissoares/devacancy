@@ -2,7 +2,7 @@
 /**
  * Questionário anônimo, uma pergunta por tela (o JS controla os passos; sem JS vira um formulário único).
  * @var array $valores @var array<string, string> $erros @var bool $noBrasil @var string $moeda
- * @var int $radarTotal vagas que já batem com as respostas (o radar se atualiza pelo HTMX a cada resposta)
+ * @var array $radar total de vagas e o que ele conta (o radar se atualiza pelo HTMX a cada resposta)
  */
 use App\Enums\AreaAtuacao;
 use App\Enums\IdiomaFalado;
@@ -194,7 +194,7 @@ $cabecalho = fn (string $pergunta, string $titulo, ?string $subtitulo = null): s
 
   <!-- Rodapé: no celular fica fixo na tela (contador, nota e botões juntos, sempre no mesmo lugar). -->
   <div class="questionario-rodape" data-rodape>
-    <?= parcial('funil/radar', ['total' => $radarTotal]) ?>
+    <?= parcial('funil/radar', $radar) ?>
 
     <p class="questionario-nota"><?= icone('cadeado', 'icone icone-sm') ?> <?= e(t('funil.nota_privacidade')) ?></p>
 

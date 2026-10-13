@@ -221,11 +221,7 @@ final class VagaService
     public function contarParaRespostas(array $dados, bool $noBrasil): int
     {
         $area = AreaAtuacao::tryFrom((string) ($dados['area'] ?? ''));
-        if ($area === null) {
-            return 0;
-        }
-
-        $areas = $this->areasAceitas($area);
+        $areas = $area !== null ? $this->areasAceitas($area) : null;
         $nivel = Senioridade::tryFrom((string) ($dados['senioridade'] ?? ''));
         $niveis = $nivel !== null ? $this->senioridadesAceitas($nivel) : null;
         $modelos = array_filter(array_map(fn ($modelo) => ModeloTrabalho::tryFrom((string) $modelo), (array) ($dados['modelos'] ?? [])));
@@ -234,7 +230,7 @@ final class VagaService
         $stack = $this->normalizarStack(ListaDeTags::normalizar((string) ($dados['stack'] ?? '')));
 
         return count(array_filter($this->vagas->listarAtivas(self::DIAS_VALIDADE), function (Vaga $vaga) use ($areas, $niveis, $modelos, $regioes, $stack): bool {
-            if (!in_array($vaga->area, $areas, true) || !in_array($vaga->regiao, $regioes, true)) {
+            if ($areas !== null && !in_array($vaga->area, $areas, true) || !in_array($vaga->regiao, $regioes, true)) {
                 return false;
             }
             if ($niveis !== null && !in_array($vaga->senioridade, $niveis, true)) {
@@ -329,7 +325,7 @@ final class VagaService
         $contagem = [];
         $rotulos = [];
         foreach ($this->vagas->listarAtivas(self::DIAS_VALIDADE) as $vaga) {
-            if (!in_array($vaga->area, $areas, true) || !in_array($vaga->regiao, $regioes, true)) {
+            if ($areas !== null && !in_array($vaga->area, $areas, true) || !in_array($vaga->regiao, $regioes, true)) {
                 continue;
             }
             // Só vagas que já pedem algo do que a pessoa sabe: as outras tecnologias dela não são o próximo passo.
