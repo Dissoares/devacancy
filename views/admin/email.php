@@ -18,6 +18,8 @@ $linhas = [
   </div>
 </section>
 
+<?= parcial('admin/partials/sistema') ?>
+
 <?php if ($teste): ?>
   <?php if ($teste['ok']): ?>
     <div class="alerta alerta-sucesso"><?= icone('check') ?><span>O servidor aceitou o e-mail para <?= e($teste['para']) ?>. Confira a caixa de entrada e o spam.</span></div>

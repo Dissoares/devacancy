@@ -48,4 +48,18 @@
   };
   filtros?.addEventListener('input', atualizarExportacao);
   filtros?.addEventListener('change', atualizarExportacao);
+
+  // Botões "Copiar" (tokens de webhook nas configurações).
+  document.addEventListener('click', async (evento) => {
+    const botao = evento.target.closest('[data-copiar]');
+    if (!botao) return;
+    const campo = document.querySelector(botao.dataset.copiar);
+    try {
+      await navigator.clipboard.writeText(campo.value);
+    } catch {
+      campo.select();
+      document.execCommand('copy');
+    }
+    window.Devacancy?.mostrarAviso(botao.dataset.mensagem, 'sucesso');
+  });
 })();

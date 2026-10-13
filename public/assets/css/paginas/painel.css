@@ -841,3 +841,148 @@
 .formulario-linha .entrada {
   min-width: 260px;
 }
+
+/* ---------- Configurações do site ---------- */
+.config-atalhos {
+  position: sticky;
+  top: 64px;
+  z-index: 5;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 10px 0;
+  overflow-x: auto;
+  background: var(--fundo, #f6f7fb);
+  scrollbar-width: none;
+}
+
+.config-atalhos a {
+  flex: none;
+  padding: 8px 14px;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  background: var(--superficie, #fff);
+  color: var(--texto);
+  font-size: .86rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.config-atalhos a:hover {
+  border-color: var(--primaria);
+  color: var(--primaria);
+}
+
+.config-grupos {
+  display: grid;
+  gap: 22px;
+}
+
+.config-grupo {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+  scroll-margin-top: 130px;
+}
+
+.config-grupo-topo h2 {
+  font-size: 1.25rem;
+  font-weight: 750;
+}
+
+.config-grupo-topo p {
+  margin-top: 4px;
+  max-width: 760px;
+}
+
+.config-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px 20px;
+}
+
+.config-rotulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.config-rotulo .selo {
+  font-size: .7rem;
+}
+
+.config-ajuda {
+  display: block;
+  margin-top: 6px;
+  font-size: .8rem;
+}
+
+.config-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  color: var(--texto-suave);
+  font-size: .82rem;
+  cursor: pointer;
+}
+
+.config-avisos,
+.config-acoes {
+  grid-column: 1 / -1;
+}
+
+.config-avisos {
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--primaria-suave);
+  list-style: none;
+  font-size: .86rem;
+  word-break: break-word;
+}
+
+.config-avisos li {
+  display: flex;
+  gap: 8px;
+}
+
+.config-avisos .icone {
+  flex: none;
+  margin-top: 2px;
+  color: var(--primaria);
+}
+
+/* Abas das telas de sistema (Configurações, e-mail, administradores, migrações) */
+.abas-sistema {
+  display: flex;
+  gap: 6px;
+  margin: -6px 0 18px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--borda);
+  scrollbar-width: none;
+}
+
+.abas-sistema a {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border-bottom: 2px solid transparent;
+  color: var(--texto-suave);
+  font-size: .9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.abas-sistema a:hover {
+  color: var(--texto);
+}
+
+.abas-sistema a.ativo {
+  border-bottom-color: var(--primaria);
+  color: var(--primaria);
+}

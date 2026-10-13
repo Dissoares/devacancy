@@ -4,6 +4,7 @@
 <head>
   <?= parcial('partials/head', ['titulo' => $titulo ?? null, 'estilos' => ['paginas/painel.css', 'paginas/assinatura.css']]) ?>
   <?php if ($usuario->ehAdmin()): ?>
+    <script src="<?= asset('js/componentes/formularios.js') ?>" defer></script>
     <script src="<?= asset('js/paginas/admin.js') ?>" defer></script>
   <?php else: ?>
     <script src="<?= asset('js/paginas/assinatura.js') ?>" defer></script>
@@ -23,10 +24,9 @@
           <a class="<?= ativo('/admin/candidaturas') ?>" href="/admin/candidaturas"><?= icone('raio', 'icone icone-sm') ?> Candidaturas</a>
           <a class="<?= ativo('/admin/comissoes') ?>" href="/admin/comissoes"><?= icone('usuarios', 'icone icone-sm') ?> Comissões</a>
           <a class="<?= ativo('/admin/pagamentos') ?>" href="/admin/pagamentos"><?= icone('cadeado', 'icone icone-sm') ?> Pagamentos</a>
-          <a class="<?= ativo('/admin/migracoes') ?>" href="/admin/migracoes"><?= icone('raio', 'icone icone-sm') ?> Migrações</a>
-          <a class="<?= ativo('/admin/email') ?>" href="/admin/email"><?= icone('email', 'icone icone-sm') ?> E-mail</a>
-          <a class="<?= ativo('/admin/administradores') ?>" href="/admin/administradores"><?= icone('escudo', 'icone icone-sm') ?> Admins</a>
           <a class="<?= ativo('/admin/analytics') ?>" href="/admin/analytics"><?= icone('grafico', 'icone icone-sm') ?> Analytics</a>
+          <?php $sistema = array_filter(['/admin/configuracoes', '/admin/migracoes', '/admin/email', '/admin/administradores'], fn (string $rota) => ativo($rota) !== ''); ?>
+          <a class="<?= $sistema ? 'ativo' : '' ?>" href="/admin/configuracoes"><?= icone('ajustes', 'icone icone-sm') ?> Configurações</a>
         </nav>
       <?php endif; ?>
 

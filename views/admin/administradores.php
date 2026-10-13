@@ -6,6 +6,8 @@
   </div>
 </section>
 
+<?= parcial('admin/partials/sistema') ?>
+
 <?php if ($sucesso): ?>
   <div class="alerta alerta-sucesso alerta-topo"><?= icone('check') ?><span><?= e($sucesso) ?></span></div>
 <?php endif; ?>
