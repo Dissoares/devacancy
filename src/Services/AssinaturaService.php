@@ -76,11 +76,12 @@ final class AssinaturaService
         if (!$asaasCobreOBrasil && ($ativos['stripe'] ?? true) && ($this->stripe->configurado() || $this->simulacaoStripe())) {
             $metodos[] = 'stripe';
         }
-        if (($ativos['paypal'] ?? true) && ($this->paypal->configurado() || $this->simulacaoPaypal())) {
+        $paypalAssinatura = $this->paypal->assinaturaPronta($this->moedaPara($noBrasil));
+        if (($ativos['paypal'] ?? true) && ($paypalAssinatura || $this->simulacaoPaypal())) {
             $metodos[] = 'paypal';
         }
-        // O PayPal só com e-mail é a alternativa de quem não tem a conta Business com a API da assinatura.
-        if (!$this->paypal->configurado() && ($ativos['paypal_email'] ?? true) && $this->paypal->pagamentoPorEmailConfigurado()) {
+        // O PayPal só com e-mail é a alternativa de quem não tem a conta Business com a API e os planos da assinatura.
+        if (!$paypalAssinatura && ($ativos['paypal_email'] ?? true) && $this->paypal->pagamentoPorEmailConfigurado()) {
             $metodos[] = 'paypal_email';
         }
         return $metodos;

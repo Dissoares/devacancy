@@ -153,8 +153,7 @@ final class DiagnosticoService
 
         $brasil = ($liga('asaas') && $this->asaas->configurado()) || ($liga('pix_manual') && $this->pixManual->configurado())
             || ($liga('pix') && (string) configuracao('expay.chave') !== '');
-        $exterior = ($liga('stripe') && $this->stripe->configurado()) || ($liga('paypal') && $this->paypal->configurado())
-            || ($liga('paypal_email') && $this->paypal->pagamentoPorEmailConfigurado());
+        $exterior = ($liga('stripe') && $this->stripe->configurado()) || ($liga('paypal') && $this->paypal->assinaturaPronta('USD')) || ($liga('paypal_email') && $this->paypal->pagamentoPorEmailConfigurado());
 
         $itens = [
             $this->item('Receber no Brasil (PIX/cartão)', $brasil ? 'ok' : 'erro', $brasil ? 'Há pelo menos uma forma ligada e configurada.' : 'Nenhuma forma de pagamento pronta para o Brasil (Configurações → Formas de pagamento).'),

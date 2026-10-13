@@ -138,7 +138,7 @@ final class CatalogoConfiguracoes
                 ],
                 'paypal' => [
                     'titulo' => 'PayPal · assinatura (Business)',
-                    'descricao' => 'Assinatura recorrente automática. Exige conta Business e os planos criados no PayPal. Quando configurado, substitui o PayPal só com e-mail.',
+                    'descricao' => 'Assinatura recorrente automática. Exige conta Business, Client ID, Secret e os 3 planos da moeda criados no PayPal. Se faltar qualquer um, o site continua usando o PayPal só com e-mail, que é mais simples.',
                     'metodo' => 'paypal',
                     'obrigatorios' => [['PAYPAL_CLIENT_ID'], ['PAYPAL_SECRET']],
                     'campos' => [

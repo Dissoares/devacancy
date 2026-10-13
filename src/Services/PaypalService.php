@@ -20,6 +20,27 @@ final class PaypalService
         return configuracao('paypal.cliente_id') !== '' && configuracao('paypal.segredo') !== '';
     }
 
+    /**
+     * A assinatura pelo PayPal só funciona com os 3 planos (semanal, mensal e trimestral) criados na moeda. Sem eles, o
+     * botão não teria o que cobrar: nesse caso o site usa o PayPal só com e-mail, que não precisa de plano.
+     */
+    public function planosCompletos(string $moeda): bool
+    {
+        $planos = (array) configuracao('paypal.planos', []);
+        foreach (['semanal', 'mensal', 'trimestral'] as $plano) {
+            if (trim((string) ($planos[$plano][$moeda] ?? '')) === '') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** Assinatura automática pronta para a moeda: credenciais e planos. */
+    public function assinaturaPronta(string $moeda): bool
+    {
+        return $this->configurado() && $this->planosCompletos($moeda);
+    }
+
     public function clienteId(): string
     {
         return (string) configuracao('paypal.cliente_id');
