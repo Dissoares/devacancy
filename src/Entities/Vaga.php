@@ -68,6 +68,23 @@ final class Vaga
         };
     }
 
+    /** Quem publicou a vaga originalmente, para o crédito "Fonte" (a empresa continua oculta). @return array{rotulo: string, site: ?string}|null */
+    public function origem(): ?array
+    {
+        return match ($this->fonte) {
+            'gupy' => ['rotulo' => 'Gupy', 'site' => null],
+            'arbeitnow' => ['rotulo' => 'Arbeitnow', 'site' => 'https://www.arbeitnow.com'],
+            'jobicy' => ['rotulo' => 'Jobicy', 'site' => 'https://jobicy.com'],
+            'remoteok' => ['rotulo' => 'Remote OK', 'site' => 'https://remoteok.com'],
+            'himalayas' => ['rotulo' => 'Himalayas', 'site' => 'https://himalayas.app'],
+            'greenhouse' => ['rotulo' => 'Greenhouse', 'site' => null],
+            'lever' => ['rotulo' => 'Lever', 'site' => null],
+            'adzuna' => ['rotulo' => 'Adzuna', 'site' => 'https://www.adzuna.com.br'],
+            'github' => ['rotulo' => 'GitHub', 'site' => null],
+            default => null,
+        };
+    }
+
     /** Texto da vaga para o público: a descrição (ou uma gerada) com o nome da empresa coberto. */
     public function descricaoPublica(): string
     {

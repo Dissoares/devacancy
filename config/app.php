@@ -144,6 +144,14 @@ return [
         'token' => Ambiente::obter('MIGRACOES_TOKEN', ''),
     ],
 
+    // Fontes de vagas por API pública (sem chave). Quais ficam ligadas e as empresas dos painéis Greenhouse/Lever
+    // se editam em Admin → Configurações → Importação de vagas.
+    'vagas' => [
+        'fontes' => Ambiente::obter('VAGAS_FONTES', 'gupy,arbeitnow,jobicy,remoteok,himalayas,greenhouse,lever'),
+        'greenhouse' => Ambiente::obter('VAGAS_GREENHOUSE', 'quintoandar,vtex,stone,gitlab,duolingo,sumup,elastic,mongodb,datadog,cloudflare,wildlifestudios'),
+        'lever' => Ambiente::obter('VAGAS_LEVER', 'spotify,jobandtalent,kavak'),
+    ],
+
     // Importação automática via Adzuna (agregador de vagas, grátis para uso básico). Cadastro gratuito em developer.adzuna.com.
     'adzuna' => [
         'url' => Ambiente::obter('ADZUNA_URL', 'https://api.adzuna.com/v1/api'),

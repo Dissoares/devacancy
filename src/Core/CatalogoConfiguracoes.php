@@ -189,6 +189,16 @@ final class CatalogoConfiguracoes
                         'GITHUB_TOKEN' => ['rotulo' => 'Token de acesso', 'tipo' => 'segredo'],
                     ],
                 ],
+                'fontes' => [
+                    'titulo' => 'Fontes por API pública',
+                    'icone' => 'busca',
+                    'descricao' => 'Sem chave. Gupy traz as vagas do Brasil; as demais trazem vagas remotas do mundo todo. A origem de cada vaga aparece na página dela.',
+                    'campos' => [
+                        'VAGAS_FONTES' => ['rotulo' => 'Fontes ligadas', 'tipo' => 'texto', 'ajuda' => 'Separe por vírgula: gupy, arbeitnow, jobicy, remoteok, himalayas, greenhouse, lever.'],
+                        'VAGAS_GREENHOUSE' => ['rotulo' => 'Empresas no Greenhouse', 'tipo' => 'texto', 'ajuda' => 'Identificadores dos painéis, separados por vírgula (o final de boards.greenhouse.io/empresa).'],
+                        'VAGAS_LEVER' => ['rotulo' => 'Empresas no Lever', 'tipo' => 'texto', 'ajuda' => 'Identificadores dos painéis, separados por vírgula (o final de jobs.lever.co/empresa).'],
+                    ],
+                ],
                 'adzuna' => [
                     'titulo' => 'Adzuna',
                     'descricao' => 'Agregador de vagas (plano pago da Adzuna).',

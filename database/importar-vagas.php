@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Importa vagas reais: repositórios de vagas da comunidade no GitHub (sempre) e Adzuna (se as
+ * Importa vagas reais: repositórios de vagas da comunidade no GitHub (sempre), APIs públicas (Gupy, Arbeitnow, Jobicy, Remote OK, Himalayas, Greenhouse e Lever) e Adzuna (se as
  * chaves ADZUNA_APP_ID/ADZUNA_APP_KEY estiverem no .env). Pode rodar quantas vezes quiser:
  * vagas já importadas são puladas.
  * Uso: php database/importar-vagas.php   (agende 1x por dia no Agendador de Tarefas / cron)
@@ -12,6 +12,7 @@ declare(strict_types=1);
 use App\Core\Ambiente;
 use App\Core\Container;
 use App\Services\ImportadorVagasAdzuna;
+use App\Services\ImportadorVagasExternas;
 use App\Services\ImportadorVagasGithub;
 
 if (PHP_SAPI !== 'cli') {
@@ -37,6 +38,16 @@ $relatar = function (string $fonte, array $resumo): void {
 };
 
 $relatar('GitHub', $container->obter(ImportadorVagasGithub::class)->importar());
+
+$externas = $container->obter(ImportadorVagasExternas::class)->importar();
+foreach ($externas['fontes'] as $fonte) {
+    echo "[{$fonte['rotulo']}] importadas: {$fonte['importadas']} | já existentes: {$fonte['repetidas']} | ignoradas: {$fonte['ignoradas']} | fora do tema: {$fonte['fora_do_tema']}
+";
+}
+foreach ($externas['erros'] as $erro) {
+    echo "[APIs] erro: {$erro}
+";
+}
 
 $adzuna = $container->obter(ImportadorVagasAdzuna::class);
 if ($adzuna->configurado()) {

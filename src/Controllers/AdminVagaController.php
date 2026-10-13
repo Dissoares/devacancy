@@ -12,6 +12,7 @@ use App\Enums\Senioridade;
 use App\Exceptions\ValidacaoException;
 use App\Services\AutenticacaoService;
 use App\Services\ImportadorVagasAdzuna;
+use App\Services\ImportadorVagasExternas;
 use App\Services\ImportadorVagasGithub;
 use App\Services\VagaService;
 use RuntimeException;
@@ -26,6 +27,7 @@ final class AdminVagaController
         private readonly VagaService $vagas,
         private readonly ImportadorVagasAdzuna $adzuna,
         private readonly ImportadorVagasGithub $github,
+        private readonly ImportadorVagasExternas $externas,
         private readonly AutenticacaoService $autenticacao,
     ) {
     }
@@ -60,6 +62,27 @@ final class AdminVagaController
         $this->vagas->excluir((int) $requisicao->parametro('id'));
         Sessao::flash('sucesso', 'Vaga excluída.');
         return Resposta::redirecionar($this->voltarPara($requisicao));
+    }
+
+    /** Importa das APIs públicas ligadas em Configurações (Gupy, Arbeitnow, Jobicy, Remote OK, Himalayas, Greenhouse, Lever). */
+    public function importarExternas(Requisicao $requisicao): Resposta
+    {
+        set_time_limit(300);
+        $resumo = $this->externas->importar();
+
+        $partes = [];
+        $total = 0;
+        foreach ($resumo['fontes'] as $fonte) {
+            $total += $fonte['importadas'];
+            $partes[] = "{$fonte['rotulo']}: {$fonte['importadas']}";
+        }
+        $mensagem = "{$total} vagas novas (" . ($partes ? implode(', ', $partes) : 'nenhuma fonte ligada em Configurações → Importação de vagas') . ').';
+        if ($resumo['erros'] !== []) {
+            $mensagem .= ' Avisos: ' . implode(' | ', array_slice($resumo['erros'], 0, 3));
+        }
+
+        Sessao::flash('sucesso', $mensagem);
+        return Resposta::redirecionar('/admin/vagas');
     }
 
     /** Mesma importação automática do terminal (repositórios de vagas do GitHub), disparada pelo navegador. */

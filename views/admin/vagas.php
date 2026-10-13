@@ -16,7 +16,8 @@ $selecao = function (string $campo, array $opcoes) use ($valores): string {
 };
 $ativas = count(array_filter($vagas, fn ($vaga) => $vaga->ativa));
 $rotuloFonte = fn (string $fonte): string => match ($fonte) {
-    'github' => 'GitHub', 'adzuna' => 'Adzuna', default => 'Manual',
+    'github' => 'GitHub', 'adzuna' => 'Adzuna', 'gupy' => 'Gupy', 'arbeitnow' => 'Arbeitnow', 'jobicy' => 'Jobicy',
+    'remoteok' => 'Remote OK', 'himalayas' => 'Himalayas', 'greenhouse' => 'Greenhouse', 'lever' => 'Lever', default => 'Manual',
 };
 $totalGeral = array_sum(array_column($porFonte, 'total'));
 $totalAtivas = array_sum(array_column($porFonte, 'ativas'));
@@ -28,9 +29,13 @@ $abas = ['' => ['Todas', $totalGeral], 'ativas' => ['Ativas', $totalAtivas], 'pa
     <p>Vagas da curadoria interna. Elas alimentam o match e o contador de "vagas compatíveis" dos profissionais.</p>
   </div>
   <div class="acoes-cabecalho">
+    <form method="post" action="/admin/vagas/importar-externas" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').textContent = 'Importando… pode levar 2 minutos'">
+      <?= csrf_campo() ?>
+      <button class="botao botao-primario" type="submit"><?= icone('download', 'icone icone-sm') ?> Importar de todas as fontes</button>
+    </form>
     <form method="post" action="/admin/vagas/importar-github" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').textContent = 'Importando… pode levar 1 minuto'">
       <?= csrf_campo() ?>
-      <button class="botao botao-primario" type="submit"><?= icone('raio', 'icone icone-sm') ?> Importar do GitHub agora</button>
+      <button class="botao botao-secundario" type="submit"><?= icone('raio', 'icone icone-sm') ?> Só GitHub</button>
     </form>
     <a class="botao botao-secundario" href="/admin/vagas/adzuna"><?= icone('busca', 'icone icone-sm') ?> Importar da Adzuna</a>
   </div>

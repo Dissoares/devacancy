@@ -1314,3 +1314,15 @@
 .aceite-checkout {
   margin: 4px 0 8px;
 }
+
+.vaga-publica-fonte {
+  color: var(--texto-suave);
+  font-size: .8rem;
+  text-align: center;
+}
+
+.vaga-publica-fonte a {
+  color: var(--texto-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

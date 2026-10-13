@@ -52,5 +52,11 @@ $recente = strtotime($vaga->criadoEm) >= time() - 86400 * 2;
       <li><?= icone('check', 'icone icone-sm') ?> <?= e(t('funil.garantia_candidaturas')) ?></li>
       <li><?= icone('check', 'icone icone-sm') ?> <?= e(t('landing.confianca_2')) ?></li>
     </ul>
+
+    <?php if ($origem = $vaga->origem()): ?>
+      <p class="vaga-publica-fonte"><?= e(t('vaga_publica.fonte')) ?>
+        <?php if ($origem['site']): ?><a href="<?= e($origem['site']) ?>" target="_blank" rel="noopener nofollow"><?= e($origem['rotulo']) ?></a><?php else: ?><?= e($origem['rotulo']) ?><?php endif; ?>
+      </p>
+    <?php endif; ?>
   </article>
 </section>
