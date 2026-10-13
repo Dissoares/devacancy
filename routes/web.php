@@ -113,13 +113,13 @@ return function (Roteador $rotas): void {
     $rotas->get('/admin/administradores', [AdminUsuarioController::class, 'administradores'], $admin);
     $rotas->post('/admin/administradores', [AdminUsuarioController::class, 'promover'], $admin);
     $rotas->post('/admin/usuarios/{id}/excluir', [AdminUsuarioController::class, 'excluir'], $admin);
-    $rotas->get('/admin/configuracoes', [AdminConfiguracaoController::class, 'painel'], $admin);
-    $rotas->post('/admin/configuracoes/{grupo}', [AdminConfiguracaoController::class, 'salvar'], $admin);
-    $rotas->get('/admin/email', [AdminEmailController::class, 'painel'], $admin);
+    $rotas->get('/admin/email', [AdminConfiguracaoController::class, 'emailAntigo'], $admin);
+    $rotas->get('/admin/configuracoes', [AdminConfiguracaoController::class, 'inicio'], $admin);
+    $rotas->get('/admin/configuracoes/{secao}', [AdminConfiguracaoController::class, 'secao'], $admin);
+    $rotas->post('/admin/configuracoes/{secao}/{cartao}', [AdminConfiguracaoController::class, 'salvar'], $admin);
     $rotas->post('/admin/email/testar', [AdminEmailController::class, 'testar'], $admin);
     $rotas->get('/admin/migracoes', [AdminMigracaoController::class, 'painel'], $admin);
     $rotas->post('/admin/migracoes/executar', [AdminMigracaoController::class, 'executar'], $admin);
     $rotas->get('/admin/pagamentos', [AdminPagamentoController::class, 'listar'], $admin);
     $rotas->post('/admin/pagamentos/{id}/confirmar', [AdminPagamentoController::class, 'confirmar'], $admin);
-    $rotas->post('/admin/pagamentos/{chave}/alternar', [AdminPagamentoController::class, 'alternar'], $admin);
 };
