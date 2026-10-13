@@ -168,13 +168,14 @@ final class ImportadorVagasExternas
         $remoto = (bool) $item['remoto'];
         $tags = implode(' ', (array) $item['tags']);
         $base = $titulo . ' ' . $tags;
+        $stack = ClassificadorVaga::stack($base . ' ' . mb_substr($texto, 0, 3000));
 
         return new VagaDTO(
             titulo: mb_substr($titulo, 0, 150),
             empresa: mb_substr(trim((string) $item['empresa']) ?: 'Confidencial', 0, 150),
-            area: ClassificadorVaga::area($base, AreaAtuacao::Fullstack),
+            area: ClassificadorVaga::area($base, ClassificadorVaga::areaPelaStack($stack)),
             senioridade: ClassificadorVaga::senioridade($titulo, (string) $item['nivel'] . ' ' . $tags),
-            stack: ClassificadorVaga::stack($base . ' ' . mb_substr($texto, 0, 3000)),
+            stack: $stack,
             modeloTrabalho: match (true) {
                 $remoto => ModeloTrabalho::Remoto,
                 !empty($item['hibrido']) => ModeloTrabalho::Hibrido,

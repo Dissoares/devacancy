@@ -46,6 +46,35 @@ final class ClassificadorVaga
         };
     }
 
+    /**
+     * Área provável quando o título não diz nada, olhando as tecnologias citadas: só front-end = Front-end,
+     * só servidor e banco = Back-end, os dois = Full-stack. Sem pista nenhuma, Full-stack.
+     * @param string[] $stack
+     */
+    public static function areaPelaStack(array $stack): AreaAtuacao
+    {
+        $grupos = [
+            'front' => ['React', 'Angular', 'Vue', 'Next.js', 'Nuxt', 'Svelte', 'HTML', 'CSS', 'Tailwind'],
+            'back' => ['PHP', 'Laravel', 'Symfony', 'Python', 'Django', 'FastAPI', 'Flask', 'Java', 'Spring', 'C#', '.NET', 'Go', 'Ruby', 'Rails', 'Elixir', 'Rust', 'Scala', 'NestJS', 'Nest.js', 'Node.js', 'SQL', 'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Kafka', 'GraphQL', 'Cobol', 'Mainframe', 'Delphi', 'SAP', 'ABAP'],
+            'mobile' => ['Flutter', 'Dart', 'Swift', 'SwiftUI', 'Android', 'iOS', 'React Native', 'Objective-C', 'Kotlin'],
+            'infra' => ['AWS', 'Azure', 'GCP', 'Docker', 'Kubernetes', 'Terraform'],
+            'dados' => ['Spark', 'Airflow', 'Power BI'],
+            'qa' => ['Cypress', 'Selenium', 'Playwright', 'Jest'],
+        ];
+        $conta = array_map(fn (array $nomes) => count(array_intersect($nomes, $stack)), $grupos);
+
+        return match (true) {
+            $conta['front'] > 0 && $conta['back'] > 0 => AreaAtuacao::Fullstack,
+            $conta['mobile'] > 0 && $conta['front'] === 0 && $conta['back'] === 0 => AreaAtuacao::Mobile,
+            $conta['front'] > 0 => AreaAtuacao::Frontend,
+            $conta['back'] > 0 => AreaAtuacao::Backend,
+            $conta['dados'] > 0 => AreaAtuacao::Dados,
+            $conta['qa'] > 0 => AreaAtuacao::Qa,
+            $conta['infra'] > 0 => AreaAtuacao::DevOps,
+            default => AreaAtuacao::Fullstack,
+        };
+    }
+
     /** A senioridade dita no texto, ou null se o texto não diz nada (sem assumir Pleno). */
     public static function senioridadeOuNulo(string $texto): ?Senioridade
     {
