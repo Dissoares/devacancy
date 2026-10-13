@@ -16,6 +16,7 @@ use App\Controllers\AutenticacaoController;
 use App\Controllers\CandidaturaController;
 use App\Controllers\FunilController;
 use App\Controllers\LandingController;
+use App\Controllers\PerfilController;
 use App\Controllers\RecuperacaoSenhaController;
 use App\Controllers\UsuarioController;
 use App\Controllers\VagaPublicaController;
@@ -63,6 +64,11 @@ return function (Roteador $rotas): void {
     $rotas->get('/completar-perfil', [UsuarioController::class, 'formularioPerfil'], $logado);
     $rotas->post('/completar-perfil', [UsuarioController::class, 'salvarPerfil'], $logado);
     $rotas->get('/painel', [UsuarioController::class, 'painel'], $perfilCompleto);
+    $rotas->get('/perfil', [PerfilController::class, 'ver'], $perfilCompleto);
+    $rotas->get('/perfil/curriculo', [PerfilController::class, 'curriculo'], $perfilCompleto);
+    $rotas->post('/perfil/importar', [PerfilController::class, 'importar'], $perfilCompleto);
+    $rotas->post('/perfil/importar/aplicar', [PerfilController::class, 'aplicar'], $perfilCompleto);
+    $rotas->post('/perfil/importar/descartar', [PerfilController::class, 'descartar'], $perfilCompleto);
     $rotas->post('/candidaturas', [CandidaturaController::class, 'candidatar'], $perfilCompleto);
 
     // Assinatura: PIX (Brasil) e PayPal (todos os países)
