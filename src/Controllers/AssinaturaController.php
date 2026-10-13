@@ -72,6 +72,29 @@ final class AssinaturaController
         return Resposta::redirecionarHtmx('/pagamento/' . $pagamento->id);
     }
 
+    /** Asaas: cria o checkout (PIX ou cartão) e leva o cliente para a página da Asaas. */
+    public function assinarAsaas(Requisicao $requisicao): Resposta
+    {
+        try {
+            $destino = $this->assinaturas->iniciarCheckoutAsaas($this->autenticacao->usuarioAtual(), $requisicao->todos());
+        } catch (ValidacaoException $erro) {
+            return Resposta::html(Visao::parcial('assinatura/partials/formulario-asaas', ['erros' => $erro->erros()]));
+        }
+
+        return Resposta::redirecionarHtmx($destino);
+    }
+
+    /** Aviso da Asaas, autenticado pelo cabeçalho asaas-access-token. */
+    public function webhookAsaas(Requisicao $requisicao): Resposta
+    {
+        $autentico = $this->assinaturas->processarWebhookAsaas(
+            (string) file_get_contents('php://input'),
+            (string) $requisicao->cabecalho('asaas-access-token'),
+        );
+
+        return $autentico ? Resposta::texto('ok') : Resposta::texto('Unauthorized', 401);
+    }
+
     /** PIX manual: gera o copia e cola com o valor do plano e leva para a página do QR code. */
     public function assinarPixManual(Requisicao $requisicao): Resposta
     {

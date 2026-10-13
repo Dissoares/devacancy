@@ -27,6 +27,7 @@ final class AssinaturaService
 {
     /** Catálogo fixo (nome, região, moedas) de cada forma de pagamento, pra tela admin. O "ativo" vem do banco. */
     private const CATALOGO = [
+        'asaas' => ['nome' => 'Asaas (PIX e cartão)', 'regiao' => 'Brasil', 'moedas' => ['BRL']],
         'pix' => ['nome' => 'PIX (ExPay)', 'regiao' => 'Brasil', 'moedas' => ['BRL']],
         'stripe' => ['nome' => 'Stripe (cartão, assinatura)', 'regiao' => 'Brasil e internacional', 'moedas' => ['BRL', 'USD']],
         'paypal' => ['nome' => 'PayPal (assinatura, conta Business)', 'regiao' => 'Brasil e internacional', 'moedas' => ['BRL', 'USD']],
@@ -41,6 +42,7 @@ final class AssinaturaService
         private readonly ExpayService $expay,
         private readonly PaypalService $paypal,
         private readonly StripeService $stripe,
+        private readonly AsaasService $asaas,
         private readonly PixManualService $pixManual,
         private readonly Email $email,
         private readonly ComissaoService $comissoes,
@@ -65,11 +67,14 @@ final class AssinaturaService
         $ativos = $this->metodosPagamento->ativos();
 
         $metodos = [];
+        if ($noBrasil && ($ativos['asaas'] ?? true) && $this->asaas->configurado()) {
+            $metodos[] = 'asaas';
+        }
         if ($noBrasil && ($ativos['pix'] ?? true) && ($this->expay->configurado() || $this->simulacaoPix())) {
             $metodos[] = 'pix';
         }
         // Enquanto não há conta no gateway, o PIX é o copia e cola do próprio dono, confirmado à mão.
-        if ($noBrasil && !$this->expay->configurado() && ($ativos['pix_manual'] ?? true) && $this->pixManual->configurado()) {
+        if ($noBrasil && !$this->expay->configurado() && !$this->asaas->configurado() && ($ativos['pix_manual'] ?? true) && $this->pixManual->configurado()) {
             $metodos[] = 'pix_manual';
         }
         if (($ativos['stripe'] ?? true) && ($this->stripe->configurado() || $this->simulacaoStripe())) {
@@ -90,6 +95,7 @@ final class AssinaturaService
     {
         $ativos = $this->metodosPagamento->ativos();
         $configurado = [
+            'asaas' => $this->asaas->configurado(),
             'pix' => $this->expay->configurado(),
             'pix_manual' => $this->pixManual->configurado(),
             'stripe' => $this->stripe->configurado(),
@@ -567,6 +573,75 @@ final class AssinaturaService
             }
         }
         $this->aplicarStatus($pagamento, StatusPagamento::Pago);
+    }
+
+    // ---------------------------------------------------------------- Asaas (PIX e cartão, Brasil)
+
+    /**
+     * Cria o pagamento e a página de checkout da Asaas; devolve o endereço para onde mandar o cliente.
+     * @throws ValidacaoException
+     */
+    public function iniciarCheckoutAsaas(Usuario $usuario, array $dados): string
+    {
+        $plano = $this->planos()[$dados['plano'] ?? ''] ?? null;
+        if ($plano === null) {
+            throw new ValidacaoException(['plano' => t('pagamento.escolha_plano')]);
+        }
+        if (!in_array('asaas', $this->metodosPara(true), true)) {
+            throw new ValidacaoException(['geral' => t('pagamento.indisponivel')]);
+        }
+
+        $valor = $plano['precos']['BRL'];
+        $id = $this->pagamentos->criar($usuario->id, $dados['plano'], $valor, 'asaas', 'BRL');
+        $nomeApp = (string) configuracao('app.nome');
+
+        try {
+            $checkout = $this->asaas->criarCheckout(
+                $nomeApp . ' ' . t('plano.' . $dados['plano']),
+                t('pagamento.asaas_item', ['app' => $nomeApp, 'plano' => t('plano.' . $dados['plano'])]),
+                $valor,
+                'pagamento-' . $id,
+                ['name' => $usuario->nome, 'email' => $usuario->email],
+                url('/pagamento/' . $id),
+                url('/planos?plano=' . $dados['plano']),
+            );
+        } catch (RuntimeException $erro) {
+            $this->registrarErro('Asaas', $erro);
+            $this->pagamentos->concluir($id, StatusPagamento::Falhou);
+            throw new ValidacaoException(['geral' => t('pagamento.falha_asaas')]);
+        }
+
+        $this->pagamentos->registrarCobranca($id, $checkout['id'], null, null, date('Y-m-d H:i:s', strtotime('+60 minutes')));
+        return $checkout['link'];
+    }
+
+    /**
+     * Aviso da Asaas. Só vale com o token certo no cabeçalho; o pagamento é achado pelo id do checkout.
+     * O mesmo aviso pode chegar mais de uma vez: a conclusão do pagamento é idempotente.
+     */
+    public function processarWebhookAsaas(string $corpo, string $token): bool
+    {
+        if (!$this->asaas->avisoAutentico($token)) {
+            return false;
+        }
+
+        $evento = json_decode($corpo, true) ?: [];
+        $checkoutId = (string) ($evento['checkout']['id'] ?? '');
+        $pagamento = $checkoutId !== '' ? $this->pagamentos->buscarPorGatewayId($checkoutId) : null;
+        if ($pagamento === null || $pagamento->metodo !== 'asaas') {
+            return true;
+        }
+
+        $status = match ($evento['event'] ?? '') {
+            'CHECKOUT_PAID' => StatusPagamento::Pago,
+            'CHECKOUT_EXPIRED' => StatusPagamento::Expirado,
+            'CHECKOUT_CANCELED' => StatusPagamento::Cancelado,
+            default => null,
+        };
+        if ($status !== null) {
+            $this->aplicarStatus($pagamento, $status);
+        }
+        return true;
     }
 
     // ---------------------------------------------------------------- PIX manual (copia e cola do dono)
