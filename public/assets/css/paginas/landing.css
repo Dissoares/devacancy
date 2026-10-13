@@ -3028,12 +3028,12 @@ a.celular:active {
   .hero-logos-movel {
     --lado: clamp(28px, 8.6vw, 38px);
     position: absolute;
-    top: 50%;
+    top: 0;
     right: 2px;
     display: grid;
     grid-template-columns: repeat(2, var(--lado));
     gap: 8px 6px;
-    transform: translateY(-50%);
+    transform: none;
     pointer-events: none;
   }
 
@@ -3090,4 +3090,74 @@ a.celular:active {
   .hero-logos-movel {
     display: none;
   }
+}
+
+
+/* ==========================================================================
+   Refino visual (identidade sóbria)
+   Paleta: azul-marinho para texto e marca, um único azul de destaque, cinzas neutros.
+   O laranja existe só no botão de ação principal; verde só para "ok"; nada de roxo ou vermelho decorativo.
+   ========================================================================== */
+.hero {
+  padding: 136px 0 88px;
+  background: linear-gradient(180deg, #eef2fa 0%, rgba(255, 255, 255, 0) 78%);
+}
+
+.hero-grade {
+  opacity: .7;
+}
+
+.hero-titulo {
+  letter-spacing: -.032em;
+}
+
+.hero-titulo .palavra-icone {
+  display: none;
+}
+
+.palavra-rotativa {
+  color: var(--primaria-forte);
+}
+
+.hero-anuncio {
+  background: var(--superficie);
+  border-color: var(--borda);
+}
+
+/* O formulário é o centro da página: borda azul fina e sombra maior que a dos outros cartões. */
+.inicio-quiz {
+  border-color: rgba(37, 99, 235, .28);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, .06), var(--sombra-lg);
+}
+
+.inicio-quiz-opcao {
+  background: var(--superficie);
+}
+
+.inicio-quiz-opcao-cta,
+.inicio-quiz-opcao-cta .icone {
+  color: var(--primaria-forte);
+}
+
+.inicio-quiz-opcao-cta {
+  border-color: var(--borda-forte);
+  border-style: dashed;
+  background: transparent;
+}
+
+.inicio-quiz-opcao-cta:hover {
+  border-style: solid;
+}
+
+.vitrine {
+  box-shadow: var(--sombra-lg), 0 40px 100px -40px rgba(30, 64, 175, .22);
+}
+
+.vitrine-ao-vivo {
+  background: var(--primaria-suave);
+  color: var(--primaria-forte);
+}
+
+.vitrine-ao-vivo span {
+  background: var(--primaria);
 }

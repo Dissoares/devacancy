@@ -12,7 +12,7 @@
   --borda: #e3e8f0;
   --borda-forte: #cfd7e3;
 
-  --texto: #0f172a;
+  --texto: #0b1730;
   --texto-2: #334155;
   --texto-suave: #64748b;
 
@@ -33,7 +33,7 @@
   --acao-forte: #ea580c;
   --brilho-acao: 0 10px 24px -6px rgba(234, 88, 12, .45);
 
-  --gradiente: linear-gradient(120deg, #2563eb 0%, #4f46e5 55%, #0ea5e9 100%);
+  --gradiente: linear-gradient(120deg, #1e40af 0%, #2563eb 100%);
   --gradiente-texto: linear-gradient(100deg, #1e40af 0%, #2563eb 55%, #0369a1 100%);
 
   --raio-sm: 8px;
