@@ -16,6 +16,50 @@ namespace App\Core;
  */
 final class CatalogoConfiguracoes
 {
+    /**
+     * Onde a pessoa consegue o dado de cada campo: aparece como link embaixo do campo, abrindo em outra aba.
+     * Só entram endereços estáveis de painéis (os que a gente conhece bem); o caminho exato vai no texto do link.
+     * @var array<string, array<int, array{0: string, 1: string}>> campo => [[endereço, texto], ...]
+     */
+    public const LINKS = [
+        'ASAAS_API_KEY' => [
+            ['https://www.asaas.com', 'Abrir o Asaas → Integrações → Chaves de API (gere e copie: a chave só aparece uma vez)'],
+            ['https://sandbox.asaas.com', 'Conta de testes (Sandbox) do Asaas'],
+            ['https://docs.asaas.com/docs/chaves-de-api', 'Passo a passo da chave de API'],
+        ],
+        'ASAAS_WEBHOOK_TOKEN' => [
+            ['https://www.asaas.com', 'Abrir o Asaas → Integrações → Webhooks (o Asaas gera o token; copie e cole aqui)'],
+            ['https://docs.asaas.com/changelog/obrigatoriedade-e-auto-gera%C3%A7%C3%A3o-de-tokens-para-webhooks', 'Por que o Asaas gera o token'],
+        ],
+        'STRIPE_SECRET_KEY' => [
+            ['https://dashboard.stripe.com/apikeys', 'Abrir as chaves de API do Stripe (clique em Revelar na "Chave secreta")'],
+            ['https://dashboard.stripe.com/test/apikeys', 'Chaves de teste do Stripe'],
+        ],
+        'STRIPE_WEBHOOK_SECRET' => [
+            ['https://dashboard.stripe.com/webhooks', 'Abrir os webhooks do Stripe (crie o endpoint e revele o "Segredo de assinatura")'],
+            ['https://docs.stripe.com/webhooks#add-a-webhook-endpoint', 'Passo a passo do webhook'],
+        ],
+        'PAYPAL_EMAIL' => [['https://www.paypal.com/myaccount/settings/', 'Conferir o e-mail da sua conta PayPal']],
+        'PAYPAL_CLIENT_ID' => [
+            ['https://developer.paypal.com/dashboard/applications/live', 'Abrir os apps do PayPal (Produção): copie o Client ID'],
+            ['https://developer.paypal.com/dashboard/applications/sandbox', 'Apps de teste (Sandbox)'],
+        ],
+        'PAYPAL_SECRET' => [['https://developer.paypal.com/dashboard/applications/live', 'Abrir os apps do PayPal (Produção): revele e copie o Secret']],
+        'PAYPAL_PLANO_MENSAL_BRL' => [['https://www.paypal.com/billing/plans', 'Ver os planos de assinatura criados no PayPal (ou rode php database/paypal-planos.php)']],
+        'GOOGLE_CLIENT_ID' => [['https://console.cloud.google.com/apis/credentials', 'Abrir as credenciais do Google Cloud (crie um "ID do cliente OAuth")']],
+        'GOOGLE_CLIENT_SECRET' => [['https://console.cloud.google.com/apis/credentials', 'Abrir as credenciais do Google Cloud']],
+        'GITHUB_CLIENT_ID' => [['https://github.com/settings/developers', 'Abrir os OAuth Apps do GitHub']],
+        'GITHUB_CLIENT_SECRET' => [['https://github.com/settings/developers', 'Abrir os OAuth Apps do GitHub (Generate a new client secret)']],
+        'LINKEDIN_CLIENT_ID' => [['https://www.linkedin.com/developers/apps', 'Abrir os apps do LinkedIn Developers']],
+        'LINKEDIN_CLIENT_SECRET' => [['https://www.linkedin.com/developers/apps', 'Abrir os apps do LinkedIn Developers → Auth']],
+        'GITHUB_TOKEN' => [['https://github.com/settings/tokens', 'Criar um token no GitHub (não precisa marcar nenhuma permissão)']],
+        'ADZUNA_APP_ID' => [['https://developer.adzuna.com/signup', 'Criar a conta gratuita na Adzuna e copiar o App ID']],
+        'ADZUNA_APP_KEY' => [['https://developer.adzuna.com/signup', 'Criar a conta gratuita na Adzuna e copiar a App key']],
+        'VERIFICACAO_GOOGLE' => [['https://search.google.com/search-console', 'Abrir o Google Search Console']],
+        'VERIFICACAO_BING' => [['https://www.bing.com/webmasters', 'Abrir o Bing Webmaster Tools']],
+        'VERIFICACAO_YANDEX' => [['https://webmaster.yandex.com', 'Abrir o Yandex Webmaster']],
+    ];
+
     public const SECOES = [
         'site' => [
             'titulo' => 'Site',
@@ -55,13 +99,13 @@ final class CatalogoConfiguracoes
                     'campos' => [
                         'ASAAS_API_KEY' => ['rotulo' => 'Chave de API', 'tipo' => 'segredo', 'ajuda' => 'Asaas → Integrações → Chaves de API. Começa com $aact_.'],
                         'ASAAS_MODO' => ['rotulo' => 'Conta', 'tipo' => 'opcao', 'opcoes' => ['producao' => 'Produção (dinheiro de verdade)', 'sandbox' => 'Sandbox (testes)']],
-                        'ASAAS_WEBHOOK_TOKEN' => ['rotulo' => 'Token do webhook', 'tipo' => 'token'],
+                        'ASAAS_WEBHOOK_TOKEN' => ['rotulo' => 'Token do webhook', 'tipo' => 'token', 'ajuda' => 'O Asaas gera esse token ao criar o webhook: copie o que ele mostrar e cole aqui. Se preferir, deixe o que foi gerado aqui e cole-o no Asaas. Os dois lados precisam ser iguais.'],
                     ],
-                    'avisos' => ['Na Asaas, em Integrações → Webhooks, crie um webhook com a URL {APP_URL}/webhooks/asaas, cole o token acima na autenticação e marque o evento CHECKOUT_PAID.'],
+                    'avisos' => ['URL do webhook no Asaas: {APP_URL}/webhooks/asaas', 'No Asaas: Integrações → Webhooks → Novo webhook. Use a URL acima, versão v3, marque o evento CHECKOUT_PAID e, em "Token de autenticação", gere o token no próprio Asaas e cole-o no campo "Token do webhook" aqui.'],
                 ],
                 'pix_manual' => [
                     'titulo' => 'PIX manual',
-                    'descricao' => 'Enquanto não há gateway: o site gera o QR e o copia e cola com o valor do plano e você confirma o recebimento em Financeiro → Pagamentos. Some sozinho quando a Asaas ou a ExPay estiverem configuradas.',
+                    'descricao' => 'Enquanto não há gateway: o site gera o QR e o copia e cola com o valor do plano e você confirma o recebimento em Pagamentos. Aparece junto das outras formas enquanto "No checkout" estiver ligado; desligue se quiser só o Asaas.',
                     'metodo' => 'pix_manual',
                     'obrigatorios' => [['PIX_CHAVE', 'PIX_COPIA_COLA']],
                     'campos' => [
@@ -75,12 +119,12 @@ final class CatalogoConfiguracoes
                     'titulo' => 'Stripe · cartão',
                     'descricao' => 'Cartão com cobrança recorrente, para Brasil e exterior.',
                     'metodo' => 'stripe',
-                    'obrigatorios' => [['STRIPE_SECRET_KEY'], ['STRIPE_WEBHOOK_SECRET']],
+                    'obrigatorios' => [['STRIPE_SECRET_KEY']],
                     'campos' => [
-                        'STRIPE_SECRET_KEY' => ['rotulo' => 'Chave secreta', 'tipo' => 'segredo', 'ajuda' => 'sk_live_… ou sk_test_…'],
-                        'STRIPE_WEBHOOK_SECRET' => ['rotulo' => 'Segredo do webhook', 'tipo' => 'segredo', 'ajuda' => 'whsec_…'],
+                        'STRIPE_SECRET_KEY' => ['rotulo' => 'Chave secreta', 'tipo' => 'segredo', 'ajuda' => 'Começa com sk_live_ (dinheiro de verdade) ou sk_test_ (testes). É a única coisa obrigatória.'],
+                        'STRIPE_WEBHOOK_SECRET' => ['rotulo' => 'Segredo do webhook (recomendado)', 'tipo' => 'segredo', 'ajuda' => 'Começa com whsec_. Sem ele, o primeiro pagamento já libera o plano, mas as renovações automáticas não são registradas.'],
                     ],
-                    'avisos' => ['No Stripe, em Developers → Webhooks, use a URL {APP_URL}/webhooks/stripe com os eventos checkout.session.completed e invoice.paid.'],
+                    'avisos' => ['URL do webhook no Stripe: {APP_URL}/webhooks/stripe', 'No Stripe: Desenvolvedores → Webhooks → Adicionar endpoint. Use a URL acima e os eventos checkout.session.completed e invoice.paid. Depois de criar, abra o endpoint e copie o "Segredo de assinatura" (whsec_…) para o campo acima.', 'Para cobrar de verdade, a conta do Stripe precisa estar ativada (dados da empresa ou do titular e conta bancária). O botão "Testar Stripe" em Pagamentos mostra se já está liberada.'],
                 ],
                 'paypal_email' => [
                     'titulo' => 'PayPal · só com e-mail',

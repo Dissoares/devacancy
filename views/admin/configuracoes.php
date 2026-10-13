@@ -90,10 +90,10 @@ $estados = [
 
               <?php elseif ($campo['tipo'] === 'token'): ?>
                 <div class="copia-cola">
-                  <input class="entrada mono" id="<?= e($id) ?>" value="<?= e($campo['valor']) ?>" readonly>
+                  <input class="entrada mono" id="<?= e($id) ?>" name="<?= e($chave) ?>" value="<?= e($campo['valor']) ?>" spellcheck="false" autocomplete="off">
                   <button class="botao botao-secundario" type="button" data-copiar="#<?= e($id) ?>" data-mensagem="Token copiado!"><?= icone('arquivo', 'icone icone-sm') ?> Copiar</button>
                 </div>
-                <label class="cfg-opcao"><input type="checkbox" name="regenerar[]" value="<?= e($chave) ?>"> Gerar um token novo (o antigo para de funcionar)</label>
+                <label class="cfg-opcao"><input type="checkbox" name="regenerar[]" value="<?= e($chave) ?>"> Gerar um token novo aqui (depois cole o novo no site do provedor)</label>
 
               <?php else: ?>
                 <input class="entrada" id="<?= e($id) ?>" name="<?= e($chave) ?>" value="<?= e($campo['valor']) ?>" spellcheck="false"
@@ -101,6 +101,9 @@ $estados = [
               <?php endif; ?>
 
               <?php if (!empty($campo['ajuda'])): ?><small class="texto-suave cfg-ajuda"><?= e($campo['ajuda']) ?></small><?php endif; ?>
+              <?php foreach ($campo['links'] as [$enderecoLink, $textoLink]): ?>
+                <a class="cfg-link" href="<?= e($enderecoLink) ?>" target="_blank" rel="noopener noreferrer"><?= icone('externo', 'icone icone-sm') ?> <?= e($textoLink) ?></a>
+              <?php endforeach; ?>
               <?= erro_campo($errosDoCartao, $chave) ?>
             </div>
           <?php endforeach; ?>

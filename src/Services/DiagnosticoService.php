@@ -165,7 +165,7 @@ final class DiagnosticoService
             $itens[] = $this->item('Webhook da Asaas', (string) configuracao('asaas.token_webhook') !== '' ? 'ok' : 'aviso', (string) configuracao('asaas.token_webhook') !== '' ? 'Token pronto. Confirme que o webhook {APP_URL}/webhooks/asaas está cadastrado na Asaas com o evento CHECKOUT_PAID.' : 'Sem o webhook, o plano não é liberado sozinho. Cadastre {APP_URL}/webhooks/asaas na Asaas com o evento CHECKOUT_PAID.');
         }
         if ($this->stripe->configurado()) {
-            $itens[] = $this->item('Webhook do Stripe', (string) configuracao('stripe.segredo_webhook') !== '' ? 'ok' : 'erro', (string) configuracao('stripe.segredo_webhook') !== '' ? 'Segredo preenchido. Confirme que {APP_URL}/webhooks/stripe está cadastrado no Stripe (checkout.session.completed e invoice.paid).' : 'O segredo do webhook (whsec_...) precisa estar preenchido, senão as renovações não são registradas.');
+            $itens[] = $this->item('Webhook do Stripe', (string) configuracao('stripe.segredo_webhook') !== '' ? 'ok' : 'aviso', (string) configuracao('stripe.segredo_webhook') !== '' ? 'Segredo preenchido. Confirme que {APP_URL}/webhooks/stripe está cadastrado no Stripe (checkout.session.completed e invoice.paid).' : 'O segredo do webhook (whsec_...) precisa estar preenchido, senão as renovações não são registradas.');
         }
         if (str_starts_with((string) configuracao('stripe.chave_secreta'), 'sk_test_')) {
             $itens[] = $this->item('Stripe em modo de teste', 'aviso', 'A chave começa com sk_test_: cobranças não são reais. Troque por sk_live_ ao abrir de verdade.');

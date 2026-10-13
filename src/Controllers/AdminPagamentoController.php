@@ -33,6 +33,14 @@ final class AdminPagamentoController
         ], 'admin'));
     }
 
+    public function testarStripe(): Resposta
+    {
+        $resultado = $this->assinaturas->testarStripe();
+        $linhas = array_map(fn (array $passo) => ($passo['ok'] ? '✓ ' : '✗ ') . $passo['rotulo'] . "\n" . $passo['detalhe'], $resultado['passos']);
+        Sessao::flash($resultado['ok'] ? 'sucesso' : 'erro', ($resultado['ok'] ? "Stripe funcionando.\n" : "Stripe precisa de atenção.\n") . implode("\n", $linhas));
+        return Resposta::redirecionar('/admin/pagamentos');
+    }
+
     /** Mostra, passo a passo, o que a Asaas respondeu (chave e criação do checkout). */
     public function testarAsaas(): Resposta
     {

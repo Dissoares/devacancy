@@ -63,6 +63,37 @@ final class StripeService
         return ['id' => (string) $sessao['id'], 'url' => (string) $sessao['url']];
     }
 
+    /**
+     * Diagnóstico para o admin: confere a chave no Stripe e diz se a conta já pode cobrar de verdade.
+     * @return array{ok: bool, passos: array<int, array{rotulo: string, ok: bool, detalhe: string}>}
+     */
+    public function testar(): array
+    {
+        $chave = (string) configuracao('stripe.chave_secreta');
+        $modo = str_starts_with($chave, 'sk_live_') || str_starts_with($chave, 'rk_live_') ? 'Produção' : 'Testes';
+        try {
+            $conta = $this->http->get($this->url('/v1/account'), $this->cabecalhos(), 20);
+        } catch (\RuntimeException $erro) {
+            $dica = str_contains($erro->getMessage(), '(401)') ? 'Chave inválida. Copie de novo a "Chave secreta" em dashboard.stripe.com/apikeys (começa com sk_live_ ou sk_test_).' : null;
+            return ['ok' => false, 'passos' => [['rotulo' => 'Chave do Stripe', 'ok' => false, 'detalhe' => ($dica ? $dica . "\n" : '') . 'Resposta do Stripe: ' . $erro->getMessage()]]];
+        }
+
+        $passos = [['rotulo' => "Chave aceita (modo {$modo})", 'ok' => true, 'detalhe' => 'Conta: ' . ($conta['business_profile']['name'] ?? $conta['email'] ?? $conta['id'] ?? '—') . ' · país: ' . ($conta['country'] ?? '—')]];
+        $cobra = (bool) ($conta['charges_enabled'] ?? false);
+        $passos[] = [
+            'rotulo' => 'Conta pode cobrar',
+            'ok' => $cobra || $modo === 'Testes',
+            'detalhe' => $cobra ? 'Cobranças habilitadas.' : 'Cobranças ainda não habilitadas. Complete o cadastro da conta em dashboard.stripe.com (dados do titular/empresa e conta bancária).',
+        ];
+        $passos[] = [
+            'rotulo' => 'Webhook (renovações)',
+            'ok' => (string) configuracao('stripe.segredo_webhook') !== '',
+            'detalhe' => (string) configuracao('stripe.segredo_webhook') !== '' ? 'Segredo salvo.' : 'Sem o segredo do webhook, o primeiro pagamento funciona, mas as renovações não são registradas. Crie o webhook em dashboard.stripe.com/webhooks.',
+        ];
+
+        return ['ok' => !in_array(false, array_column($passos, 'ok'), true), 'passos' => $passos];
+    }
+
     public function sessao(string $id): array
     {
         return $this->http->get($this->url('/v1/checkout/sessions/' . rawurlencode($id)), $this->cabecalhos());

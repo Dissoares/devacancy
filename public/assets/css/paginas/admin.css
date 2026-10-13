@@ -528,3 +528,24 @@
     gap: 6px;
   }
 }
+
+/* Link "onde encontrar" embaixo de cada campo de configuração. */
+.cfg-link {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 6px;
+  color: var(--primaria-forte);
+  font-size: .84rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.cfg-link:hover {
+  text-decoration: underline;
+}
+
+.cfg-link .icone {
+  flex-shrink: 0;
+  margin-top: 2px;
+}

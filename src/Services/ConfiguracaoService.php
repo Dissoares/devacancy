@@ -56,6 +56,7 @@ final class ConfiguracaoService
                 $atual = $doPainel !== '' ? $doPainel : (string) $doArquivo;
                 $valores[$chaveCampo] = $atual;
                 $campos[$chaveCampo] = $campo + [
+                    'links' => CatalogoConfiguracoes::LINKS[$chaveCampo] ?? [],
                     'origem' => $doPainel !== '' ? 'painel' : ($doArquivo !== null ? 'env' : 'vazio'),
                     // Segredos nunca vão para o HTML; só o final, para a pessoa reconhecer qual é.
                     'valor' => $campo['tipo'] === 'segredo' ? '' : $atual,

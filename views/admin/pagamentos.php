@@ -11,6 +11,10 @@ $classes = ['pago' => 'selo-sucesso', 'pendente' => 'selo-alerta'];
     <?= csrf_campo() ?>
     <button class="botao botao-secundario" type="submit"><?= icone('raio', 'icone icone-sm') ?> Testar Asaas</button>
   </form>
+  <form method="post" action="/admin/pagamentos/testar-stripe" class="acoes-cabecalho" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').textContent = 'Testando…'">
+    <?= csrf_campo() ?>
+    <button class="botao botao-secundario" type="submit"><?= icone('raio', 'icone icone-sm') ?> Testar Stripe</button>
+  </form>
 </section>
 
 <?php if ($pixProblema && $pixProblema !== \App\Services\PixManualService::SEM_CONFIGURACAO): ?>

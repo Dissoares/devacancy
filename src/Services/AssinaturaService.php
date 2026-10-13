@@ -713,6 +713,15 @@ final class AssinaturaService
     }
 
     /** @return array{ok: bool, passos: array} */
+    public function testarStripe(): array
+    {
+        if (!$this->stripe->configurado()) {
+            return ['ok' => false, 'passos' => [['rotulo' => 'Chave secreta', 'ok' => false, 'detalhe' => 'Nenhuma chave salva em Configurações → Formas de pagamento → Stripe.']]];
+        }
+        return $this->stripe->testar();
+    }
+
+    /** @return array{ok: bool, passos: array} */
     public function testarAsaas(): array
     {
         if (!$this->asaas->configurado()) {
