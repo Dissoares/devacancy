@@ -4,6 +4,7 @@
     <?= parcial('partials/marca') ?>
 
     <nav class="navegacao" id="navegacao" aria-label="<?= e(t('nav.principal')) ?>">
+      <a href="/vagas"><?= e(t('nav.vagas')) ?></a>
       <a href="/#como-funciona"><?= e(t('nav.como_funciona')) ?></a>
       <a href="/#precos"><?= e(t('nav.precos')) ?></a>
       <a href="/#empresas"><?= e(t('nav.empresas')) ?></a>

@@ -48,6 +48,7 @@ final class SiteController
             'Disallow: /auth/',
             'Disallow: /webhooks/',
             'Disallow: /install',
+            'Disallow: /vaga/*/aplicar',
             '',
             'Sitemap: ' . url('/sitemap.xml'),
         ];
@@ -58,10 +59,19 @@ final class SiteController
     public function sitemap(): Resposta
     {
         $entradas = [];
-        foreach (['/', '/comecar', '/cadastro?tipo=empresa', '/privacidade', '/termos'] as $caminho) {
-            $entradas[] = ['loc' => url($caminho), 'mod' => null, 'prioridade' => $caminho === '/' ? '1.0' : '0.6'];
+        foreach (['/', '/vagas', '/privacidade', '/termos'] as $caminho) {
+            $entradas[] = ['loc' => url($caminho), 'mod' => date('Y-m-d'), 'prioridade' => $caminho === '/' ? '1.0' : ($caminho === '/vagas' ? '0.9' : '0.4')];
         }
-        foreach ($this->vagas->listar(true) as $vaga) {
+
+        $abertas = $this->vagas->abertas();
+        // Páginas por tema só entram com vagas suficientes (as vazias ficam fora do Google).
+        foreach (\App\Core\CatalogoSeo::todas() as $categoria) {
+            $dessa = \App\Core\CatalogoSeo::filtrar($abertas, $categoria);
+            if (count($dessa) >= \App\Core\CatalogoSeo::MINIMO_PARA_INDEXAR) {
+                $entradas[] = ['loc' => url('/vagas/' . $categoria['slug']), 'mod' => substr($dessa[0]->criadoEm, 0, 10), 'prioridade' => '0.8'];
+            }
+        }
+        foreach ($abertas as $vaga) {
             $entradas[] = ['loc' => url_vaga($vaga), 'mod' => substr($vaga->criadoEm, 0, 10), 'prioridade' => '0.7'];
         }
 

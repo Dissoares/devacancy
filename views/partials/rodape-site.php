@@ -12,6 +12,15 @@
         <a href="/#perguntas"><?= e(t('nav.duvidas')) ?></a>
       </div>
       <div>
+        <h4><?= e(t('nav.vagas')) ?></h4>
+        <a href="/vagas"><?= e(t('vagas.todas')) ?></a>
+        <a href="/vagas/remoto"><?= e(t('modelo.remoto')) ?></a>
+        <a href="/vagas/backend">Back-end</a>
+        <a href="/vagas/frontend">Front-end</a>
+        <a href="/vagas/react">React</a>
+        <a href="/vagas/python">Python</a>
+      </div>
+      <div>
         <h4><?= e(t('rodape.conta')) ?></h4>
         <a href="/comecar"><?= e(t('rodape.sou_profissional')) ?></a>
         <a href="/cadastro?tipo=empresa"><?= e(t('landing.sou_empresa')) ?></a>

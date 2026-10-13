@@ -4,6 +4,7 @@ $descricao ??= t('landing.descricao_pagina');
 $imagemOg ??= url('/assets/img/og-padrao.png');
 $urlCanonica ??= null;
 $dadosEstruturados ??= null;
+$semIndexar ??= false;
 $imagemAlt ??= $titulo ?? 'Devacancy';
 ?>
 <meta charset="UTF-8">
@@ -11,6 +12,15 @@ $imagemAlt ??= $titulo ?? 'Devacancy';
 <title><?= e($titulo ?? 'Devacancy') ?></title>
 <meta name="description" content="<?= e($descricao) ?>">
 <meta name="theme-color" content="#ffffff">
+<?php if ($semIndexar): ?><meta name="robots" content="noindex, follow">
+<?php else: ?><meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<?php endif; ?>
+<?php if ($v = configuracao('seo.google')): ?><meta name="google-site-verification" content="<?= e($v) ?>">
+<?php endif; ?>
+<?php if ($v = configuracao('seo.bing')): ?><meta name="msvalidate.01" content="<?= e($v) ?>">
+<?php endif; ?>
+<?php if ($v = configuracao('seo.yandex')): ?><meta name="yandex-verification" content="<?= e($v) ?>">
+<?php endif; ?>
 <script>document.documentElement.classList.add('js')</script>
 <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
 <meta property="og:type" content="website">

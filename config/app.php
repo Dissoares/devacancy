@@ -144,6 +144,14 @@ return [
         'token' => Ambiente::obter('MIGRACOES_TOKEN', ''),
     ],
 
+    // Buscadores: códigos de verificação do Google Search Console, Bing e Yandex, e a chave do IndexNow (opcional).
+    'seo' => [
+        'google' => Ambiente::obter('VERIFICACAO_GOOGLE', ''),
+        'bing' => Ambiente::obter('VERIFICACAO_BING', ''),
+        'yandex' => Ambiente::obter('VERIFICACAO_YANDEX', ''),
+        'indexnow_chave' => Ambiente::obter('INDEXNOW_CHAVE', ''),
+    ],
+
     // Fontes de vagas por API pública (sem chave). Quais ficam ligadas e as empresas dos painéis Greenhouse/Lever
     // se editam em Admin → Configurações → Importação de vagas.
     'vagas' => [

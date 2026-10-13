@@ -197,6 +197,12 @@ final class VagaService
         return count(array_filter($this->recentes($noBrasil, 2000), fn (Vaga $vaga) => strtotime($vaga->criadoEm) >= $limite));
     }
 
+    /** Vagas abertas ao público (dentro do prazo), as mais novas primeiro. @return Vaga[] */
+    public function abertas(): array
+    {
+        return $this->vagas->listarAtivas(self::DIAS_VALIDADE);
+    }
+
     /** Vagas ativas que o público enxerga (dentro do prazo de validade), em qualquer região. */
     public function contarVisiveisAoPublico(): int
     {

@@ -30,6 +30,16 @@ final class CatalogoConfiguracoes
                         'APP_AMBIENTE' => ['rotulo' => 'Ambiente', 'tipo' => 'opcao', 'opcoes' => ['producao' => 'Produção', 'local' => 'Local (só na sua máquina)'], 'ajuda' => 'No servidor, sempre Produção.'],
                     ],
                 ],
+                'buscadores' => [
+                    'titulo' => 'Buscadores',
+                    'icone' => 'busca',
+                    'descricao' => 'Para o Google, o Bing e o Yandex confirmarem que o site é seu. Copie só o código (o valor de content) da tag que cada painel mostra. O endereço do sitemap é {APP_URL}/sitemap.xml.',
+                    'campos' => [
+                        'VERIFICACAO_GOOGLE' => ['rotulo' => 'Google Search Console', 'tipo' => 'texto', 'ajuda' => 'search.google.com/search-console → Adicionar propriedade → Prefixo do URL → Tag HTML.'],
+                        'VERIFICACAO_BING' => ['rotulo' => 'Bing Webmaster Tools', 'tipo' => 'texto', 'ajuda' => 'bing.com/webmasters → Adicionar site → Meta tag (msvalidate.01).'],
+                        'VERIFICACAO_YANDEX' => ['rotulo' => 'Yandex Webmaster', 'tipo' => 'texto', 'ajuda' => 'webmaster.yandex.com → Adicionar site → Meta tag.'],
+                    ],
+                ],
             ],
         ],
 

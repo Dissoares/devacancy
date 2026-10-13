@@ -17,6 +17,7 @@ use App\Controllers\AutenticacaoController;
 use App\Controllers\CandidaturaController;
 use App\Controllers\FunilController;
 use App\Controllers\LandingController;
+use App\Controllers\ListaVagasController;
 use App\Controllers\PerfilController;
 use App\Controllers\RecuperacaoSenhaController;
 use App\Controllers\SiteController;
@@ -35,6 +36,9 @@ return function (Roteador $rotas): void {
     $perfilCompleto = [...$logado, PerfilCompletoMiddleware::class];
 
     $rotas->get('/', [LandingController::class, 'inicio']);
+    $rotas->get('/vagas', [ListaVagasController::class, 'todas']);
+    $rotas->get('/vagas/{slug}', [ListaVagasController::class, 'categoria']);
+    $rotas->get('/indexnow.txt', [ListaVagasController::class, 'chaveIndexNow']);
     $rotas->get('/vaga/{id}', [VagaPublicaController::class, 'mostrar']);
     $rotas->get('/vaga/{id}/aplicar', [VagaPublicaController::class, 'aplicar']);
     $rotas->get('/vaga/{id}/imagem.png', [VagaPublicaController::class, 'imagem']);

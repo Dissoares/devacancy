@@ -81,7 +81,6 @@ final class VagaPublicaController
     private function dadosEstruturados(\App\Entities\Vaga $vaga): array
     {
         $dados = [
-            '@context' => 'https://schema.org',
             '@type' => 'JobPosting',
             'title' => $vaga->titulo,
             'description' => mb_substr($vaga->descricaoPublica(), 0, 5000),
@@ -100,7 +99,15 @@ final class VagaPublicaController
         if ($vaga->cidade) {
             $dados['jobLocation'] = ['@type' => 'Place', 'address' => ['@type' => 'PostalAddress', 'addressLocality' => $vaga->cidade, 'addressCountry' => $vaga->regiao === \App\Enums\RegiaoVagas::Brasil ? 'BR' : 'US']];
         }
-        return $dados;
+        // Trilha de navegação: o Google a mostra no resultado de busca, no lugar do endereço.
+        $trilha = [
+            ['@type' => 'ListItem', 'position' => 1, 'name' => t('vagas.migalha_inicio'), 'item' => url('/')],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => t('vagas.migalha_vagas'), 'item' => url('/vagas')],
+            ['@type' => 'ListItem', 'position' => 3, 'name' => $vaga->area->rotulo(), 'item' => url('/vagas/' . $vaga->area->value)],
+            ['@type' => 'ListItem', 'position' => 4, 'name' => $vaga->titulo],
+        ];
+
+        return ['@context' => 'https://schema.org', '@graph' => [$dados, ['@type' => 'BreadcrumbList', 'itemListElement' => $trilha]]];
     }
 
     /** "123" ou "123-dev-backend-pleno": só o número importa. */
