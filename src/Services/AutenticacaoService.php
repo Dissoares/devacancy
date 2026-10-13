@@ -21,8 +21,10 @@ final class AutenticacaoService
 
     private ?Usuario $usuarioAtual = null;
 
-    public function __construct(private readonly UsuarioRepositoryInterface $usuarios)
-    {
+    public function __construct(
+        private readonly UsuarioRepositoryInterface $usuarios,
+        private readonly NotificacaoService $notificacoes,
+    ) {
     }
 
     /** @throws AutenticacaoException */
@@ -58,6 +60,9 @@ final class AutenticacaoService
             $tipo = in_array($tipoPretendido, TipoUsuario::publicos(), true) ? $tipoPretendido : TipoUsuario::Profissional;
             $usuario = $this->usuarios->criar($tipo, $social->nome, $social->email, null, $social->avatarUrl, Idioma::atual(), $pais, Indicacao::codigoCapturado());
             Indicacao::limpar();
+            if ($usuario->ehProfissional()) {
+                $this->notificacoes->boasVindas($usuario);
+            }
         }
 
         $this->usuarios->vincularContaSocial($usuario->id, $social->provedor, $social->provedorId);

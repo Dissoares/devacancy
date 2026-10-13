@@ -16,6 +16,7 @@ use App\Exceptions\ValidacaoException;
 use App\Interfaces\AssinaturaRepositoryInterface;
 use App\Interfaces\MetodoPagamentoRepositoryInterface;
 use App\Interfaces\PagamentoRepositoryInterface;
+use App\Interfaces\UsuarioRepositoryInterface;
 use RuntimeException;
 
 /**
@@ -35,6 +36,8 @@ final class AssinaturaService
         private readonly AsaasService $asaas,
         private readonly PixManualService $pixManual,
         private readonly Email $email,
+        private readonly NotificacaoService $notificacoes,
+        private readonly UsuarioRepositoryInterface $usuarios,
         private readonly ComissaoService $comissoes,
         private readonly Transacao $transacao,
     ) {
@@ -288,7 +291,8 @@ final class AssinaturaService
     {
         $config = $this->planos()[$plano] ?? throw new RuntimeException("Plano desconhecido: {$plano}");
 
-        $this->transacao->executar(function () use ($usuarioId, $plano, $moeda, $assinaturaId, $ciclo, $config): void {
+        $pedido = null;
+        $this->transacao->executar(function () use ($usuarioId, $plano, $moeda, $assinaturaId, $ciclo, $config, &$pedido): void {
             $gatewayId = "paypal-{$assinaturaId}-{$ciclo}";
             $novo = $this->pagamentos->registrarPagoExterno(
                 $usuarioId, $plano, $config['precos'][$moeda], $moeda, 'paypal', $gatewayId, $assinaturaId,
@@ -297,8 +301,13 @@ final class AssinaturaService
                 $this->assinaturas->estender($usuarioId, $plano, $config['dias']);
                 $pagamento = $this->pagamentos->buscarPorGatewayId($gatewayId);
                 $this->comissoes->registrarSeElegivel($usuarioId, $pagamento->id, $config['precos'][$moeda], $moeda);
+                $pedido = $pagamento->id;
             }
         });
+
+        if ($pedido !== null) {
+            $this->avisarAssinatura($usuarioId, $plano, $config['precos'][$moeda], $moeda, 'paypal', $pedido);
+        }
     }
 
     // ---------------------------------------------------------------- Stripe (cartão, assinatura recorrente)
@@ -446,12 +455,18 @@ final class AssinaturaService
     {
         $config = $this->planos()[$chavePlano];
 
-        $this->transacao->executar(function () use ($usuarioId, $chavePlano, $valor, $moeda, $gatewayId, $assinaturaId, $config): void {
+        $pedido = null;
+        $this->transacao->executar(function () use ($usuarioId, $chavePlano, $valor, $moeda, $gatewayId, $assinaturaId, $config, &$pedido): void {
             if ($this->pagamentos->registrarPagoExterno($usuarioId, $chavePlano, $valor, $moeda, 'stripe', $gatewayId, $assinaturaId)) {
                 $this->assinaturas->estender($usuarioId, $chavePlano, $config['dias']);
-                $this->comissoes->registrarSeElegivel($usuarioId, $this->pagamentos->buscarPorGatewayId($gatewayId)->id, $valor, $moeda);
+                $pedido = $this->pagamentos->buscarPorGatewayId($gatewayId)->id;
+                $this->comissoes->registrarSeElegivel($usuarioId, $pedido, $valor, $moeda);
             }
         });
+
+        if ($pedido !== null) {
+            $this->avisarAssinatura($usuarioId, $chavePlano, $valor, $moeda, 'stripe', $pedido);
+        }
     }
 
     // ---------------------------------------------------------------- PayPal só com e-mail
@@ -709,16 +724,36 @@ final class AssinaturaService
             return $pagamento;
         }
 
-        $this->transacao->executar(function () use ($pagamento, $status): void {
+        $liberou = false;
+        $this->transacao->executar(function () use ($pagamento, $status, &$liberou): void {
             $mudou = $this->pagamentos->concluir($pagamento->id, $status);
             if ($mudou && $status === StatusPagamento::Pago) {
+                $liberou = true;
                 $plano = $this->planos()[$pagamento->plano] ?? throw new RuntimeException("Plano desconhecido: {$pagamento->plano}");
                 $this->assinaturas->estender($pagamento->usuarioId, $pagamento->plano, $plano['dias']);
                 $this->comissoes->registrarSeElegivel($pagamento->usuarioId, $pagamento->id, $pagamento->valor, $pagamento->moeda);
             }
         });
 
+        // O e-mail sai só depois de gravar tudo, e só na primeira vez que este pagamento é confirmado.
+        if ($liberou) {
+            $this->avisarAssinatura($pagamento->usuarioId, $pagamento->plano, $pagamento->valor, $pagamento->moeda, $pagamento->metodo, $pagamento->id);
+        }
+
         return $this->pagamentos->buscarPorId($pagamento->id);
+    }
+
+    /** E-mail de assinatura confirmada (ou de renovação, se já havia pagamento antes deste). */
+    private function avisarAssinatura(int $usuarioId, string $plano, float $valor, string $moeda, string $metodo, int $pedido): void
+    {
+        $usuario = $this->usuarios->buscarPorId($usuarioId);
+        if ($usuario === null) {
+            return;
+        }
+        $this->notificacoes->assinaturaConfirmada(
+            $usuario, $plano, $valor, $moeda, $metodo, $this->vigenteAte($usuario),
+            $this->pagamentos->contarPagosDoUsuario($usuarioId) > 1, $pedido,
+        );
     }
 
     private function registrarErro(string $gateway, RuntimeException $erro): void

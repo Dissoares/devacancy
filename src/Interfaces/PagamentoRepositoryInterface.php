@@ -34,6 +34,9 @@ interface PagamentoRepositoryInterface
     /** Sai de "pendente" para o novo status. Retorna false se outro processo já mudou o status. */
     public function concluir(int $id, StatusPagamento $status): bool;
 
+    /** Quantos pagamentos concluídos a pessoa já tem (1 = o primeiro, mais de 1 = renovação). */
+    public function contarPagosDoUsuario(int $usuarioId): int;
+
     /** Apaga um pagamento que não foi concluído (pendente, falho, expirado ou cancelado). Pagos e estornados ficam. */
     public function excluirNaoConcluido(int $id): bool;
 

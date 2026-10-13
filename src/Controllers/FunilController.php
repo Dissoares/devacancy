@@ -18,6 +18,7 @@ use App\Exceptions\ValidacaoException;
 use App\Services\AutenticacaoService;
 use App\Services\FunilService;
 use App\Services\LocalizacaoService;
+use App\Services\NotificacaoService;
 use App\Services\UsuarioService;
 use App\Services\VagaService;
 
@@ -33,6 +34,7 @@ final class FunilController
         private readonly UsuarioService $usuarios,
         private readonly AutenticacaoService $autenticacao,
         private readonly LocalizacaoService $localizacao,
+        private readonly NotificacaoService $notificacoes,
     ) {
     }
 
@@ -156,8 +158,11 @@ final class FunilController
         }
 
         $this->funil->concluirCadastro($usuario);
+        $cadastrado = $this->usuarios->buscarPorId($usuario->id);
+        $perfil = $this->usuarios->perfilDe($cadastrado);
+        $this->notificacoes->boasVindas($cadastrado, $perfil instanceof PerfilProfissional ? count($this->vagas->compativeis($perfil)) : null);
         Sessao::remover(VagaPublicaController::CHAVE_SESSAO_VAGA);
-        $this->autenticacao->iniciarSessao($this->usuarios->buscarPorId($usuario->id));
+        $this->autenticacao->iniciarSessao($cadastrado);
         Sessao::flash('sucesso', t('funil.conta_criada'));
 
         return Resposta::redirecionarHtmx('/painel');

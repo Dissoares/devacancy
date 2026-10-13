@@ -95,6 +95,13 @@ final class PagamentoRepository implements PagamentoRepositoryInterface
         return $consulta->fetchAll();
     }
 
+    public function contarPagosDoUsuario(int $usuarioId): int
+    {
+        $consulta = $this->pdo->prepare("SELECT COUNT(*) FROM pagamentos WHERE usuario_id = ? AND status = 'pago'");
+        $consulta->execute([$usuarioId]);
+        return (int) $consulta->fetchColumn();
+    }
+
     public function excluirNaoConcluido(int $id): bool
     {
         $consulta = $this->pdo->prepare("DELETE FROM pagamentos WHERE id = ? AND status IN ('pendente', 'falhou', 'expirado', 'cancelado')");
