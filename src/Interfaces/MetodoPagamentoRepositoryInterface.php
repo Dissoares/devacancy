@@ -9,5 +9,6 @@ interface MetodoPagamentoRepositoryInterface
     /** @return array<string, bool> chave => ativo */
     public function ativos(): array;
 
-    public function alternar(string $chave): void;
+    /** Liga ou desliga a forma de pagamento no checkout. */
+    public function definir(string $chave, bool $ativo): void;
 }

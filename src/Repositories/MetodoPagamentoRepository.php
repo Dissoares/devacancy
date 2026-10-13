@@ -25,8 +25,10 @@ final class MetodoPagamentoRepository implements MetodoPagamentoRepositoryInterf
         return $ativos;
     }
 
-    public function alternar(string $chave): void
+    public function definir(string $chave, bool $ativo): void
     {
-        $this->pdo->prepare('UPDATE metodos_pagamento SET ativo = 1 - ativo WHERE chave = ?')->execute([$chave]);
+        // VALUES() em vez de alias: o MariaDB da hospedagem não aceita "AS novo".
+        $this->pdo->prepare('INSERT INTO metodos_pagamento (chave, ativo) VALUES (?, ?) ON DUPLICATE KEY UPDATE ativo = VALUES(ativo)')
+            ->execute([$chave, $ativo ? 1 : 0]);
     }
 }
