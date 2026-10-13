@@ -445,3 +445,86 @@
     padding: 18px 16px;
   }
 }
+
+/* ---------- Saúde do sistema ---------- */
+.saude-resumo {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 26px;
+  margin-bottom: 22px;
+}
+
+.saude-resumo h2 {
+  font-size: 1.2rem;
+  font-weight: 780;
+}
+
+.saude-icone {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+}
+
+.saude-ok { border-color: rgba(22, 163, 74, .35); background: var(--sucesso-suave); }
+.saude-ok .saude-icone { background: #16a34a; color: #fff; }
+.saude-erro { border-color: rgba(220, 38, 38, .35); background: rgba(220, 38, 38, .06); }
+.saude-erro .saude-icone { background: #dc2626; color: #fff; }
+
+.saude-grupo {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding: 20px 24px;
+}
+
+.saude-grupo h2 {
+  font-size: 1.05rem;
+  font-weight: 750;
+}
+
+.saude-lista {
+  display: grid;
+  padding: 0;
+  list-style: none;
+}
+
+.saude-item {
+  display: grid;
+  grid-template-columns: 112px 1fr;
+  align-items: start;
+  gap: 14px;
+  padding: 12px 0;
+  border-top: 1px solid var(--borda);
+}
+
+.saude-item:first-child {
+  border-top: 0;
+}
+
+.saude-item strong {
+  display: block;
+  font-size: .95rem;
+}
+
+.saude-item small {
+  display: block;
+  margin-top: 2px;
+  font-size: .84rem;
+  line-height: 1.45;
+}
+
+.selo-erro {
+  background: rgba(220, 38, 38, .1);
+  color: #b91c1c;
+}
+
+@media (max-width: 560px) {
+  .saude-item {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}

@@ -26,6 +26,7 @@ $grupos = [
         ['/admin/configuracoes/vagas', 'busca', 'Importação de vagas'],
     ],
     'Sistema' => [
+        ['/admin/saude', 'escudo', 'Saúde do sistema'],
         ['/admin/administradores', 'usuario', 'Administradores'],
         ['/admin/migracoes', 'caixa', 'Banco de dados'],
     ],
