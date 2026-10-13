@@ -767,7 +767,7 @@ return [
     'vaga_publica.aplicar_logado' => 'Ver no meu painel',
     'funil.vaga_escolhida' => 'Você escolheu: :titulo',
     'funil.vaga_escolhida_nota' => 'Crie sua conta para a nossa equipe se candidatar por você. A empresa é liberada para assinantes.',
-    'planos.metodo_pix_manual' => 'PIX',
+    'planos.metodo_pix_manual' => 'PIX copia e cola',
     'pagamento.pix_manual_continuar' => 'Gerar PIX',
     'pagamento.pix_manual_nota' => 'Você recebe o código PIX já com o valor do plano. Depois de pagar, avise e a gente libera o plano assim que confirmar o recebimento.',
     'pagamento.pix_manual_passos' => 'Abra o app do seu banco, escolha Pix, depois Pix copia e cola (ou leia o QR code) e pague :valor.',

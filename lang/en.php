@@ -767,7 +767,7 @@ return [
     'vaga_publica.aplicar_logado' => 'Go to my dashboard',
     'funil.vaga_escolhida' => 'You picked: :titulo',
     'funil.vaga_escolhida_nota' => 'Create your account so our team can apply for you. The company is unlocked for subscribers.',
-    'planos.metodo_pix_manual' => 'PIX',
+    'planos.metodo_pix_manual' => 'PIX (copy and paste)',
     'pagamento.pix_manual_continuar' => 'Generate PIX',
     'pagamento.pix_manual_nota' => 'You get the PIX code with the plan amount already filled in. After paying, let us know and we unlock your plan as soon as we confirm the payment.',
     'pagamento.pix_manual_passos' => 'Open your bank app, choose Pix, then Pix copy and paste (or scan the QR code) and pay :valor.',

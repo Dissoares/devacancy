@@ -8,3 +8,6 @@
 /storage/cache/*
 
 /marketing/anuncios/*.png
+
+# Pacotes gerados à mão para subir ao servidor
+*.zip

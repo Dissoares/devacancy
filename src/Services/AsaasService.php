@@ -46,6 +46,49 @@ final class AsaasService
         return ['id' => (string) $resposta['id'], 'link' => (string) $resposta['link']];
     }
 
+    /**
+     * Diagnóstico para o admin: confere se a chave é aceita no ambiente escolhido e tenta abrir um checkout de verdade
+     * (some em 60 minutos e não cobra nada). Devolve, passo a passo, o que a Asaas respondeu.
+     * @return array{ok: bool, passos: array<int, array{rotulo: string, ok: bool, detalhe: string}>}
+     */
+    public function testar(): array
+    {
+        $passos = [];
+        $ambiente = configuracao('asaas.modo') === 'sandbox' ? 'Sandbox (testes)' : 'Produção';
+
+        try {
+            $this->http->get($this->url('/customers?limit=1'), $this->cabecalhos(), 20);
+            $passos[] = ['rotulo' => "Chave aceita em {$ambiente}", 'ok' => true, 'detalhe' => 'A Asaas reconheceu a chave de API.'];
+        } catch (\RuntimeException $erro) {
+            $passos[] = ['rotulo' => "Chave em {$ambiente}", 'ok' => false, 'detalhe' => $this->resumoDoErro($erro)];
+            return ['ok' => false, 'passos' => $passos];
+        }
+
+        try {
+            $checkout = $this->criarCheckout('Teste Devacancy', 'Teste de conexão do painel (pode ignorar)', 5.00, 'teste-' . time(), ['name' => 'Teste Devacancy', 'email' => 'teste@devacancy.online'], url('/planos'), url('/planos'));
+            $passos[] = ['rotulo' => 'Criação do checkout', 'ok' => true, 'detalhe' => 'A Asaas abriu a página de pagamento: ' . $checkout['link']];
+        } catch (\RuntimeException $erro) {
+            $passos[] = ['rotulo' => 'Criação do checkout', 'ok' => false, 'detalhe' => $this->resumoDoErro($erro)];
+            return ['ok' => false, 'passos' => $passos];
+        }
+
+        return ['ok' => true, 'passos' => $passos];
+    }
+
+    /** Traduz as respostas de erro mais comuns da Asaas e mantém o texto original logo depois. */
+    private function resumoDoErro(\RuntimeException $erro): string
+    {
+        $mensagem = $erro->getMessage();
+        $dica = match (true) {
+            str_contains($mensagem, '(401)') => 'Chave inválida para este ambiente. Confira se a chave é de Produção ($aact_prod…) e se "Conta" está em Produção, ou o contrário no Sandbox.',
+            str_contains($mensagem, '(403)') => 'A conta não tem permissão para isso. O checkout hospedado precisa estar liberado na sua conta Asaas (fale com o suporte deles) e a conta precisa estar aprovada.',
+            str_contains($mensagem, '(400)') => 'A Asaas recusou os dados enviados. O motivo exato está no texto abaixo.',
+            str_contains($mensagem, '(404)') => 'Endereço da API não encontrado. Confira o ambiente (Produção ou Sandbox).',
+            default => null,
+        };
+        return ($dica ? $dica . "\n" : '') . 'Resposta da Asaas: ' . $mensagem;
+    }
+
     /** A Asaas manda o token configurado no webhook no cabeçalho asaas-access-token. Sem token salvo, nada é aceito. */
     public function avisoAutentico(string $tokenRecebido): bool
     {

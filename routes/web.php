@@ -141,6 +141,7 @@ return function (Roteador $rotas): void {
     $rotas->post('/admin/migracoes/executar', [AdminMigracaoController::class, 'executar'], $admin);
     $rotas->get('/admin/pagamentos', [AdminPagamentoController::class, 'listar'], $admin);
     $rotas->post('/admin/pagamentos/{id}/confirmar', [AdminPagamentoController::class, 'confirmar'], $admin);
+    $rotas->post('/admin/pagamentos/testar-asaas', [AdminPagamentoController::class, 'testarAsaas'], $admin);
     $rotas->post('/admin/pagamentos/limpar', [AdminPagamentoController::class, 'limparNaoConcluidos'], $admin);
     $rotas->post('/admin/pagamentos/{id}/excluir', [AdminPagamentoController::class, 'excluir'], $admin);
 };

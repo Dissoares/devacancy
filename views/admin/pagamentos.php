@@ -7,6 +7,10 @@ $classes = ['pago' => 'selo-sucesso', 'pendente' => 'selo-alerta'];
     <h1>Pagamentos</h1>
     <p>O que está esperando a sua confirmação e o histórico recente. Para ligar ou desligar uma forma de pagamento, use <a class="link" href="/admin/configuracoes/pagamentos">Configurações → Formas de pagamento</a>.</p>
   </div>
+  <form method="post" action="/admin/pagamentos/testar-asaas" class="acoes-cabecalho" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').textContent = 'Testando…'">
+    <?= csrf_campo() ?>
+    <button class="botao botao-secundario" type="submit"><?= icone('raio', 'icone icone-sm') ?> Testar Asaas</button>
+  </form>
 </section>
 
 <?php if ($pixProblema && $pixProblema !== \App\Services\PixManualService::SEM_CONFIGURACAO): ?>
@@ -14,7 +18,10 @@ $classes = ['pago' => 'selo-sucesso', 'pendente' => 'selo-alerta'];
 <?php endif; ?>
 
 <?php if (!empty($sucesso)): ?>
-  <div class="alerta alerta-sucesso alerta-topo"><?= icone('check') ?><span><?= e($sucesso) ?></span></div>
+  <div class="alerta alerta-sucesso alerta-topo"><?= icone('check') ?><span><?= nl2br(e($sucesso)) ?></span></div>
+<?php endif; ?>
+<?php if (!empty($erro)): ?>
+  <div class="alerta alerta-erro alerta-topo" role="alert"><?= icone('x') ?><span style="overflow-wrap:anywhere"><?= nl2br(e($erro)) ?></span></div>
 <?php endif; ?>
 
 <section class="admin-secao">

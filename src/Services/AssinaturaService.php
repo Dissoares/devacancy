@@ -66,8 +66,9 @@ final class AssinaturaService
         if ($noBrasil && ($ativos['pix'] ?? true) && ($this->expay->configurado() || $this->simulacaoPix())) {
             $metodos[] = 'pix';
         }
-        // Enquanto não há conta no gateway, o PIX é o copia e cola do próprio dono, confirmado à mão.
-        if ($noBrasil && !$this->expay->configurado() && !$this->asaas->configurado() && ($ativos['pix_manual'] ?? true) && $this->pixManual->configurado()) {
+        // O PIX copia e cola do próprio dono, confirmado à mão. Aparece sempre que estiver ligado e configurado (serve
+        // de alternativa se o Asaas falhar); só fica de fora quando o PIX automático da ExPay já está na lista.
+        if ($noBrasil && !in_array('pix', $metodos, true) && ($ativos['pix_manual'] ?? true) && $this->pixManual->configurado()) {
             $metodos[] = 'pix_manual';
         }
         // No Brasil, a Asaas já cobre PIX e cartão: mostrar a Stripe junto só aumentaria as opções sem ganho.
@@ -709,6 +710,15 @@ final class AssinaturaService
     public function limparPagamentosNaoConcluidos(): int
     {
         return $this->pagamentos->excluirNaoConcluidosAntigos();
+    }
+
+    /** @return array{ok: bool, passos: array} */
+    public function testarAsaas(): array
+    {
+        if (!$this->asaas->configurado()) {
+            return ['ok' => false, 'passos' => [['rotulo' => 'Chave de API', 'ok' => false, 'detalhe' => 'Nenhuma chave salva em Configurações → Formas de pagamento → Asaas.']]];
+        }
+        return $this->asaas->testar();
     }
 
     public function pixManualProblema(): ?string

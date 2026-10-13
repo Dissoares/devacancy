@@ -45,7 +45,7 @@ final class CatalogoConfiguracoes
 
         'pagamentos' => [
             'titulo' => 'Formas de pagamento',
-            'descricao' => 'Ligue só o que estiver configurado. Quem está no Brasil vê Asaas (ou PIX manual), cartão e PayPal; quem está fora vê cartão e PayPal.',
+            'descricao' => 'Ligue só o que estiver configurado. Quem está no Brasil vê Asaas e o PIX manual (se ligado), cartão e PayPal; quem está fora vê cartão e PayPal.',
             'cartoes' => [
                 'asaas' => [
                     'titulo' => 'Asaas · PIX e cartão',

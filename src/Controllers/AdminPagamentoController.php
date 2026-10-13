@@ -28,8 +28,18 @@ final class AdminPagamentoController
             'pendentes' => $this->assinaturas->pagamentosManuaisPendentes(),
             'ultimos' => $this->assinaturas->ultimosPagamentos(30),
             'sucesso' => Sessao::obterFlash('sucesso'),
+            'erro' => Sessao::obterFlash('erro'),
             'pixProblema' => $this->assinaturas->pixManualProblema(),
         ], 'admin'));
+    }
+
+    /** Mostra, passo a passo, o que a Asaas respondeu (chave e criação do checkout). */
+    public function testarAsaas(): Resposta
+    {
+        $resultado = $this->assinaturas->testarAsaas();
+        $linhas = array_map(fn (array $passo) => ($passo['ok'] ? '✓ ' : '✗ ') . $passo['rotulo'] . "\n" . $passo['detalhe'], $resultado['passos']);
+        Sessao::flash($resultado['ok'] ? 'sucesso' : 'erro', ($resultado['ok'] ? "Asaas funcionando.\n" : "Asaas com problema.\n") . implode("\n", $linhas));
+        return Resposta::redirecionar('/admin/pagamentos');
     }
 
     public function excluir(Requisicao $requisicao): Resposta
