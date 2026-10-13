@@ -2,9 +2,12 @@
 /**
  * @var array<int, array{vaga: \App\Entities\Vaga, compatibilidade: int}> $compativeis @var int $recentes
  * @var ?string $assinaturaAte @var array<int, \App\Enums\StatusCandidatura> $statusCandidaturas
+ * @var int $restantesHoje candidaturas que ainda cabem hoje @var int $limiteDiario
  */
 $total = count($compativeis);
 $semCandidatura = array_values(array_filter($compativeis, fn (array $item) => !isset($statusCandidaturas[$item['vaga']->id])));
+// Só as melhores que cabem no limite de hoje vão no envio em lote.
+$deHoje = array_slice($semCandidatura, 0, $restantesHoje);
 ?>
 <?php if ($total > 0): ?>
   <section class="cartao banner-assinatura">
@@ -15,15 +18,18 @@ $semCandidatura = array_values(array_filter($compativeis, fn (array $item) => !i
         <?= e(t($assinaturaAte ? 'painel.vagas_texto_assinante' : 'painel.vagas_texto')) ?>
       </p>
     </div>
-    <?php if ($semCandidatura !== []): ?>
+    <?php if ($deHoje !== []): ?>
       <form method="post" action="/candidaturas" hx-post="/candidaturas">
         <?= csrf_campo() ?>
-        <?php foreach ($semCandidatura as $item): ?><input type="hidden" name="vaga_ids[]" value="<?= $item['vaga']->id ?>"><?php endforeach; ?>
+        <?php foreach ($deHoje as $item): ?><input type="hidden" name="vaga_ids[]" value="<?= $item['vaga']->id ?>"><?php endforeach; ?>
         <button class="botao botao-primario botao-grande" type="submit">
           <span class="carregando" aria-hidden="true"></span>
-          <span class="rotulo-botao"><?= icone('raio', 'icone icone-sm') ?> <?= e(t('painel.candidatar_todas', ['n' => count($semCandidatura)])) ?></span>
+          <span class="rotulo-botao"><?= icone('raio', 'icone icone-sm') ?> <?= e(t(count($deHoje) < count($semCandidatura) ? 'painel.candidatar_melhores' : 'painel.candidatar_todas', ['n' => count($deHoje)])) ?></span>
         </button>
+        <small class="texto-suave banner-limite"><?= e(t('painel.limite_diario', ['restantes' => $restantesHoje, 'limite' => $limiteDiario])) ?></small>
       </form>
+    <?php elseif ($semCandidatura !== []): ?>
+      <p class="texto-suave banner-limite"><?= icone('relogio', 'icone icone-sm') ?> <?= e(t('painel.limite_usado', ['limite' => $limiteDiario])) ?></p>
     <?php endif; ?>
   </section>
 

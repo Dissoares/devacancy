@@ -111,6 +111,8 @@ $idiomas = array_map(fn (string $codigo) => IdiomaFalado::tryFrom($codigo), $per
   </div>
 
   <aside class="perfil-lateral">
+    <?= parcial('perfil/partials/assinatura', ['assinatura' => $assinatura, 'limiteDiario' => $limiteDiario]) ?>
+
     <section class="cartao perfil-secao perfil-forca">
       <h2><?= e(t('perfilpg.forca')) ?></h2>
       <div class="perfil-anel" style="--valor: <?= (int) $forca['percentual'] ?>" role="img" aria-label="<?= (int) $forca['percentual'] ?>%">

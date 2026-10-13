@@ -38,10 +38,17 @@ final class CandidaturaController
         }
 
         $ids = array_filter([(int) $requisicao->entrada('vaga_id', 0), ...array_map('intval', (array) $requisicao->entrada('vaga_ids', []))]);
-        $this->candidaturas->candidatar($usuario, $perfil, $ids);
+        $resultado = $this->candidaturas->candidatar($usuario, $perfil, $ids);
 
         if ($this->assinaturas->vigenteAte($usuario) === null) {
             return Resposta::redirecionarHtmx('/planos');
+        }
+
+        // Passou do limite do dia: avisa no painel, sem mexer nas vagas que não entraram.
+        $limite = $this->candidaturas->limiteDiario();
+        if ($resultado['limitou']) {
+            Sessao::flash('aviso', t($resultado['criadas'] > 0 ? 'candidatura.limite_parcial' : 'candidatura.limite_atingido', ['n' => $resultado['criadas'], 'limite' => $limite]));
+            return Resposta::redirecionarHtmx('/painel');
         }
 
         // Uma vaga só, pelo HTMX: devolve o próprio cartão já com o status, sem recarregar o painel.

@@ -21,6 +21,14 @@ final class AssinaturaRepository implements AssinaturaRepositoryInterface
         return $expiraEm !== false ? (string) $expiraEm : null;
     }
 
+    public function vigenteDe(int $usuarioId): ?array
+    {
+        $consulta = $this->pdo->prepare('SELECT plano, expira_em FROM assinaturas WHERE usuario_id = ? AND expira_em > NOW()');
+        $consulta->execute([$usuarioId]);
+        $linha = $consulta->fetch();
+        return $linha ? ['plano' => (string) $linha['plano'], 'expira_em' => (string) $linha['expira_em']] : null;
+    }
+
     public function estender(int $usuarioId, string $plano, int $dias): void
     {
         $this->pdo->prepare(

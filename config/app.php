@@ -59,6 +59,9 @@ return [
 
     // Planos de assinatura do profissional. Preço em reais (Brasil: PIX e PayPal) e em dólar (resto do mundo: PayPal).
     // 'paypal' traz o ID do plano criado no PayPal para cada moeda (php database/paypal-planos.php gera os IDs).
+    // Quantas candidaturas por dia cada pessoa pode pedir (todos os planos): é o que o site promete ("até 2 por dia").
+    'candidaturas' => ['por_dia' => 2],
+
     'planos' => [
         'semanal' => ['dias' => 7, 'periodo' => 'semana', 'divisor' => 1, 'precos' => ['BRL' => 19.90, 'USD' => 9.99]],
         'mensal' => ['dias' => 30, 'periodo' => 'mes', 'divisor' => 1, 'precos' => ['BRL' => 49.90, 'USD' => 24.99]],
@@ -103,7 +106,10 @@ return [
         'cliente_id' => Ambiente::obter('PAYPAL_CLIENT_ID', ''),
         'segredo' => Ambiente::obter('PAYPAL_SECRET', ''),
         'token_webhook' => Ambiente::obter('PAYPAL_WEBHOOK_TOKEN', ''),
-        'planos' => [
+        // Quantas candidaturas por dia cada pessoa pode pedir (todos os planos): é o que o site promete ("até 2 por dia").
+    'candidaturas' => ['por_dia' => 2],
+
+    'planos' => [
             'semanal' => ['BRL' => Ambiente::obter('PAYPAL_PLANO_SEMANAL_BRL', ''), 'USD' => Ambiente::obter('PAYPAL_PLANO_SEMANAL_USD', '')],
             'mensal' => ['BRL' => Ambiente::obter('PAYPAL_PLANO_MENSAL_BRL', ''), 'USD' => Ambiente::obter('PAYPAL_PLANO_MENSAL_USD', '')],
             'trimestral' => ['BRL' => Ambiente::obter('PAYPAL_PLANO_TRIMESTRAL_BRL', ''), 'USD' => Ambiente::obter('PAYPAL_PLANO_TRIMESTRAL_USD', '')],

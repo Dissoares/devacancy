@@ -86,6 +86,31 @@ final class AssinaturaService
         return $metodos;
     }
 
+    /**
+     * O que mostrar em "Minha assinatura": plano e validade (se houver) e como foi o último pagamento concluído.
+     * @return array{plano: ?string, ate: ?string, forma: ?string, valor: ?float, moeda: ?string, pago_em: ?string}
+     */
+    public function resumoDoUsuario(Usuario $usuario): array
+    {
+        $vigente = $this->assinaturas->vigenteDe($usuario->id);
+        $ultimo = null;
+        foreach ($this->usuarios->pagamentosDe($usuario->id, 10) as $pagamento) {
+            if ($pagamento['status'] === 'pago') {
+                $ultimo = $pagamento;
+                break;
+            }
+        }
+
+        return [
+            'plano' => $vigente['plano'] ?? null,
+            'ate' => $vigente['expira_em'] ?? null,
+            'forma' => $ultimo['metodo'] ?? null,
+            'valor' => $ultimo ? (float) $ultimo['valor'] : null,
+            'moeda' => $ultimo['moeda'] ?? null,
+            'pago_em' => $ultimo['pago_em'] ?? null,
+        ];
+    }
+
     public function vigenteAte(Usuario $usuario): ?string
     {
         return $this->assinaturas->vigenteAte($usuario->id);

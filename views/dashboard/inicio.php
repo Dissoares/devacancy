@@ -12,6 +12,9 @@ $statusCandidaturas ??= [];
 <?php if (!empty($sucesso)): ?>
   <div class="alerta alerta-sucesso alerta-topo"><?= icone('check') ?><span><?= e($sucesso) ?></span></div>
 <?php endif; ?>
+<?php if (!empty($aviso)): ?>
+  <div class="alerta alerta-aviso alerta-topo" role="status"><?= icone('relogio') ?><span><?= e($aviso) ?></span></div>
+<?php endif; ?>
 
 <section class="boas-vindas">
   <div>
@@ -34,6 +37,8 @@ $statusCandidaturas ??= [];
       'recentes' => $recentes,
       'assinaturaAte' => $assinaturaAte,
       'statusCandidaturas' => $statusCandidaturas,
+      'restantesHoje' => $restantesHoje ?? 0,
+      'limiteDiario' => $limiteDiario ?? 2,
   ]) ?>
 <?php endif; ?>
 

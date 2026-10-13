@@ -21,16 +21,38 @@ final class CandidaturaService
     ) {
     }
 
+    /** Quantas candidaturas a pessoa pode pedir por dia. */
+    public function limiteDiario(): int
+    {
+        return max(1, (int) configuracao('candidaturas.por_dia', 2));
+    }
+
+    /** Quantas candidaturas ainda cabem hoje. */
+    public function restantesHoje(Usuario $usuario): int
+    {
+        return max(0, $this->limiteDiario() - $this->candidaturas->contarDoDia($usuario->id));
+    }
+
     /**
-     * Só aceita vagas compatíveis com o perfil (ignora ids de fora). Retorna quantas entraram na fila.
+     * Só aceita vagas compatíveis com o perfil (ignora ids de fora) e que ainda não foram pedidas. Respeita o limite
+     * diário: o que passar dele fica de fora, na ordem recebida (a tela manda as melhores primeiro).
      * @param int[] $vagaIds
+     * @return array{criadas: int, limitou: bool}
      */
-    public function candidatar(Usuario $usuario, PerfilProfissional $perfil, array $vagaIds): int
+    public function candidatar(Usuario $usuario, PerfilProfissional $perfil, array $vagaIds): array
     {
         $compativeis = array_map(fn (array $item) => $item['vaga']->id, $this->vagas->compativeis($perfil));
-        $validas = array_values(array_intersect(array_map('intval', $vagaIds), $compativeis));
+        $jaPedidas = array_keys($this->candidaturas->statusPorVaga($usuario->id));
+        $novas = array_values(array_diff(array_intersect(array_map('intval', $vagaIds), $compativeis), $jaPedidas));
+        if ($novas === []) {
+            return ['criadas' => 0, 'limitou' => false];
+        }
 
-        return $validas === [] ? 0 : $this->candidaturas->criar($usuario->id, $validas);
+        $permitidas = array_slice($novas, 0, $this->restantesHoje($usuario));
+        return [
+            'criadas' => $permitidas === [] ? 0 : $this->candidaturas->criar($usuario->id, $permitidas),
+            'limitou' => count($permitidas) < count($novas),
+        ];
     }
 
     /** @return array<int, StatusCandidatura> */

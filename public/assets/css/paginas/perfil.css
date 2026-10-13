@@ -682,3 +682,43 @@
     grid-template-columns: 1fr !important;
   }
 }
+
+/* Cartão "Minha assinatura" */
+.perfil-assinatura h2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.perfil-assinatura-dados {
+  display: grid;
+  gap: 2px;
+  margin: 12px 0;
+}
+
+.perfil-assinatura-dados > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  border-top: 1px solid var(--borda);
+  font-size: .92rem;
+}
+
+.perfil-assinatura-dados dt {
+  color: var(--texto-suave);
+}
+
+.perfil-assinatura-dados dd {
+  font-weight: 650;
+  text-align: right;
+}
+
+.perfil-assinatura-limite {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-size: .86rem;
+}

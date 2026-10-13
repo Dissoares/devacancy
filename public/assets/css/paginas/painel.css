@@ -841,3 +841,11 @@
 .formulario-linha .entrada {
   min-width: 260px;
 }
+
+/* Aviso do limite diário de candidaturas, embaixo do botão em lote. */
+.banner-limite {
+  display: block;
+  margin-top: 8px;
+  font-size: .82rem;
+  text-align: center;
+}

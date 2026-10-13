@@ -27,6 +27,13 @@ final class CandidaturaRepository implements CandidaturaRepositoryInterface
         return $criadas;
     }
 
+    public function contarDoDia(int $usuarioId): int
+    {
+        $consulta = $this->pdo->prepare('SELECT COUNT(*) FROM candidaturas WHERE usuario_id = ? AND DATE(criado_em) = CURDATE()');
+        $consulta->execute([$usuarioId]);
+        return (int) $consulta->fetchColumn();
+    }
+
     public function statusPorVaga(int $usuarioId): array
     {
         $consulta = $this->pdo->prepare('SELECT vaga_id, status FROM candidaturas WHERE usuario_id = ?');

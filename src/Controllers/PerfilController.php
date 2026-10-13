@@ -11,7 +11,9 @@ use App\Core\Visao;
 use App\Entities\PerfilProfissional;
 use App\Exceptions\NaoEncontradoException;
 use App\Exceptions\ValidacaoException;
+use App\Services\AssinaturaService;
 use App\Services\AutenticacaoService;
+use App\Services\CandidaturaService;
 use App\Services\ContaService;
 use App\Services\CurriculoService;
 use App\Services\ImportacaoPerfilService;
@@ -28,6 +30,8 @@ final class PerfilController
         private readonly ImportacaoPerfilService $importacao,
         private readonly CurriculoService $curriculos,
         private readonly ContaService $contas,
+        private readonly AssinaturaService $assinaturas,
+        private readonly CandidaturaService $candidaturas,
     ) {
     }
 
@@ -40,6 +44,8 @@ final class PerfilController
             'usuario' => $usuario,
             'perfil' => $perfil,
             'forca' => $perfil->forca(),
+            'assinatura' => $this->assinaturas->resumoDoUsuario($usuario),
+            'limiteDiario' => $this->candidaturas->limiteDiario(),
             'totalCompativeis' => count($this->vagas->compativeis($perfil)),
             'emAlta' => $this->vagas->tecnologiasEmAlta($perfil),
             'revisao' => $this->importacao->revisao($perfil, $usuario),

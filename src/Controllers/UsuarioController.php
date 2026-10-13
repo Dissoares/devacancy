@@ -163,9 +163,12 @@ final class UsuarioController
             'recentes' => $this->vagas->contarRecentes($compativeis),
             'assinaturaAte' => $usuario->ehProfissional() ? $this->assinaturas->vigenteAte($usuario) : null,
             'statusCandidaturas' => $usuario->ehProfissional() ? $this->candidaturas->statusPorVaga($usuario) : [],
+            'restantesHoje' => $usuario->ehProfissional() ? $this->candidaturas->restantesHoje($usuario) : 0,
+            'limiteDiario' => $this->candidaturas->limiteDiario(),
             'linkIndicacao' => $codigoIndicacao ? $this->comissoes->linkDeIndicacao($codigoIndicacao) : null,
             'indicacoes' => $usuario->ehProfissional() ? $this->comissoes->painelDoUsuario($usuario) : null,
             'sucesso' => Sessao::obterFlash('sucesso'),
+            'aviso' => Sessao::obterFlash('aviso'),
         ], 'app'));
     }
 

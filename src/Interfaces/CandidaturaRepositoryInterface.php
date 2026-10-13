@@ -14,6 +14,9 @@ interface CandidaturaRepositoryInterface
     /** @return array<int, StatusCandidatura> vaga_id => status */
     public function statusPorVaga(int $usuarioId): array;
 
+    /** Quantas candidaturas a pessoa pediu hoje. */
+    public function contarDoDia(int $usuarioId): int;
+
     /**
      * Candidaturas para a equipe enviar, com dados do profissional e da vaga.
      * @param bool $somenteAssinantes ignora pedidos de quem ainda não assinou
