@@ -20,6 +20,9 @@ final class Email
     {
         $this->ultimoErro = null;
         $de = (string) configuracao('email.de');
+        if ($de === '') {
+            $de = 'suporte@' . (parse_url(endereco_do_site(), PHP_URL_HOST) ?: 'localhost');
+        }
         $nome = (string) configuracao('email.nome');
         $limite = 'dv' . bin2hex(random_bytes(8));
 
@@ -76,7 +79,7 @@ final class Email
         stream_set_timeout($socket, 15);
 
         try {
-            $dominio = parse_url((string) configuracao('app.url'), PHP_URL_HOST) ?: 'localhost';
+            $dominio = parse_url((string) endereco_do_site(), PHP_URL_HOST) ?: 'localhost';
             $this->esperar($socket, '220');
             $this->comando($socket, "EHLO {$dominio}", '250');
 

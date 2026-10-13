@@ -38,7 +38,7 @@ final class ConfiguracaoService
         $secao = CatalogoConfiguracoes::SECOES[$chave] ?? throw new NaoEncontradoException();
         $salvos = $this->configuracoes->todas();
         $ativos = $this->metodosPagamento->ativos();
-        $base = rtrim((string) configuracao('app.url'), '/');
+        $base = rtrim(endereco_do_site(), '/');
 
         $cartoes = [];
         foreach ($secao['cartoes'] as $chaveCartao => $cartao) {
@@ -149,7 +149,7 @@ final class ConfiguracaoService
             'usuario_completo' => $usuario === '' || str_contains($usuario, '@'),
             'senha_tamanho' => mb_strlen($senha),
             'senha_suspeita' => $senha !== trim($senha) || preg_match('/["\'\s]/', $senha) === 1,
-            'url' => (string) configuracao('app.url'),
+            'url' => endereco_do_site(),
         ];
     }
 

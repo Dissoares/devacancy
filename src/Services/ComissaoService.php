@@ -33,7 +33,7 @@ final class ComissaoService
 
     public function linkDeIndicacao(string $codigoIndicacao): string
     {
-        return rtrim((string) configuracao('app.url'), '/') . '/?ref=' . $codigoIndicacao;
+        return rtrim(endereco_do_site(), '/') . '/?ref=' . $codigoIndicacao;
     }
 
     /** @return array{itens: array, totais: array<string, array{pendente: float, paga: float}>} */

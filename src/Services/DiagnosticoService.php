@@ -89,7 +89,7 @@ final class DiagnosticoService
     private function seguranca(): array
     {
         $itens = [];
-        $url = (string) configuracao('app.url');
+        $url = endereco_do_site();
         $https = str_starts_with($url, 'https://');
         $itens[] = $this->item('Endereço do site (APP_URL)', $https || ambiente_local() ? 'ok' : 'erro', $https || ambiente_local() ? $url : "{$url}: em produção o endereço precisa começar com https:// (Configurações → Site).");
 
@@ -201,7 +201,7 @@ final class DiagnosticoService
     /** @return array{rotulo: string, estado: string, detalhe: string} */
     private function item(string $rotulo, string $estado, string $detalhe): array
     {
-        return ['rotulo' => $rotulo, 'estado' => $estado, 'detalhe' => str_replace('{APP_URL}', rtrim((string) configuracao('app.url'), '/'), $detalhe)];
+        return ['rotulo' => $rotulo, 'estado' => $estado, 'detalhe' => str_replace('{APP_URL}', rtrim(endereco_do_site(), '/'), $detalhe)];
     }
 
     private function consultaUnica(string $sql): int

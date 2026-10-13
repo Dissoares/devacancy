@@ -44,6 +44,12 @@ final class RecuperacaoSenhaService
             return;
         }
 
+        // O link vai por e-mail: só vale o endereço salvo pelo administrador, nunca o do cabeçalho Host da requisição.
+        if (trim((string) configuracao('app.url')) === '') {
+            error_log('Recuperação de senha: defina o endereço do site em Admin → Configurações → Site.');
+            return;
+        }
+
         $token = bin2hex(random_bytes(32));
         $this->redefinicoes->criar($usuario->id, hash('sha256', $token));
 
