@@ -150,6 +150,12 @@ return [
         'token' => Ambiente::obter('MIGRACOES_TOKEN', ''),
     ],
 
+    // Rastreamento de conversões: Pixel da Meta e Google Analytics 4. Só os códigos; se estiverem vazios nada é carregado.
+    'rastreamento' => [
+        'meta_pixel' => Ambiente::obter('META_PIXEL_ID', ''),
+        'ga' => Ambiente::obter('GA_MEASUREMENT_ID', ''),
+    ],
+
     // Buscadores: códigos de verificação do Google Search Console, Bing e Yandex, e a chave do IndexNow (opcional).
     'seo' => [
         'google' => Ambiente::obter('VERIFICACAO_GOOGLE', ''),

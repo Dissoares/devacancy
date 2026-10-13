@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Idioma;
+use App\Core\Rastreamento;
 use App\Core\Requisicao;
 use App\Core\Resposta;
 use App\Core\Sessao;
@@ -45,9 +46,14 @@ final class AssinaturaController
             return Resposta::redirecionar('/painel');
         }
 
+        $dados = $this->dadosDoCheckout($requisicao, $usuario);
+        $destaque = array_filter($dados['planos'], fn (array $plano) => !empty($plano['destaque']));
+        $plano = $destaque ? reset($destaque) : reset($dados['planos']);
+        Rastreamento::agora(Rastreamento::inicioDeCheckout((float) ($plano['precos'][$dados['moeda']] ?? 0), (string) $dados['moeda']));
+
         return Resposta::html(Visao::renderizar('assinatura/planos', [
             'titulo' => t('planos.titulo_pagina'),
-            ...$this->dadosDoCheckout($requisicao, $usuario),
+            ...$dados,
             'valores' => ['plano' => (string) $requisicao->consulta('plano', 'trimestral')],
             'erros' => [],
         ], 'app'));

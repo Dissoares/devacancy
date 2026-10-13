@@ -22,6 +22,7 @@ $imagemAlt ??= $titulo ?? 'Devacancy';
 <?php if ($v = configuracao('seo.yandex')): ?><meta name="yandex-verification" content="<?= e($v) ?>">
 <?php endif; ?>
 <script>document.documentElement.classList.add('js')</script>
+<?php if ($rastrear ?? true): ?><?= parcial('partials/rastreamento') ?><?php endif; ?>
 <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Devacancy">

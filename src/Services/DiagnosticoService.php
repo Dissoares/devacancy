@@ -191,6 +191,9 @@ final class DiagnosticoService
             $this->item('Envio de e-mail', $smtp ? 'ok' : 'aviso', $smtp ? 'SMTP configurado. Teste em Configurações → E-mail.' : 'Usando o envio da hospedagem, que costuma cair no spam. Configure o SMTP (Configurações → E-mail).'),
             $this->item('Vagas abertas', $vagas >= 20 ? 'ok' : ($vagas >= 5 ? 'aviso' : 'erro'), "{$vagas} vaga(s) ativa(s). Quem se cadastra precisa ver vagas compatíveis: o ideal é ter dezenas."),
             $this->item('Vagas novas (14 dias)', $recente >= 5 ? 'ok' : 'aviso', "{$recente} vaga(s) nova(s) nas últimas duas semanas. Importe de novo em Operação → Vagas."),
+            $this->item('Rastreamento de conversões', \App\Core\Rastreamento::ativo() ? 'ok' : 'aviso', \App\Core\Rastreamento::ativo()
+                ? 'Ativo: ' . implode(' e ', array_filter([\App\Core\Rastreamento::pixel() !== '' ? 'Pixel da Meta' : null, \App\Core\Rastreamento::analytics() !== '' ? 'Google Analytics' : null])) . '. Só carrega depois que a pessoa aceita os cookies.'
+                : 'Sem Pixel da Meta nem Google Analytics: as conversões de cadastro e assinatura não são medidas. Cole os códigos em Configurações → Site → Rastreamento.'),
             $this->item('Páginas legais', 'ok', 'Privacidade e Termos publicados (/privacidade e /termos). Peça a revisão de um advogado e preencha os dados da empresa quando tiver CNPJ.'),
         ];
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\LimiteDeTentativas;
+use App\Core\Rastreamento;
 use App\Core\Requisicao;
 use App\Core\Resposta;
 use App\Core\Sessao;
@@ -79,6 +80,7 @@ final class UsuarioController
             ]));
         }
 
+        Rastreamento::naProximaPagina(Rastreamento::cadastro('email'));
         $this->autenticacao->iniciarSessao($usuario);
         return Resposta::redirecionarHtmx('/completar-perfil');
     }

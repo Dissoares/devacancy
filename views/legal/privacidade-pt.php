@@ -25,12 +25,15 @@
   <li><strong>Empresas e recrutadores:</strong> quando enviamos uma candidatura em seu nome, a empresa da vaga recebe os dados do seu perfil e o seu currículo. É a finalidade do serviço que você contratou.</li>
   <li><strong>Processadores de pagamento:</strong> Asaas, Stripe e PayPal, para cobrar e confirmar pagamentos.</li>
   <li><strong>Infraestrutura:</strong> hospedagem, envio de e-mails e um serviço de geolocalização aproximada por IP (ipwho.is). As fontes de texto são carregadas do Google Fonts, que recebe o seu IP ao entregá-las.</li>
+  <li><strong>Medição e publicidade (só com o seu consentimento):</strong> Google Analytics (Google) e Pixel da Meta (Facebook e Instagram), para medir o uso do site e saber se os nossos anúncios levam a cadastros e assinaturas. Veja a seção 5.</li>
   <li><strong>Autoridades:</strong> quando houver obrigação legal ou ordem judicial.</li>
 </ul>
 <p>Alguns desses fornecedores ficam fora do Brasil. Nesses casos, a transferência internacional acontece para executar o serviço que você pediu e com fornecedores que adotam medidas de proteção compatíveis com a LGPD.</p>
 
 <h2>5. Cookies</h2>
-<p>Usamos apenas cookies essenciais: o de sessão (mantém você conectado e protege formulários), o de idioma e um identificador de proteção contra fraudes em formulários. Não usamos cookies de publicidade ou rastreamento. Se isso mudar, atualizaremos esta página e pediremos o seu consentimento quando a lei exigir.</p>
+<p><strong>Essenciais (sempre ativos):</strong> o cookie de sessão (mantém você conectado e protege formulários), o de idioma e o que guarda a sua escolha sobre cookies. Sem eles o site não funciona direito.</p>
+<p><strong>Medição e publicidade (só se você aceitar):</strong> quando você clica em "Aceitar" no aviso de cookies, carregamos o Google Analytics e o Pixel da Meta. Eles usam cookies e identificadores para registrar as páginas que você visita, o dispositivo e o navegador, a localização aproximada e ações importantes, como criar uma conta ou assinar um plano (com o valor e a moeda). Não enviamos o seu nome, e-mail, currículo nem senha a essas ferramentas. A Google e a Meta tratam esses dados conforme as próprias políticas e podem usá-los para medir e otimizar anúncios.</p>
+<p>Se você recusar, essas ferramentas não são carregadas. Você pode mudar de ideia a qualquer momento no link "Cookies" no rodapé do site, e também pode apagar os cookies no seu navegador.</p>
 
 <h2>6. Por quanto tempo guardamos</h2>
 <p>Enquanto a sua conta existir. Se você excluir a conta, apagamos o seu perfil, o currículo e os dados pessoais em até 30 dias, exceto o que a lei nos obriga a manter, como registros de pagamento e fiscais (em geral, por 5 anos). Cópias de segurança são descartadas no ciclo normal de rotação.</p>

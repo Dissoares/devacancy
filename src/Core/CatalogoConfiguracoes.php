@@ -55,6 +55,8 @@ final class CatalogoConfiguracoes
         'GITHUB_TOKEN' => [['https://github.com/settings/tokens', 'Criar um token no GitHub (não precisa marcar nenhuma permissão)']],
         'ADZUNA_APP_ID' => [['https://developer.adzuna.com/signup', 'Criar a conta gratuita na Adzuna e copiar o App ID']],
         'ADZUNA_APP_KEY' => [['https://developer.adzuna.com/signup', 'Criar a conta gratuita na Adzuna e copiar a App key']],
+        'META_PIXEL_ID' => [['https://business.facebook.com/events_manager2', 'Abrir o Gerenciador de Eventos da Meta (copie o ID do Pixel)']],
+        'GA_MEASUREMENT_ID' => [['https://analytics.google.com/analytics/web/#/a/admin', 'Abrir o Google Analytics (Admin → Fluxos de dados → ID de métricas)']],
         'VERIFICACAO_GOOGLE' => [['https://search.google.com/search-console', 'Abrir o Google Search Console']],
         'VERIFICACAO_BING' => [['https://www.bing.com/webmasters', 'Abrir o Bing Webmaster Tools']],
         'VERIFICACAO_YANDEX' => [['https://webmaster.yandex.com', 'Abrir o Yandex Webmaster']],
@@ -73,6 +75,16 @@ final class CatalogoConfiguracoes
                         'APP_URL' => ['rotulo' => 'Endereço do site', 'tipo' => 'url', 'ajuda' => 'Com https e sem barra no final. Ex.: https://devacancy.online'],
                         'APP_AMBIENTE' => ['rotulo' => 'Ambiente', 'tipo' => 'opcao', 'opcoes' => ['producao' => 'Produção', 'local' => 'Local (só na sua máquina)'], 'ajuda' => 'No servidor, sempre Produção.'],
                     ],
+                ],
+                'rastreamento' => [
+                    'titulo' => 'Rastreamento de conversões',
+                    'icone' => 'grafico',
+                    'descricao' => 'Cole só o código de cada ferramenta. O site avisa cadastros e assinaturas sozinho e só carrega o Pixel e o Analytics depois que a pessoa aceita os cookies.',
+                    'campos' => [
+                        'META_PIXEL_ID' => ['rotulo' => 'Pixel da Meta (Facebook e Instagram)', 'tipo' => 'texto', 'ajuda' => 'Só os números, ex.: 1234567890123456. Fica em Gerenciador de Eventos → seu Pixel → Configurações.'],
+                        'GA_MEASUREMENT_ID' => ['rotulo' => 'Google Analytics (ID de métricas)', 'tipo' => 'texto', 'ajuda' => 'Começa com G-, ex.: G-ABC123XYZ9. Fica em Admin → Fluxos de dados → seu site.'],
+                    ],
+                    'avisos' => ['Eventos enviados: cadastro (CompleteRegistration / sign_up), questionário concluído (Lead / generate_lead), início do checkout (InitiateCheckout / begin_checkout) e assinatura paga (Purchase / purchase, com valor e moeda).'],
                 ],
                 'buscadores' => [
                     'titulo' => 'Buscadores',

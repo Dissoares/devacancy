@@ -36,6 +36,9 @@
   </div>
   <div class="container rodape-base">
     <span>© <?= date('Y') ?> Devacancy. <?= e(t('rodape.direitos')) ?></span>
-    <?= parcial('partials/seletor-idioma') ?>
+    <span class="rodape-base-acoes">
+      <?php if (\App\Core\Rastreamento::ativo()): ?><a class="link-cookies" href="#cookies" data-abrir-cookies><?= e(t('cookies.rotulo')) ?></a><?php endif; ?>
+      <?= parcial('partials/seletor-idioma') ?>
+    </span>
   </div>
 </footer>

@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="<?= \App\Core\Idioma::html() ?>">
 <head>
-  <?= parcial('partials/head', ['titulo' => $titulo ?? null, 'estilos' => ['paginas/painel.css', 'paginas/assinatura.css', 'paginas/admin.css']]) ?>
+  <?= parcial('partials/head', ['titulo' => $titulo ?? null, 'rastrear' => false, 'estilos' => ['paginas/painel.css', 'paginas/assinatura.css', 'paginas/admin.css']]) ?>
   <meta name="robots" content="noindex, nofollow">
   <script src="<?= asset('js/componentes/formularios.js') ?>" defer></script>
   <script src="<?= asset('js/paginas/admin.js') ?>" defer></script>

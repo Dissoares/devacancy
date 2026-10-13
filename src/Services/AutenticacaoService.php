@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Core\Idioma;
 use App\Core\Indicacao;
+use App\Core\Rastreamento;
 use App\Core\Sessao;
 use App\DTOs\UsuarioSocialDTO;
 use App\Entities\Usuario;
@@ -60,6 +61,7 @@ final class AutenticacaoService
             $tipo = in_array($tipoPretendido, TipoUsuario::publicos(), true) ? $tipoPretendido : TipoUsuario::Profissional;
             $usuario = $this->usuarios->criar($tipo, $social->nome, $social->email, null, $social->avatarUrl, Idioma::atual(), $pais, Indicacao::codigoCapturado());
             Indicacao::limpar();
+            Rastreamento::naProximaPagina(Rastreamento::cadastro($social->provedor->value));
             if ($usuario->ehProfissional()) {
                 $this->notificacoes->boasVindas($usuario);
             }

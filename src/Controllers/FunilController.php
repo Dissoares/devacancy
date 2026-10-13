@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Core\Idioma;
 use App\Core\LimiteDeTentativas;
+use App\Core\Rastreamento;
 use App\Core\Requisicao;
 use App\Core\Resposta;
 use App\Core\Sessao;
@@ -94,6 +95,9 @@ final class FunilController
         }
 
         $compativeis = $this->vagas->compativeis($perfil);
+        if (!$usuario) {
+            Rastreamento::agora(Rastreamento::interesse());
+        }
 
         // Feed da animação: as vagas compatíveis aparecem uma a uma, sem a empresa.
         $feed = array_map(fn (array $item) => [
@@ -158,6 +162,7 @@ final class FunilController
         }
 
         $this->funil->concluirCadastro($usuario);
+        Rastreamento::naProximaPagina(Rastreamento::cadastro('email'));
         $cadastrado = $this->usuarios->buscarPorId($usuario->id);
         $perfil = $this->usuarios->perfilDe($cadastrado);
         $this->notificacoes->boasVindas($cadastrado, $perfil instanceof PerfilProfissional ? count($this->vagas->compativeis($perfil)) : null);

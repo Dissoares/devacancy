@@ -14,7 +14,7 @@ use App\Services\VagaService;
 final class SiteController
 {
     /** Data da última revisão dos textos legais. */
-    private const ATUALIZADO_EM = '2026-10-12';
+    private const ATUALIZADO_EM = '2026-10-13';
 
     public function __construct(private readonly VagaService $vagas)
     {

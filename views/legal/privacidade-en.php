@@ -25,12 +25,15 @@
   <li><strong>Companies and recruiters:</strong> when we send an application on your behalf, the hiring company receives your profile data and resume. This is the purpose of the service you hired.</li>
   <li><strong>Payment processors:</strong> Asaas, Stripe and PayPal, to charge and confirm payments.</li>
   <li><strong>Infrastructure:</strong> hosting, email delivery and an approximate IP geolocation service (ipwho.is). Text fonts are loaded from Google Fonts, which sees your IP when delivering them.</li>
+  <li><strong>Measurement and advertising (only with your consent):</strong> Google Analytics (Google) and the Meta Pixel (Facebook and Instagram), to measure how the site is used and whether our ads lead to sign-ups and subscriptions. See section 5.</li>
   <li><strong>Authorities:</strong> when required by law or court order.</li>
 </ul>
 <p>Some of these providers are located outside Brazil. In those cases, the international transfer happens to deliver the service you requested and with providers that apply protection measures compatible with the LGPD.</p>
 
 <h2>5. Cookies</h2>
-<p>We only use essential cookies: the session cookie (keeps you signed in and protects forms), the language cookie and a form-protection token. We do not use advertising or tracking cookies. If that changes, we will update this page and ask for your consent where the law requires.</p>
+<p><strong>Essential (always on):</strong> the session cookie (keeps you signed in and protects forms), the language cookie and the one that stores your cookie choice. The site does not work properly without them.</p>
+<p><strong>Measurement and advertising (only if you accept):</strong> when you click "Accept" on the cookie notice, we load Google Analytics and the Meta Pixel. They use cookies and identifiers to record the pages you visit, your device and browser, approximate location and key actions, such as creating an account or subscribing to a plan (with the amount and currency). We do not send your name, email, resume or password to these tools. Google and Meta process this data under their own policies and may use it to measure and optimize ads.</p>
+<p>If you decline, these tools are not loaded. You can change your mind at any time using the "Cookies" link in the site footer, and you can also clear cookies in your browser.</p>
 
 <h2>6. How long we keep it</h2>
 <p>For as long as your account exists. If you delete your account, we erase your profile, resume and personal data within 30 days, except what the law requires us to keep, such as payment and tax records (generally 5 years). Backups are discarded in the normal rotation cycle.</p>
