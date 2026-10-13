@@ -85,3 +85,18 @@ Preencha `EXPAY_API_KEY` e `EXPAY_WEBHOOK_TOKEN` no `.env` e configure no painel
 As duas fontes usam o mesmo classificador (`App\Core\ClassificadorVaga`) para adivinhar área, senioridade, modelo de trabalho e stack a partir do texto. Agende o script para rodar 1x por dia.
 
 `php database/baixar-cidades.php` baixa a lista oficial de municípios do Brasil (API do IBGE) e salva em `public/assets/data/cidades-br.json`, usada pelo autocomplete de cidade no cadastro e no perfil. Só é preciso rodar de novo se o IBGE criar algum município.
+
+## Colocando no ar (checklist)
+
+O que precisa estar certo antes de divulgar. Depois de subir os arquivos, abra **Admin → Sistema → Saúde do sistema**: a página confere quase tudo abaixo sozinha.
+
+1. **Arquivos**: suba o projeto inteiro (inclusive `vendor/`, `storage/fontes/` e `public/assets/js/vendor/pdfjs/`). Não suba o `.env` do seu computador nem a pasta `storage/logs/`.
+2. **`.env` mínimo no servidor**: só a conexão com o banco (`DB_*`). Todo o resto é configurado em **Admin → Configurações**.
+3. **Banco**: rode as migrações em **Admin → Banco de dados**. Sem acesso ao admin ainda, use `/install` com `MIGRACOES_TOKEN` no `.env` (e remova o token depois).
+4. **Site**: em Configurações → Site, endereço `https://seudominio` e ambiente **Produção**.
+5. **Pagamentos**: configure ao menos uma forma para o Brasil (Asaas, ou PIX manual enquanto isso) e uma para o exterior (Stripe ou PayPal). Cadastre os webhooks nos provedores, usando os endereços mostrados nos cartões.
+6. **E-mail**: SMTP em Configurações → E-mail e envie o teste.
+7. **Administrador**: promova a sua conta em Administradores e exclua o administrador padrão.
+8. **Vagas**: importe em Operação → Vagas e agende a importação (`php database/importar-vagas.php` no cron) ou clique em "Importar do GitHub agora" de vez em quando.
+9. **Cloudflare (opcional)**: o site já reconhece o IP e o país reais atrás dela. Deixe o SSL em "Full".
+10. **Legal**: `/privacidade` e `/termos` já estão publicadas. Peça a revisão de um advogado e preencha razão social e CNPJ quando tiver.
