@@ -11,6 +11,7 @@ $logado = usuario_sessao();
   <script src="<?= asset('js/componentes/formularios.js') ?>" defer></script>
   <script src="<?= asset('js/paginas/funil.js') ?>" defer></script>
   <script src="<?= asset('js/paginas/assinatura.js') ?>" defer></script>
+  <meta name="robots" content="noindex, nofollow">
 </head>
 <body class="pagina-funil">
   <?= parcial('partials/icones') ?>

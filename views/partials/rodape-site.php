@@ -17,6 +17,12 @@
         <a href="/cadastro?tipo=empresa"><?= e(t('landing.sou_empresa')) ?></a>
         <a href="/entrar"><?= e(t('auth.entrar')) ?></a>
       </div>
+      <div>
+        <h4><?= e(t('rodape.legal')) ?></h4>
+        <a href="/privacidade"><?= e(t('legal.privacidade_titulo')) ?></a>
+        <a href="/termos"><?= e(t('legal.termos_titulo')) ?></a>
+        <a href="mailto:suporte@devacancy.online"><?= e(t('rodape.contato')) ?></a>
+      </div>
     </div>
   </div>
   <div class="container rodape-base">

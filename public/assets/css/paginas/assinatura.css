@@ -1296,3 +1296,21 @@
   gap: 12px;
   margin-top: 16px;
 }
+
+/* Aviso de aceite dos Termos e da Privacidade (cadastro e checkout) */
+.aceite-legal {
+  color: var(--texto-suave);
+  font-size: .8rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.aceite-legal a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.aceite-checkout {
+  margin: 4px 0 8px;
+}

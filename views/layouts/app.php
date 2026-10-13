@@ -9,6 +9,7 @@
   <?php else: ?>
     <script src="<?= asset('js/paginas/assinatura.js') ?>" defer></script>
   <?php endif; ?>
+  <meta name="robots" content="noindex, nofollow">
 </head>
 <body class="pagina-app">
   <?= parcial('partials/icones') ?>

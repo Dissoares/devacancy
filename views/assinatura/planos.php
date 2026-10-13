@@ -148,6 +148,8 @@ foreach ($planos as $chave => $plano) {
     <?php endif; ?>
   </section>
 
+  <p class="aceite-legal aceite-checkout"><?= t('legal.aceite_compra', ['termos' => '<a href="/termos" target="_blank">' . e(t('legal.termos_titulo')) . '</a>', 'privacidade' => '<a href="/privacidade" target="_blank">' . e(t('legal.privacidade_titulo')) . '</a>']) ?></p>
+
   <aside class="cartao cartao-painel como-funciona">
     <h2 class="cartao-titulo"><?= e(t('planos.como_funciona')) ?></h2>
     <ol class="linha-tempo">

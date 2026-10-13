@@ -26,5 +26,7 @@
 
   <?= parcial('funil/formulario-conta', ['valores' => $valores, 'erros' => $erros]) ?>
 
+  <p class="aceite-legal"><?= t('legal.aceite', ['termos' => '<a href="/termos" target="_blank">' . e(t('legal.termos_titulo')) . '</a>', 'privacidade' => '<a href="/privacidade" target="_blank">' . e(t('legal.privacidade_titulo')) . '</a>']) ?></p>
+
   <p class="auth-rodape"><?= e(t('auth.ja_tem_conta')) ?> <a href="/entrar"><?= e(t('auth.entrar')) ?></a></p>
 </section>

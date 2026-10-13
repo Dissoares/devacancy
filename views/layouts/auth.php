@@ -4,6 +4,7 @@
 <head>
   <?= parcial('partials/head', ['titulo' => $titulo ?? null, 'estilos' => ['paginas/autenticacao.css']]) ?>
   <script src="<?= asset('js/componentes/formularios.js') ?>" defer></script>
+  <meta name="robots" content="noindex, nofollow">
 </head>
 <body class="pagina-auth" data-tipo="<?= e($tipoLateral) ?>">
   <?= parcial('partials/icones') ?>

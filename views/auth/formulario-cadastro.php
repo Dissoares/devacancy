@@ -47,4 +47,5 @@
     <span class="rotulo-botao"><?= e(t('cadastro.criar_conta')) ?></span>
     <?= icone('seta', 'icone icone-seta') ?>
   </button>
+  <p class="aceite-legal"><?= t('legal.aceite', ['termos' => '<a href="/termos" target="_blank">' . e(t('legal.termos_titulo')) . '</a>', 'privacidade' => '<a href="/privacidade" target="_blank">' . e(t('legal.privacidade_titulo')) . '</a>']) ?></p>
 </form>
