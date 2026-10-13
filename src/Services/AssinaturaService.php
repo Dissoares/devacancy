@@ -67,7 +67,9 @@ final class AssinaturaService
         if ($noBrasil && !$this->expay->configurado() && !$this->asaas->configurado() && ($ativos['pix_manual'] ?? true) && $this->pixManual->configurado()) {
             $metodos[] = 'pix_manual';
         }
-        if (($ativos['stripe'] ?? true) && ($this->stripe->configurado() || $this->simulacaoStripe())) {
+        // No Brasil, a Asaas já cobre PIX e cartão: mostrar a Stripe junto só aumentaria as opções sem ganho.
+        $asaasCobreOBrasil = $noBrasil && in_array('asaas', $metodos, true);
+        if (!$asaasCobreOBrasil && ($ativos['stripe'] ?? true) && ($this->stripe->configurado() || $this->simulacaoStripe())) {
             $metodos[] = 'stripe';
         }
         if (($ativos['paypal'] ?? true) && ($this->paypal->configurado() || $this->simulacaoPaypal())) {
