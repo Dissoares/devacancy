@@ -3,7 +3,7 @@
 ?>
 <section class="pagamento">
   <a class="link" href="/planos"><?= icone('chevron-esq', 'icone icone-sm') ?> <?= e(t('pagamento.trocar_plano')) ?></a>
-  <h1><?= e(t($pagamento->metodo === 'paypal_email' ? 'pagamento.paypal_titulo' : 'pagamento.pix_titulo')) ?></h1>
+  <h1><?= e(t(match ($pagamento->metodo) { 'paypal_email' => 'pagamento.paypal_titulo', 'asaas' => 'pagamento.asaas_titulo', default => 'pagamento.pix_titulo' })) ?></h1>
   <p class="texto-suave"><?= e(t('plano.' . $pagamento->plano)) ?> · <?= e(moeda($pagamento->valor, $pagamento->moeda)) ?></p>
 
   <?php if (!empty($pixManual) && $pagamento->pixCopiaCola): ?>

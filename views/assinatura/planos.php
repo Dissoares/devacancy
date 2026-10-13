@@ -93,6 +93,12 @@ foreach ($planos as $chave => $plano) {
           </div>
         <?php endif; ?>
 
+        <?php if (in_array('asaas', $metodos, true)): ?>
+          <div class="metodo-painel" data-painel="asaas" <?= $metodos[0] !== 'asaas' ? 'hidden' : '' ?>>
+            <?= parcial('assinatura/partials/formulario-asaas', ['erros' => $erros]) ?>
+          </div>
+        <?php endif; ?>
+
         <?php if (in_array('pix', $metodos, true)): ?>
           <div class="metodo-painel" data-painel="pix" <?= $metodos[0] !== 'pix' ? 'hidden' : '' ?>>
             <?= parcial('assinatura/partials/formulario-pix', ['valores' => $valores, 'erros' => $erros]) ?>
