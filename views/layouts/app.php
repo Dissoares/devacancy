@@ -18,16 +18,7 @@
       <?= parcial('partials/marca') ?>
 
       <?php if ($usuario->ehAdmin()): ?>
-        <nav class="barra-app-navegacao" aria-label="Administração">
-          <a class="<?= ativo('/admin') ?>" href="/admin"><?= icone('usuarios', 'icone icone-sm') ?> Cadastros</a>
-          <a class="<?= ativo('/admin/vagas') ?>" href="/admin/vagas"><?= icone('maleta', 'icone icone-sm') ?> Vagas</a>
-          <a class="<?= ativo('/admin/candidaturas') ?>" href="/admin/candidaturas"><?= icone('raio', 'icone icone-sm') ?> Candidaturas</a>
-          <a class="<?= ativo('/admin/comissoes') ?>" href="/admin/comissoes"><?= icone('usuarios', 'icone icone-sm') ?> Comissões</a>
-          <a class="<?= ativo('/admin/pagamentos') ?>" href="/admin/pagamentos"><?= icone('cadeado', 'icone icone-sm') ?> Pagamentos</a>
-          <a class="<?= ativo('/admin/analytics') ?>" href="/admin/analytics"><?= icone('grafico', 'icone icone-sm') ?> Analytics</a>
-          <?php $sistema = array_filter(['/admin/configuracoes', '/admin/migracoes', '/admin/email', '/admin/administradores'], fn (string $rota) => ativo($rota) !== ''); ?>
-          <a class="<?= $sistema ? 'ativo' : '' ?>" href="/admin/configuracoes"><?= icone('ajustes', 'icone icone-sm') ?> Configurações</a>
-        </nav>
+        <a class="botao botao-secundario botao-pequeno" href="/admin"><?= icone('ajustes', 'icone icone-sm') ?> Painel admin</a>
       <?php endif; ?>
 
       <div class="menu-usuario">
