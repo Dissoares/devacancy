@@ -27,7 +27,7 @@ final class AsaasService
      */
     public function criarCheckout(string $nome, string $descricao, float $valor, string $referencia, array $cliente, string $urlSucesso, string $urlCancelamento): array
     {
-        $resposta = $this->http->postJson($this->url('/checkouts'), [
+        $corpo = [
             'billingTypes' => ['PIX', 'CREDIT_CARD'],
             'chargeTypes' => ['DETACHED'],
             'minutesToExpire' => 60,
@@ -40,8 +40,16 @@ final class AsaasService
                 'value' => round($valor, 2),
                 'imageBase64' => $this->imagemDoItem(),
             ]],
-            'customerData' => array_filter($cliente),
-        ], $this->cabecalhos());
+        ];
+
+        // Se o bloco do cliente existe, a Asaas exige TODOS os campos (CPF, telefone, endereço...), mesmo que a documentação
+        // diga que são opcionais. Sem ele, a própria página de pagamento da Asaas pede esses dados ao comprador.
+        $completo = ['cpfCnpj', 'phoneNumber', 'address', 'addressNumber', 'province', 'postalCode'];
+        if (count(array_filter($completo, fn (string $campo) => !empty($cliente[$campo]))) === count($completo)) {
+            $corpo['customerData'] = array_filter($cliente);
+        }
+
+        $resposta = $this->http->postJson($this->url('/checkouts'), $corpo, $this->cabecalhos());
 
         return ['id' => (string) $resposta['id'], 'link' => (string) $resposta['link']];
     }
