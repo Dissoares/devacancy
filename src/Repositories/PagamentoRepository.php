@@ -62,6 +62,16 @@ final class PagamentoRepository implements PagamentoRepositoryInterface
         )->execute([$gatewayId, $copiaCola, $qrBase64, $expiraEm, $id]);
     }
 
+    public function temRecorrenciaAtiva(int $usuarioId): bool
+    {
+        $consulta = $this->pdo->prepare(
+            "SELECT 1 FROM pagamentos WHERE usuario_id = ? AND metodo IN ('stripe', 'paypal') AND status = 'pago'
+                AND pago_em > NOW() - INTERVAL 40 DAY LIMIT 1"
+        );
+        $consulta->execute([$usuarioId]);
+        return (bool) $consulta->fetchColumn();
+    }
+
     public function recentes(int $limite): array
     {
         $consulta = $this->pdo->prepare(

@@ -22,6 +22,9 @@ interface PagamentoRepositoryInterface
 
     public function registrarCobranca(int $id, string $gatewayId, ?string $copiaCola, ?string $qrBase64, ?string $expiraEm): void;
 
+    /** Houve pagamento recente por cartão (Stripe) ou PayPal: a assinatura pode estar renovando sozinha no provedor. */
+    public function temRecorrenciaAtiva(int $usuarioId): bool;
+
     /** Últimos pagamentos de qualquer forma, com o usuário. @return array<int, array> */
     public function recentes(int $limite): array;
 
