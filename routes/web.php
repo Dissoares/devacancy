@@ -9,6 +9,7 @@ use App\Controllers\AdminController;
 use App\Controllers\AdminEmailController;
 use App\Controllers\AdminMigracaoController;
 use App\Controllers\AdminPagamentoController;
+use App\Controllers\AdminSaudeController;
 use App\Controllers\AdminUsuarioController;
 use App\Controllers\AdminVagaController;
 use App\Controllers\AssinaturaController;
@@ -18,6 +19,7 @@ use App\Controllers\FunilController;
 use App\Controllers\LandingController;
 use App\Controllers\PerfilController;
 use App\Controllers\RecuperacaoSenhaController;
+use App\Controllers\SiteController;
 use App\Controllers\UsuarioController;
 use App\Controllers\VagaPublicaController;
 use App\Core\Roteador;
@@ -36,6 +38,10 @@ return function (Roteador $rotas): void {
     $rotas->get('/vaga/{id}', [VagaPublicaController::class, 'mostrar']);
     $rotas->get('/vaga/{id}/aplicar', [VagaPublicaController::class, 'aplicar']);
     $rotas->get('/vaga/{id}/imagem.png', [VagaPublicaController::class, 'imagem']);
+    $rotas->get('/privacidade', [SiteController::class, 'privacidade']);
+    $rotas->get('/termos', [SiteController::class, 'termos']);
+    $rotas->get('/robots.txt', [SiteController::class, 'robots']);
+    $rotas->get('/sitemap.xml', [SiteController::class, 'sitemap']);
     $rotas->get('/vitrine', [LandingController::class, 'vitrine']);
 
     // Funil do profissional: questionário → vagas compatíveis → criar conta (sem login até aqui)
@@ -66,6 +72,7 @@ return function (Roteador $rotas): void {
     $rotas->get('/painel', [UsuarioController::class, 'painel'], $perfilCompleto);
     $rotas->get('/perfil', [PerfilController::class, 'ver'], $perfilCompleto);
     $rotas->get('/perfil/curriculo', [PerfilController::class, 'curriculo'], $perfilCompleto);
+    $rotas->post('/perfil/excluir', [PerfilController::class, 'excluirConta'], $perfilCompleto);
     $rotas->post('/perfil/importar', [PerfilController::class, 'importar'], $perfilCompleto);
     $rotas->post('/perfil/importar/aplicar', [PerfilController::class, 'aplicar'], $perfilCompleto);
     $rotas->post('/perfil/importar/descartar', [PerfilController::class, 'descartar'], $perfilCompleto);
@@ -124,6 +131,7 @@ return function (Roteador $rotas): void {
     $rotas->get('/admin/configuracoes/{secao}', [AdminConfiguracaoController::class, 'secao'], $admin);
     $rotas->post('/admin/configuracoes/{secao}/{cartao}', [AdminConfiguracaoController::class, 'salvar'], $admin);
     $rotas->post('/admin/email/testar', [AdminEmailController::class, 'testar'], $admin);
+    $rotas->get('/admin/saude', [AdminSaudeController::class, 'painel'], $admin);
     $rotas->get('/admin/migracoes', [AdminMigracaoController::class, 'painel'], $admin);
     $rotas->post('/admin/migracoes/executar', [AdminMigracaoController::class, 'executar'], $admin);
     $rotas->get('/admin/pagamentos', [AdminPagamentoController::class, 'listar'], $admin);
