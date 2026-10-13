@@ -214,3 +214,32 @@ function ambiente_local(): bool
     $host = strtolower((string) parse_url((string) configuracao('app.url'), PHP_URL_HOST));
     return $host === 'localhost' || $host === '127.0.0.1' || str_ends_with($host, '.test') || str_ends_with($host, '.localhost');
 }
+
+/** Números mostrados como selo no menu do admin (pagamentos manuais esperando confirmação). */
+function admin_contagens(): array
+{
+    static $contagens = null;
+    if ($contagens !== null) {
+        return $contagens;
+    }
+
+    $contagens = ['pagamentos' => 0];
+    try {
+        $contagens['pagamentos'] = (int) \App\Core\Conexao::obter()
+            ->query("SELECT COUNT(*) FROM pagamentos WHERE status = 'pendente' AND metodo IN ('pix_manual', 'paypal_email')")
+            ->fetchColumn();
+    } catch (\Throwable) {
+        // O menu não pode derrubar a página.
+    }
+    return $contagens;
+}
+
+/** Provedores de login social com Client ID e Client secret preenchidos (o botão só aparece para eles). @return \App\Enums\ProvedorSocial[] */
+function provedores_sociais(): array
+{
+    return array_values(array_filter(
+        \App\Enums\ProvedorSocial::cases(),
+        fn (\App\Enums\ProvedorSocial $provedor) => configuracao("oauth.{$provedor->value}.cliente_id") !== ''
+            && configuracao("oauth.{$provedor->value}.cliente_segredo") !== '',
+    ));
+}
