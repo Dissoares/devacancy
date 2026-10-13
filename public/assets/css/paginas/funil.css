@@ -1367,3 +1367,17 @@ html:has(.pagina-funil) {
     flex: 1 1 100%;
   }
 }
+
+.radar-texto {
+  display: grid;
+  gap: 2px;
+}
+
+.radar-local {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--texto-suave);
+  font-size: .76rem;
+  font-weight: 600;
+}

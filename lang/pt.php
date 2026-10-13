@@ -225,6 +225,8 @@ return [
     'funil.radar_regiao_varios_br' => ':n vagas abertas agora: :br no Brasil e :ext no exterior',
     'funil.radar_regiao_um_fora' => ':n vaga internacional aberta agora',
     'funil.radar_regiao_varios_fora' => ':n vagas internacionais abertas agora',
+    'funil.radar_voce_esta' => 'Sua região: :local',
+    'funil.radar_zero' => 'Nenhuma vaga para :filtro agora. Seu perfil entra no radar e avisamos quando surgir.',
     'funil.radar_area_um' => ':n vaga de :filtro aberta agora',
     'funil.radar_area_varios' => ':n vagas de :filtro abertas agora',
     'funil.radar_combinam_um' => ':n vaga combina com :filtro',

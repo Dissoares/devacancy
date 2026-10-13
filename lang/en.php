@@ -225,6 +225,8 @@ return [
     'funil.radar_regiao_varios_br' => ':n jobs open now: :br in Brazil and :ext abroad',
     'funil.radar_regiao_um_fora' => ':n international job open now',
     'funil.radar_regiao_varios_fora' => ':n international jobs open now',
+    'funil.radar_voce_esta' => 'Your region: :local',
+    'funil.radar_zero' => 'No jobs for :filtro right now. Your profile joins the radar and we will let you know when one appears.',
     'funil.radar_area_um' => ':n :filtro job open now',
     'funil.radar_area_varios' => ':n :filtro jobs open now',
     'funil.radar_combinam_um' => ':n job matches :filtro',

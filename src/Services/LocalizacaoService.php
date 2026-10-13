@@ -69,6 +69,19 @@ final class LocalizacaoService
         return $local['cidade'] ? $local['cidade'] . ($local['estado'] ? ', ' . $local['estado'] : '') : null;
     }
 
+    /** Onde a pessoa está, para mostrar na tela: "Blumenau, SC" ou, sem a cidade, o nome do país ("Brasil"). */
+    public function descricao(Requisicao $requisicao): ?string
+    {
+        $local = $this->detectar($requisicao);
+        if ($local['cidade']) {
+            return $local['cidade'] . ($local['estado'] ? ', ' . $local['estado'] : '');
+        }
+
+        $pais = $this->pais($requisicao);
+        $nome = class_exists(\Locale::class) ? \Locale::getDisplayRegion('-' . $pais, Idioma::atual()) : '';
+        return $nome !== '' && $nome !== $pais ? $nome : $pais;
+    }
+
     /** @return array{cidade: ?string, estado: ?string, pais: ?string} */
     private function consultarIp(string $ip): array
     {

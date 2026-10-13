@@ -77,7 +77,7 @@ final class FunilController
     public function radar(Requisicao $requisicao): Resposta
     {
         return Resposta::html(Visao::parcial('funil/radar', [
-        ] + $this->dadosDoRadar($requisicao->consultas(), $this->localizacao->noBrasil($requisicao))));
+        ] + $this->dadosDoRadar($requisicao->consultas(), $this->localizacao->noBrasil($requisicao), $this->localizacao->descricao($requisicao))));
     }
 
     /** Análise animada e resultado. Funciona para visitantes (respostas na sessão) e para profissionais logados. */
@@ -181,9 +181,9 @@ final class FunilController
     /**
      * Número do radar e o que ele está contando: sem resposta nenhuma, todas as vagas abertas na região; com a área,
      * as vagas da área; com mais respostas, as que combinam com o resumo (área · nível · tecnologias).
-     * @return array{total: int, noBrasil: bool, resumo: string, filtrado: bool, porArea: bool, brasil: int, exterior: int}
+     * @return array{total: int, noBrasil: bool, resumo: string, filtrado: bool, local: ?string, porArea: bool, brasil: int, exterior: int}
      */
-    private function dadosDoRadar(array $valores, bool $noBrasil): array
+    private function dadosDoRadar(array $valores, bool $noBrasil, ?string $local): array
     {
         $partes = [];
         if ($area = AreaAtuacao::tryFrom((string) ($valores['area'] ?? ''))) {
@@ -200,6 +200,7 @@ final class FunilController
         return [
             'total' => $this->vagas->contarParaRespostas($valores, $noBrasil),
             'noBrasil' => $noBrasil,
+            'local' => $local,
             'resumo' => implode(' · ', [...$partes, ...$tecnologias]),
             'filtrado' => $extras,
             'porArea' => $area !== null,
@@ -220,7 +221,7 @@ final class FunilController
             'erros' => $erros,
             'noBrasil' => $noBrasil,
             'moeda' => $noBrasil ? 'BRL' : 'USD',
-            'radar' => $this->dadosDoRadar($valores, $noBrasil),
+            'radar' => $this->dadosDoRadar($valores, $noBrasil, $this->localizacao->descricao($requisicao)),
             'passoInicial' => $passoInicial,
         ], 'funil'), $erros ? 422 : 200);
     }
