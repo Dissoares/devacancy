@@ -23,6 +23,23 @@ final class PerfilProfissionalRepository implements PerfilProfissionalRepository
         return $linha ? PerfilProfissional::deLinha($linha) : null;
     }
 
+    public function salvarImportacao(int $usuarioId, ?array $experiencias, ?array $formacao): void
+    {
+        $this->pdo->prepare(
+            'UPDATE perfis_profissionais SET experiencias = COALESCE(?, experiencias), formacao = COALESCE(?, formacao), importado_em = NOW() WHERE usuario_id = ?'
+        )->execute([
+            $experiencias !== null ? json_encode($experiencias, JSON_UNESCAPED_UNICODE) : null,
+            $formacao !== null ? json_encode($formacao, JSON_UNESCAPED_UNICODE) : null,
+            $usuarioId,
+        ]);
+    }
+
+    public function definirCurriculo(int $usuarioId, string $arquivo, string $nomeOriginal): void
+    {
+        $this->pdo->prepare('UPDATE perfis_profissionais SET curriculo_arquivo = ?, curriculo_nome_original = ? WHERE usuario_id = ?')
+            ->execute([$arquivo, $nomeOriginal, $usuarioId]);
+    }
+
     public function salvar(int $usuarioId, PerfilProfissionalDTO $dados, ?string $curriculoArquivo, ?string $curriculoNomeOriginal): void
     {
         $this->pdo->prepare(

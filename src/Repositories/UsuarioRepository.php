@@ -135,6 +135,11 @@ final class UsuarioRepository implements UsuarioRepositoryInterface
         $this->pdo->prepare('UPDATE usuarios SET cadastro_completo = 1 WHERE id = ?')->execute([$usuarioId]);
     }
 
+    public function atualizarNome(int $usuarioId, string $nome): void
+    {
+        $this->pdo->prepare('UPDATE usuarios SET nome = ? WHERE id = ?')->execute([$nome, $usuarioId]);
+    }
+
     public function atualizarSenha(int $usuarioId, string $senhaHash): void
     {
         $this->pdo->prepare('UPDATE usuarios SET senha_hash = ? WHERE id = ?')->execute([$senhaHash, $usuarioId]);

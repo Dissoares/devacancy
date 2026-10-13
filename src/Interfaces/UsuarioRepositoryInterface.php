@@ -32,6 +32,8 @@ interface UsuarioRepositoryInterface
 
     public function registrarAcesso(int $usuarioId): void;
 
+    public function atualizarNome(int $usuarioId, string $nome): void;
+
     public function atualizarSenha(int $usuarioId, string $senhaHash): void;
 
     /** Transforma a conta em administradora (e dispensa o preenchimento de perfil). */
