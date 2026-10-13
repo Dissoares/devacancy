@@ -9,6 +9,7 @@ use App\Core\CatalogoConfiguracoes;
 use App\Exceptions\NaoEncontradoException;
 use App\Exceptions\ValidacaoException;
 use App\Interfaces\ConfiguracaoRepositoryInterface;
+use App\Interfaces\MetodoPagamentoRepositoryInterface;
 
 /**
  * Configurações do site editadas no painel. O valor do painel vence o do .env; apagar um campo
@@ -16,66 +17,82 @@ use App\Interfaces\ConfiguracaoRepositoryInterface;
  */
 final class ConfiguracaoService
 {
-    public function __construct(private readonly ConfiguracaoRepositoryInterface $configuracoes)
+    public function __construct(
+        private readonly ConfiguracaoRepositoryInterface $configuracoes,
+        private readonly MetodoPagamentoRepositoryInterface $metodosPagamento,
+    ) {
+    }
+
+    public function existe(string $secao): bool
     {
+        return isset(CatalogoConfiguracoes::SECOES[$secao]);
     }
 
     /**
-     * Grupos do catálogo com o estado de cada campo, prontos para a tela.
-     * origem: painel | env | vazio. Tokens vazios são gerados aqui, para já aparecerem prontos para copiar.
+     * Uma seção do menu com os seus cartões e o estado de cada campo, pronta para a tela.
+     * origem do campo: painel | env | vazio. Tokens ainda vazios são gerados aqui, já prontos para copiar.
+     * status do cartão: configurado | incompleto | vazio (null quando o cartão não tem campos obrigatórios).
      */
-    public function grupos(): array
+    public function secao(string $chave): array
     {
+        $secao = CatalogoConfiguracoes::SECOES[$chave] ?? throw new NaoEncontradoException();
         $salvos = $this->configuracoes->todas();
+        $ativos = $this->metodosPagamento->ativos();
         $base = rtrim((string) configuracao('app.url'), '/');
-        $grupos = [];
 
-        foreach (CatalogoConfiguracoes::GRUPOS as $chaveGrupo => $grupo) {
+        $cartoes = [];
+        foreach ($secao['cartoes'] as $chaveCartao => $cartao) {
             $campos = [];
-            foreach ($grupo['campos'] as $chave => $campo) {
-                $doPainel = (string) ($salvos[$chave] ?? '');
-                $doArquivo = Ambiente::doArquivo($chave);
+            $valores = [];
+            foreach ($cartao['campos'] as $chaveCampo => $campo) {
+                $doPainel = (string) ($salvos[$chaveCampo] ?? '');
+                $doArquivo = Ambiente::doArquivo($chaveCampo);
 
                 if ($campo['tipo'] === 'token' && $doPainel === '' && $doArquivo === null) {
                     $doPainel = $this->gerarToken();
-                    $this->configuracoes->salvar($chave, $doPainel);
+                    $this->configuracoes->salvar($chaveCampo, $doPainel);
                 }
 
                 $atual = $doPainel !== '' ? $doPainel : (string) $doArquivo;
-                $campos[$chave] = $campo + [
+                $valores[$chaveCampo] = $atual;
+                $campos[$chaveCampo] = $campo + [
                     'origem' => $doPainel !== '' ? 'painel' : ($doArquivo !== null ? 'env' : 'vazio'),
-                    // Segredos nunca vão para o HTML; mostra só o final, para a pessoa reconhecer qual é.
+                    // Segredos nunca vão para o HTML; só o final, para a pessoa reconhecer qual é.
                     'valor' => $campo['tipo'] === 'segredo' ? '' : $atual,
                     'final' => $campo['tipo'] === 'segredo' && $atual !== '' ? '…' . mb_substr($atual, -4) : null,
                 ];
             }
 
-            $grupos[$chaveGrupo] = [
-                'titulo' => $grupo['titulo'],
-                'descricao' => $grupo['descricao'],
+            $cartoes[$chaveCartao] = [
+                'titulo' => $cartao['titulo'],
+                'descricao' => $cartao['descricao'],
+                'icone' => $cartao['icone'] ?? null,
+                'metodo' => $cartao['metodo'] ?? null,
+                'ativo' => isset($cartao['metodo']) ? ($ativos[$cartao['metodo']] ?? true) : null,
+                'status' => $this->status($cartao['obrigatorios'] ?? null, $valores),
                 'campos' => $campos,
-                'avisos' => array_map(fn (string $aviso) => str_replace('{APP_URL}', $base, $aviso), $grupo['avisos'] ?? []),
+                'avisos' => array_map(fn (string $aviso) => str_replace('{APP_URL}', $base, $aviso), $cartao['avisos'] ?? []),
             ];
         }
 
         Ambiente::esquecerPainel();
-        return $grupos;
+        return ['titulo' => $secao['titulo'], 'descricao' => $secao['descricao'], 'extra' => $secao['extra'] ?? null, 'cartoes' => $cartoes];
     }
 
     /**
-     * Salva os campos de um grupo. Em branco: segredo mantém o atual; os demais voltam para o .env.
-     * @param array<string, mixed> $dados campos do formulário (+ "limpar" e "regenerar" como listas de chaves)
+     * Salva os campos de um cartão. Em branco: segredo e token mantêm o atual; os demais voltam para o .env.
+     * @param array<string, mixed> $dados campos do formulário (+ "limpar", "regenerar" e "__ativo")
      * @throws ValidacaoException
      */
-    public function salvar(string $grupo, array $dados): void
+    public function salvar(string $secao, string $cartao, array $dados): void
     {
-        $campos = CatalogoConfiguracoes::GRUPOS[$grupo]['campos'] ?? throw new NaoEncontradoException();
+        $definicao = CatalogoConfiguracoes::SECOES[$secao]['cartoes'][$cartao] ?? throw new NaoEncontradoException();
         $limpar = (array) ($dados['limpar'] ?? []);
         $regenerar = (array) ($dados['regenerar'] ?? []);
 
         $erros = [];
         $mudancas = [];
-        foreach ($campos as $chave => $campo) {
+        foreach ($definicao['campos'] as $chave => $campo) {
             $valor = trim((string) ($dados[$chave] ?? ''));
 
             if (in_array($chave, $limpar, true)) {
@@ -110,7 +127,54 @@ final class ConfiguracaoService
         foreach ($mudancas as $chave => $valor) {
             $valor === null ? $this->configuracoes->remover($chave) : $this->configuracoes->salvar($chave, $valor);
         }
+        if (isset($definicao['metodo']) && isset($dados['__ativo_enviado'])) {
+            $this->metodosPagamento->definir($definicao['metodo'], isset($dados['__ativo']));
+        }
         Ambiente::esquecerPainel();
+    }
+
+    /** O que o servidor leu das configurações de e-mail (nunca a senha), para a tela de diagnóstico. */
+    public function leituraDoEmail(): array
+    {
+        $usuario = (string) configuracao('email.smtp_usuario');
+        $senha = (string) configuracao('email.smtp_senha');
+
+        return [
+            'modo' => (string) configuracao('email.smtp_host') !== '' ? 'SMTP' : 'mail() da hospedagem',
+            'de' => (string) configuracao('email.de'),
+            'host' => (string) configuracao('email.smtp_host'),
+            'porta' => (string) configuracao('email.smtp_porta'),
+            'seguranca' => (string) configuracao('email.smtp_seguranca'),
+            'usuario' => $usuario,
+            'usuario_completo' => $usuario === '' || str_contains($usuario, '@'),
+            'senha_tamanho' => mb_strlen($senha),
+            'senha_suspeita' => $senha !== trim($senha) || preg_match('/["\'\s]/', $senha) === 1,
+            'url' => (string) configuracao('app.url'),
+        ];
+    }
+
+    /** @param array<int, string[]>|null $grupos @param array<string, string> $valores */
+    private function status(?array $grupos, array $valores): ?string
+    {
+        if ($grupos === null) {
+            return null;
+        }
+
+        $ok = 0;
+        foreach ($grupos as $alternativas) {
+            foreach ($alternativas as $chave) {
+                if (($valores[$chave] ?? '') !== '') {
+                    $ok++;
+                    break;
+                }
+            }
+        }
+
+        return match (true) {
+            $ok === count($grupos) => 'configurado',
+            $ok === 0 => 'vazio',
+            default => 'incompleto',
+        };
     }
 
     private function validar(array $campo, string $valor): ?string
