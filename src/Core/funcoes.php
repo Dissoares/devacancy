@@ -80,12 +80,31 @@ function e(mixed $valor): string
     return htmlspecialchars((string) ($valor ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+/**
+ * Endereço do site: o salvo em Configurações → Site (ou APP_URL) e, enquanto ninguém salvou, o do próprio acesso.
+ * O do acesso só serve para o site funcionar logo após a instalação; links enviados por e-mail usam só o salvo.
+ */
+function endereco_do_site(): string
+{
+    $salvo = trim((string) configuracao('app.url'));
+    if ($salvo !== '') {
+        return rtrim($salvo, '/');
+    }
+
+    $host = (string) ($_SERVER['HTTP_HOST'] ?? '');
+    if ($host === '' || !preg_match('/^[a-z0-9.-]+(:\d{1,5})?$/i', $host)) {
+        return '';
+    }
+    $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || ($_SERVER['SERVER_PORT'] ?? '') === '443';
+    return ($https ? 'https://' : 'http://') . $host;
+}
+
 function url(string $caminho = '/'): string
 {
     if (preg_match('#^https?://#', $caminho)) {
         return $caminho;
     }
-    return rtrim((string) configuracao('app.url'), '/') . '/' . ltrim($caminho, '/');
+    return rtrim(endereco_do_site(), '/') . '/' . ltrim($caminho, '/');
 }
 
 /** URL de arquivo estático com versão pela data de modificação (cache seguro). */
@@ -211,7 +230,7 @@ function ambiente_local(): bool
         return false;
     }
 
-    $host = strtolower((string) parse_url((string) configuracao('app.url'), PHP_URL_HOST));
+    $host = strtolower((string) parse_url(endereco_do_site(), PHP_URL_HOST));
     return $host === 'localhost' || $host === '127.0.0.1' || str_ends_with($host, '.test') || str_ends_with($host, '.localhost');
 }
 

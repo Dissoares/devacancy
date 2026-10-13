@@ -30,7 +30,7 @@ use App\Repositories\VagaRepository;
 return [
     'app' => [
         'nome' => Ambiente::obter('APP_NOME', 'Devacancy'),
-        'url' => Ambiente::obter('APP_URL', 'http://devacancy.test'),
+        'url' => Ambiente::obter('APP_URL', ''),
         'ambiente' => Ambiente::obter('APP_AMBIENTE', 'producao'),
     ],
 
@@ -129,7 +129,7 @@ return [
     // E-mails do sistema (recuperação de senha). Com MAIL_SMTP_HOST usa SMTP; sem, usa o mail() do PHP.
     // MAIL_DE precisa ser um endereço do seu domínio (ex.: suporte@devacancy.online) para não cair no spam.
     'email' => [
-        'de' => Ambiente::obter('MAIL_DE', 'suporte@' . (parse_url(Ambiente::obter('APP_URL', 'http://devacancy.test'), PHP_URL_HOST) ?: 'devacancy.test')),
+        'de' => Ambiente::obter('MAIL_DE', ''),
         'nome' => Ambiente::obter('APP_NOME', 'Devacancy'),
         'smtp_host' => Ambiente::obter('MAIL_SMTP_HOST', ''),
         'smtp_porta' => Ambiente::obter('MAIL_SMTP_PORTA', '465'),
