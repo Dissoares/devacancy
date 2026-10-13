@@ -64,9 +64,37 @@ final class Resposta
         return $this;
     }
 
+    /**
+     * Cabeçalhos de segurança em toda resposta, direto do PHP (não dependem de a hospedagem ter mod_headers).
+     * As páginas HTML são privadas: dados da conta não ficam em cache de proxy nem de navegador compartilhado.
+     * @return array<string, string>
+     */
+    private function segurancaPadrao(): array
+    {
+        $cabecalhos = [
+            'X-Content-Type-Options' => 'nosniff',
+            'X-Frame-Options' => 'DENY',
+            'Referrer-Policy' => 'strict-origin-when-cross-origin',
+            'Permissions-Policy' => 'camera=(), microphone=(), geolocation=(), payment=()',
+        ];
+
+        $https = ($_SERVER['HTTPS'] ?? '') === 'on' || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+        if ($https) {
+            $cabecalhos['Strict-Transport-Security'] = 'max-age=31536000';
+        }
+        if (str_starts_with($this->cabecalhos['Content-Type'] ?? '', 'text/html')) {
+            $cabecalhos['Cache-Control'] = 'private, no-cache, must-revalidate';
+        }
+
+        return $cabecalhos;
+    }
+
     public function enviar(): void
     {
         http_response_code($this->status);
+        foreach ($this->segurancaPadrao() as $nome => $valor) {
+            header("{$nome}: {$valor}");
+        }
         foreach ($this->cabecalhos as $nome => $valor) {
             header("{$nome}: {$valor}");
         }
