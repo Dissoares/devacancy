@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Controllers\AdminAnalyticsController;
 use App\Controllers\AdminComissaoController;
+use App\Controllers\AdminConfiguracaoController;
 use App\Controllers\AdminController;
 use App\Controllers\AdminEmailController;
 use App\Controllers\AdminMigracaoController;
@@ -70,6 +71,7 @@ return function (Roteador $rotas): void {
     $rotas->get('/pagamento/{id}', [AssinaturaController::class, 'pagamento'], $perfilCompleto);
     $rotas->get('/pagamento/{id}/status', [AssinaturaController::class, 'statusPagamento'], $perfilCompleto);
     $rotas->post('/pagamento/{id}/simular', [AssinaturaController::class, 'simularPagamento'], $perfilCompleto);
+    $rotas->post('/assinar/asaas', [AssinaturaController::class, 'assinarAsaas'], $perfilCompleto);
     $rotas->post('/assinar/pix-manual', [AssinaturaController::class, 'assinarPixManual'], $perfilCompleto);
     $rotas->post('/pagamento/{id}/avisar', [AssinaturaController::class, 'avisarPagamento'], $perfilCompleto);
     $rotas->post('/assinar/stripe', [AssinaturaController::class, 'assinarStripe'], $perfilCompleto);
@@ -81,6 +83,7 @@ return function (Roteador $rotas): void {
     $rotas->get('/assinatura/paypal/{id}', [AssinaturaController::class, 'aguardandoPaypal'], $perfilCompleto);
     $rotas->get('/assinatura/paypal/{id}/status', [AssinaturaController::class, 'statusPaypal'], $perfilCompleto);
     $rotas->post('/webhooks/expay', [AssinaturaController::class, 'webhook']);
+    $rotas->post('/webhooks/asaas', [AssinaturaController::class, 'webhookAsaas']);
     $rotas->post('/webhooks/stripe', [AssinaturaController::class, 'webhookStripe']);
     $rotas->post('/webhooks/paypal-ipn', [AssinaturaController::class, 'ipnPaypal']);
     $rotas->post('/webhooks/paypal', [AssinaturaController::class, 'webhookPaypal']);
@@ -110,6 +113,8 @@ return function (Roteador $rotas): void {
     $rotas->get('/admin/administradores', [AdminUsuarioController::class, 'administradores'], $admin);
     $rotas->post('/admin/administradores', [AdminUsuarioController::class, 'promover'], $admin);
     $rotas->post('/admin/usuarios/{id}/excluir', [AdminUsuarioController::class, 'excluir'], $admin);
+    $rotas->get('/admin/configuracoes', [AdminConfiguracaoController::class, 'painel'], $admin);
+    $rotas->post('/admin/configuracoes/{grupo}', [AdminConfiguracaoController::class, 'salvar'], $admin);
     $rotas->get('/admin/email', [AdminEmailController::class, 'painel'], $admin);
     $rotas->post('/admin/email/testar', [AdminEmailController::class, 'testar'], $admin);
     $rotas->get('/admin/migracoes', [AdminMigracaoController::class, 'painel'], $admin);
