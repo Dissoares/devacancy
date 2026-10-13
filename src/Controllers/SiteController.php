@@ -81,6 +81,7 @@ final class SiteController
         return Resposta::html(Visao::renderizar('legal/documento', [
             'titulo' => $titulo . ' — Devacancy',
             'descricao' => t('legal.' . $tipo . '_descricao'),
+            'urlCanonica' => url('/' . ($tipo === 'privacidade' ? 'privacidade' : 'termos')),
             'tituloDocumento' => $titulo,
             'conteudo_legal' => "legal/{$tipo}-" . Idioma::atual(),
             'atualizadoEm' => data_br(self::ATUALIZADO_EM),

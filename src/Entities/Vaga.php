@@ -68,6 +68,20 @@ final class Vaga
         };
     }
 
+    /** Texto da vaga para o público: a descrição (ou uma gerada) com o nome da empresa coberto. */
+    public function descricaoPublica(): string
+    {
+        $descricao = $this->descricao ?: t('funil.descricao_gerada', [
+            'nivel' => mb_strtolower($this->senioridade->rotulo()),
+            'area' => $this->area->rotulo(),
+            'stack' => implode(', ', array_slice($this->stack, 0, 3)) ?: $this->area->rotulo(),
+        ]);
+        if ($this->empresa !== 'Confidencial' && mb_strlen($this->empresa) >= 3) {
+            $descricao = preg_replace('/' . preg_quote($this->empresa, '/') . '/iu', '▒▒▒▒▒', $descricao);
+        }
+        return $descricao;
+    }
+
     public function local(): string
     {
         $local = $this->cidade ?? ($this->regiao === RegiaoVagas::Internacional ? t('regiao.internacional') : null);

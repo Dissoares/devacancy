@@ -665,6 +665,8 @@ return [
     'compartilhar.imagem_padrao_texto' => 'Daily job applications for developers, sent by us',
     'vaga.aplicar_esta' => 'Apply to this job',
     'vaga_publica.aberta' => 'Open job',
+    'vaga_publica.empresa_oculta' => 'Confidential company',
+    'landing.og_alt' => 'Devacancy: you code, we apply',
     'vaga_publica.empresa_nota' => 'Company unlocked for subscribers',
     'vaga_publica.aplicar' => 'I want to apply to this job',
     'vaga_publica.aplicar_logado' => 'Go to my dashboard',

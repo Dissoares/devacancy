@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="<?= \App\Core\Idioma::html() ?>">
 <head>
-  <?= parcial('partials/head', ['titulo' => $titulo ?? null, 'descricao' => $descricao ?? null, 'imagemOg' => $imagemOg ?? null, 'urlCanonica' => $urlCanonica ?? null, 'estilos' => ['paginas/landing.css', 'paginas/assinatura.css', 'paginas/legal.css']]) ?>
+  <?= parcial('partials/head', ['titulo' => $titulo ?? null, 'descricao' => $descricao ?? null, 'imagemOg' => $imagemOg ?? null, 'urlCanonica' => $urlCanonica ?? null, 'imagemAlt' => $imagemAlt ?? null, 'dadosEstruturados' => $dadosEstruturados ?? null, 'estilos' => ['paginas/landing.css', 'paginas/assinatura.css', 'paginas/legal.css']]) ?>
   <script src="<?= asset('js/paginas/landing.js') ?>" defer></script>
 </head>
 <body class="pagina-site">

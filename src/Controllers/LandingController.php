@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Idioma;
 use App\Core\Requisicao;
 use App\Core\Resposta;
 use App\Core\Visao;
@@ -25,6 +26,15 @@ final class LandingController
         return Resposta::html(Visao::renderizar('landing/inicio', [
             'titulo' => t('landing.titulo_pagina'),
             'descricao' => t('landing.descricao_pagina'),
+            'urlCanonica' => url('/'),
+            'imagemAlt' => t('landing.og_alt'),
+            'dadosEstruturados' => [
+                '@context' => 'https://schema.org',
+                '@graph' => [
+                    ['@type' => 'Organization', 'name' => 'Devacancy', 'url' => url('/'), 'logo' => url('/assets/img/og-padrao.png')],
+                    ['@type' => 'WebSite', 'name' => 'Devacancy', 'url' => url('/'), 'inLanguage' => Idioma::atual() === 'pt' ? 'pt-BR' : 'en'],
+                ],
+            ],
             'vagasAbertas' => $this->vagas->contarAtivas($noBrasil),
             'vagasNovas' => $this->vagas->contarNovas($noBrasil),
             'vagasRecentes' => $this->vagas->recentes($noBrasil, 8),

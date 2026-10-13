@@ -44,6 +44,7 @@ final class VagaPublicaController
             'descricao' => $descricao,
             'imagemOg' => url('/vaga/' . $vaga->id . '/imagem.png'),
             'urlCanonica' => url_vaga($vaga),
+            'dadosEstruturados' => $this->dadosEstruturados($vaga),
             'vaga' => $vaga,
             'usuario' => $usuario,
         ], 'site'));
@@ -74,6 +75,32 @@ final class VagaPublicaController
         $caminho ??= RAIZ . '/public/assets/img/og-padrao.png';
         return Resposta::download($caminho, 'vaga.png', 'image/png')
             ->comCabecalho('Cache-Control', 'public, max-age=86400');
+    }
+
+    /** Marcação schema.org/JobPosting: é o que faz a vaga aparecer no Google Vagas. A empresa continua oculta. */
+    private function dadosEstruturados(\App\Entities\Vaga $vaga): array
+    {
+        $dados = [
+            '@context' => 'https://schema.org',
+            '@type' => 'JobPosting',
+            'title' => $vaga->titulo,
+            'description' => mb_substr($vaga->descricaoPublica(), 0, 5000),
+            'datePosted' => date('c', strtotime($vaga->criadoEm)),
+            'validThrough' => date('c', strtotime($vaga->criadoEm . ' +60 days')),
+            'employmentType' => 'FULL_TIME',
+            'directApply' => false,
+            'hiringOrganization' => ['@type' => 'Organization', 'name' => t('vaga_publica.empresa_oculta')],
+            'url' => url_vaga($vaga),
+        ];
+
+        if ($vaga->modeloTrabalho === \App\Enums\ModeloTrabalho::Remoto) {
+            $dados['jobLocationType'] = 'TELECOMMUTE';
+            $dados['applicantLocationRequirements'] = ['@type' => 'Country', 'name' => $vaga->regiao === \App\Enums\RegiaoVagas::Brasil ? 'BR' : 'US'];
+        }
+        if ($vaga->cidade) {
+            $dados['jobLocation'] = ['@type' => 'Place', 'address' => ['@type' => 'PostalAddress', 'addressLocality' => $vaga->cidade, 'addressCountry' => $vaga->regiao === \App\Enums\RegiaoVagas::Brasil ? 'BR' : 'US']];
+        }
+        return $dados;
     }
 
     /** "123" ou "123-dev-backend-pleno": só o número importa. */

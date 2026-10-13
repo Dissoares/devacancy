@@ -5,15 +5,7 @@
  */
 use App\Enums\ModeloTrabalho;
 
-$descricao = $vaga->descricao ?: t('funil.descricao_gerada', [
-    'nivel' => mb_strtolower($vaga->senioridade->rotulo()),
-    'area' => $vaga->area->rotulo(),
-    'stack' => implode(', ', array_slice($vaga->stack, 0, 3)) ?: $vaga->area->rotulo(),
-]);
-// A empresa fica oculta também dentro do texto da descrição.
-if ($vaga->empresa !== 'Confidencial' && mb_strlen($vaga->empresa) >= 3) {
-    $descricao = preg_replace('/' . preg_quote($vaga->empresa, '/') . '/iu', '▒▒▒▒▒', $descricao);
-}
+$descricao = $vaga->descricaoPublica();
 $recente = strtotime($vaga->criadoEm) >= time() - 86400 * 2;
 ?>
 <section class="vaga-publica">

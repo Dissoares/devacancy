@@ -665,6 +665,8 @@ return [
     'compartilhar.imagem_padrao_texto' => 'Candidaturas diárias para devs, enviadas por nós',
     'vaga.aplicar_esta' => 'Aplicar a esta vaga',
     'vaga_publica.aberta' => 'Vaga aberta',
+    'vaga_publica.empresa_oculta' => 'Empresa confidencial',
+    'landing.og_alt' => 'Devacancy: você programa, a gente se candidata',
     'vaga_publica.empresa_nota' => 'Empresa liberada para assinantes',
     'vaga_publica.aplicar' => 'Quero aplicar a esta vaga',
     'vaga_publica.aplicar_logado' => 'Ver no meu painel',

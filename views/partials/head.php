@@ -3,6 +3,8 @@
 $descricao ??= t('landing.descricao_pagina');
 $imagemOg ??= url('/assets/img/og-padrao.png');
 $urlCanonica ??= null;
+$dadosEstruturados ??= null;
+$imagemAlt ??= $titulo ?? 'Devacancy';
 ?>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -18,16 +20,21 @@ $urlCanonica ??= null;
 <meta property="og:image" content="<?= e($imagemOg) ?>">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="<?= e($imagemAlt) ?>">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="<?= e($titulo ?? 'Devacancy') ?>">
 <meta name="twitter:description" content="<?= e($descricao) ?>">
 <meta name="twitter:image" content="<?= e($imagemOg) ?>">
+<meta name="twitter:image:alt" content="<?= e($imagemAlt) ?>">
 <?php if ($urlCanonica): ?>
 <meta property="og:url" content="<?= e($urlCanonica) ?>">
 <link rel="canonical" href="<?= e($urlCanonica) ?>">
 <?php endif; ?>
 <meta property="og:locale" content="<?= \App\Core\Idioma::atual() === 'pt' ? 'pt_BR' : 'en_US' ?>">
 <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
+<?php if ($dadosEstruturados): ?>
+<script type="application/ld+json"><?= json_encode($dadosEstruturados, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) ?></script>
+<?php endif; ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400..800&family=Geist+Mono:wght@400;500&display=swap">
