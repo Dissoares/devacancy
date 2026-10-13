@@ -38,6 +38,11 @@ final class LocalizacaoService
         }
 
         $local = $this->consultarIp($requisicao->ip());
+        // O país que a Cloudflare já conferiu vale mais que a consulta externa (e funciona se ela estiver fora do ar).
+        $paisConfiavel = $requisicao->cabecalho('x-pais-confiavel');
+        if ($paisConfiavel !== null) {
+            $local['pais'] = $paisConfiavel;
+        }
         Sessao::definir(self::CHAVE_SESSAO, ['ip' => $requisicao->ip(), ...$local]);
         return $local;
     }
