@@ -316,6 +316,44 @@ final class VagaService
         ];
     }
 
+    /**
+     * As tecnologias mais pedidas nas vagas abertas da área do profissional que ainda não estão no perfil dele.
+     * @return array<string, int> tecnologia => quantidade de vagas
+     */
+    public function tecnologiasEmAlta(PerfilProfissional $perfil, int $limite = 6): array
+    {
+        $areas = $this->areasAceitas($perfil->area);
+        $regioes = $perfil->regiaoVagas->aceitas();
+        $tem = array_flip($this->normalizarStack($perfil->stack));
+
+        $contagem = [];
+        $rotulos = [];
+        foreach ($this->vagas->listarAtivas(self::DIAS_VALIDADE) as $vaga) {
+            if (!in_array($vaga->area, $areas, true) || !in_array($vaga->regiao, $regioes, true)) {
+                continue;
+            }
+            // Só vagas que já pedem algo do que a pessoa sabe: as outras tecnologias dela não são o próximo passo.
+            if ($tem !== [] && array_intersect($this->normalizarStack($vaga->stack), array_keys($tem)) === []) {
+                continue;
+            }
+            foreach ($vaga->stack as $tecnologia) {
+                $chave = $this->normalizarStack([$tecnologia])[0] ?? null;
+                if ($chave === null || isset($tem[$chave])) {
+                    continue;
+                }
+                $contagem[$chave] = ($contagem[$chave] ?? 0) + 1;
+                $rotulos[$chave] ??= $tecnologia;
+            }
+        }
+
+        arsort($contagem);
+        $resultado = [];
+        foreach (array_slice($contagem, 0, $limite, true) as $chave => $total) {
+            $resultado[$rotulos[$chave]] = $total;
+        }
+        return $resultado;
+    }
+
     /** @return AreaAtuacao[] */
     private function areasAceitas(AreaAtuacao $area): array
     {
