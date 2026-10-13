@@ -654,3 +654,24 @@
     flex: 1 1 100%;
   }
 }
+
+/* ---------- Excluir a própria conta ---------- */
+.perfil-exclusao {
+  margin-top: 22px;
+}
+
+.perfil-exclusao summary {
+  color: var(--texto-suave);
+  font-size: .92rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.perfil-exclusao details[open] summary {
+  margin-bottom: 12px;
+  color: #b42318;
+}
+
+.perfil-exclusao .formulario-linha {
+  margin-top: 14px;
+}

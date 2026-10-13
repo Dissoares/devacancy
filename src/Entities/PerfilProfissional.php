@@ -107,24 +107,24 @@ final class PerfilProfissional
     public function forca(): array
     {
         $itens = [
-            'Currículo em PDF' => [20, $this->possuiCurriculo(), true],
-            'Stack com 3 ou mais tecnologias' => [15, count($this->stack) >= 3, true],
-            'Experiências profissionais' => [15, $this->experiencias !== [], true],
-            'Resumo profissional' => [10, $this->resumo !== null, true],
-            'LinkedIn' => [10, $this->linkedinUrl !== null, true],
-            'GitHub ou portfólio' => [10, $this->githubUrl !== null || $this->portfolioUrl !== null, true],
-            'Pretensão salarial' => [10, $this->pretensaoSalarial !== null, false],
-            'Formação' => [5, $this->formacao !== [], true],
-            'Idiomas' => [5, $this->idiomas !== [], true],
+            'curriculo' => [20, $this->possuiCurriculo(), true],
+            'stack' => [15, count($this->stack) >= 3, true],
+            'experiencia' => [15, $this->experiencias !== [], true],
+            'resumo' => [10, $this->resumo !== null, true],
+            'linkedin' => [10, $this->linkedinUrl !== null, true],
+            'github' => [10, $this->githubUrl !== null || $this->portfolioUrl !== null, true],
+            'pretensao' => [10, $this->pretensaoSalarial !== null, false],
+            'formacao' => [5, $this->formacao !== [], true],
+            'idiomas' => [5, $this->idiomas !== [], true],
         ];
 
         $percentual = 0;
         $pendencias = [];
-        foreach ($itens as $rotulo => [$peso, $feito, $importavel]) {
+        foreach ($itens as $chave => [$peso, $feito, $importavel]) {
             if ($feito) {
                 $percentual += $peso;
             } else {
-                $pendencias[] = ['rotulo' => $rotulo, 'importavel' => $importavel];
+                $pendencias[] = ['rotulo' => t('perfilpg.pend_' . $chave), 'importavel' => $importavel];
             }
         }
         return ['percentual' => $percentual, 'pendencias' => $pendencias];

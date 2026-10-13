@@ -12,6 +12,7 @@ use App\Entities\PerfilProfissional;
 use App\Exceptions\NaoEncontradoException;
 use App\Exceptions\ValidacaoException;
 use App\Services\AutenticacaoService;
+use App\Services\ContaService;
 use App\Services\CurriculoService;
 use App\Services\ImportacaoPerfilService;
 use App\Services\UsuarioService;
@@ -26,6 +27,7 @@ final class PerfilController
         private readonly VagaService $vagas,
         private readonly ImportacaoPerfilService $importacao,
         private readonly CurriculoService $curriculos,
+        private readonly ContaService $contas,
     ) {
     }
 
@@ -42,6 +44,7 @@ final class PerfilController
             'emAlta' => $this->vagas->tecnologiasEmAlta($perfil),
             'revisao' => $this->importacao->revisao($perfil, $usuario),
             'sucesso' => Sessao::obterFlash('sucesso'),
+            'erroExclusao' => Sessao::obterFlash('erro_exclusao'),
         ], 'app'));
     }
 
@@ -85,6 +88,22 @@ final class PerfilController
     {
         $this->importacao->descartar();
         return Resposta::redirecionar('/perfil');
+    }
+
+    /** Excluir a própria conta: pede a palavra de confirmação e só apaga depois de cancelada qualquer assinatura recorrente. */
+    public function excluirConta(Requisicao $requisicao): Resposta
+    {
+        [$usuario] = $this->profissional();
+
+        try {
+            $this->contas->excluirPropriaConta($usuario, (string) $requisicao->entrada('confirmacao', ''));
+        } catch (ValidacaoException $erro) {
+            Sessao::flash('erro_exclusao', implode(' ', $erro->erros()));
+            return Resposta::redirecionar('/perfil#excluir');
+        }
+
+        $this->autenticacao->sair();
+        return Resposta::html(Visao::renderizar('perfil/conta-excluida', ['titulo' => t('perfilpg.conta_excluida_titulo')], 'site'));
     }
 
     /** O próprio PDF do profissional, para ele conferir o que está enviado. */

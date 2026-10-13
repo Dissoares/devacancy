@@ -3,7 +3,7 @@
  * Página de perfil do profissional.
  * @var \App\Entities\Usuario $usuario @var \App\Entities\PerfilProfissional $perfil
  * @var array{percentual: int, pendencias: array<int, array{rotulo: string, importavel: bool}>} $forca
- * @var int $totalCompativeis @var array<string, int> $emAlta @var ?array $revisao @var ?string $sucesso
+ * @var int $totalCompativeis @var array<string, int> $emAlta @var ?array $revisao @var ?string $sucesso @var ?string $erroExclusao
  */
 use App\Enums\IdiomaFalado;
 
@@ -192,3 +192,20 @@ $idiomas = array_map(fn (string $codigo) => IdiomaFalado::tryFrom($codigo), $per
     </section>
   </aside>
 </div>
+
+<section class="cartao perfil-secao perfil-exclusao" id="excluir">
+  <details <?= !empty($erroExclusao) ? 'open' : '' ?>>
+    <summary><?= e(t('perfilpg.excluir_titulo')) ?></summary>
+    <p class="texto-suave"><?= e(t('perfilpg.excluir_texto')) ?></p>
+    <?php if (!empty($erroExclusao)): ?><div class="alerta alerta-erro" role="alert"><?= icone('x') ?><span><?= e($erroExclusao) ?></span></div><?php endif; ?>
+    <form method="post" action="/perfil/excluir" class="formulario-linha"
+          onsubmit="return confirm('<?= e(addslashes(t('perfilpg.excluir_certeza'))) ?>')">
+      <?= csrf_campo() ?>
+      <label class="campo-rotulo" for="confirmacao-exclusao"><?= e(t('perfilpg.excluir_instrucao', ['palavra' => t('perfilpg.excluir_palavra')])) ?></label>
+      <div class="acoes-cabecalho">
+        <input class="entrada" id="confirmacao-exclusao" name="confirmacao" autocomplete="off" required>
+        <button class="botao botao-perigo" type="submit"><?= e(t('perfilpg.excluir_botao')) ?></button>
+      </div>
+    </form>
+  </details>
+</section>
