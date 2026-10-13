@@ -37,7 +37,7 @@ final class ImagemVagaService
             'local' => $vaga->local(),
             'salario' => $vaga->faixaSalarial(),
             'stack' => array_slice($vaga->stack, 0, 5),
-            'versao' => 2, // muda quando o desenho muda, para refazer as imagens guardadas
+            'versao' => 3, // muda quando o desenho muda, para refazer as imagens guardadas
             'rodape' => t('compartilhar.imagem_rodape'),
             'selo' => t('compartilhar.imagem_selo'),
         ];
@@ -82,8 +82,7 @@ final class ImagemVagaService
         $margem = 72;
 
         // Marca
-        $this->retanguloArredondado($imagem, $margem, 56, 56, 56, 14, imagecolorallocate($imagem, 37, 99, 235));
-        $this->texto($imagem, '>_', 22, $margem + 9, 94, $branco, 'Bold');
+        $this->simbolo($imagem, $margem, 56, 56);
         $this->texto($imagem, 'dev', 32, $margem + 74, 96, $branco, 'Bold');
         $larguraDev = $this->largura('dev', 32, 'Bold');
         $this->texto($imagem, 'acancy', 32, $margem + 74 + $larguraDev, 96, $azul, 'Bold');
@@ -160,6 +159,40 @@ final class ImagemVagaService
         imagefilledellipse($imagem, (int) ($largura * 0.9), (int) ($altura * 0.05), (int) ($largura * 0.7), (int) ($largura * 0.7), $brilho);
         $brilho2 = imagecolorallocatealpha($imagem, 249, 115, 22, 120);
         imagefilledellipse($imagem, (int) ($largura * 0.02), (int) ($altura * 1.02), (int) ($largura * 0.45), (int) ($largura * 0.45), $brilho2);
+    }
+
+    /** O símbolo da marca (chevron + check) desenhado na grade de 32 unidades do favicon, na posição e tamanho dados. */
+    private function simbolo(GdImage $imagem, int $x, int $y, int $lado): void
+    {
+        $this->retanguloArredondado($imagem, $x, $y, $lado, $lado, (int) round($lado / 4), imagecolorallocate($imagem, 38, 104, 240));
+        $k = $lado / 32;
+        $traco = fn (array $pontos, int $cor) => $this->traco($imagem, array_map(fn (array $p) => [$x + $p[0] * $k, $y + $p[1] * $k], $pontos), 3.2 * $k, $cor);
+        $traco([[7.3, 9.5], [14, 16], [7.3, 22.5]], imagecolorallocate($imagem, 255, 255, 255));
+        $traco([[17.4, 18.3], [20.2, 21.1], [25.9, 12.3]], imagecolorallocate($imagem, 255, 138, 31));
+    }
+
+    /** Linha grossa de pontas redondas ligando os pontos (coordenadas em px já na escala 1x). */
+    private function traco(GdImage $imagem, array $pontos, float $largura, int $cor): void
+    {
+        $e = self::ESCALA;
+        $r = $largura * $e / 2;
+        foreach ($pontos as [$px, $py]) {
+            imagefilledellipse($imagem, (int) round($px * $e), (int) round($py * $e), (int) round($r * 2), (int) round($r * 2), $cor);
+        }
+        for ($i = 0; $i < count($pontos) - 1; $i++) {
+            [[$x1, $y1], [$x2, $y2]] = [$pontos[$i], $pontos[$i + 1]];
+            $dx = $y2 - $y1;
+            $dy = $x1 - $x2;
+            $tam = hypot($dx, $dy) ?: 1;
+            $dx = $dx / $tam * $r / $e;
+            $dy = $dy / $tam * $r / $e;
+            imagefilledpolygon($imagem, [
+                (int) round(($x1 + $dx) * $e), (int) round(($y1 + $dy) * $e),
+                (int) round(($x2 + $dx) * $e), (int) round(($y2 + $dy) * $e),
+                (int) round(($x2 - $dx) * $e), (int) round(($y2 - $dy) * $e),
+                (int) round(($x1 - $dx) * $e), (int) round(($y1 - $dy) * $e),
+            ], $cor);
+        }
     }
 
     private function retanguloArredondado(GdImage $imagem, int $x, int $y, int $l, int $a, int $raio, int $cor): void
