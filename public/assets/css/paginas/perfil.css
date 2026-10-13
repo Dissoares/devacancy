@@ -675,3 +675,10 @@
 .perfil-exclusao .formulario-linha {
   margin-top: 14px;
 }
+
+/* Telas estreitas: os botões do topo do perfil ficam um embaixo do outro, em vez de estourar o cartão. */
+@media (max-width: 440px) {
+  .perfil-topo-acoes {
+    grid-template-columns: 1fr !important;
+  }
+}

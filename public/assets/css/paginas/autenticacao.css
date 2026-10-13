@@ -342,3 +342,13 @@
 .link-esqueci:hover {
   color: var(--primaria);
 }
+
+/* Celular: logo à esquerda e seletor de idioma à direita, na mesma linha, sem se tocarem. */
+@media (max-width: 960px) {
+  .auth-topo-movel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+}
