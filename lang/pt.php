@@ -678,4 +678,10 @@ return [
     'pagamento.ja_paguei' => 'Já paguei',
     'pagamento.aviso_enviado' => 'Aviso enviado! Nossa equipe vai conferir o PIX e liberar o seu plano, em geral em poucos minutos.',
     'pagamento.aviso_indisponivel' => 'Este pagamento não está mais aguardando.',
+    'planos.metodo_asaas' => 'PIX ou cartão',
+    'pagamento.asaas_continuar' => 'Pagar com PIX ou cartão',
+    'pagamento.asaas_nota' => 'Pagamento seguro pela Asaas. Você escolhe PIX ou cartão de crédito na próxima tela e o plano é liberado assim que o pagamento for confirmado.',
+    'pagamento.asaas_item' => 'Plano :plano do :app: candidaturas enviadas pela nossa equipe.',
+    'pagamento.asaas_titulo' => 'Confirmando o seu pagamento',
+    'pagamento.falha_asaas' => 'Não conseguimos abrir o pagamento agora. Tente novamente em instantes.',
 ];

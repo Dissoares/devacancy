@@ -678,4 +678,10 @@ return [
     'pagamento.ja_paguei' => 'I have paid',
     'pagamento.aviso_enviado' => 'Notice sent! Our team will check the PIX and unlock your plan, usually within a few minutes.',
     'pagamento.aviso_indisponivel' => 'This payment is no longer waiting.',
+    'planos.metodo_asaas' => 'PIX or card',
+    'pagamento.asaas_continuar' => 'Pay with PIX or card',
+    'pagamento.asaas_nota' => 'Secure payment by Asaas. Choose PIX or credit card on the next screen; your plan unlocks as soon as the payment is confirmed.',
+    'pagamento.asaas_item' => ':app :plano plan: applications sent by our team.',
+    'pagamento.asaas_titulo' => 'Confirming your payment',
+    'pagamento.falha_asaas' => "We couldn't open the payment right now. Please try again in a moment.",
 ];
