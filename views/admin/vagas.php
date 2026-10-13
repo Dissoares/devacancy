@@ -41,6 +41,14 @@ $abas = ['' => ['Todas', $totalGeral], 'ativas' => ['Ativas', $totalAtivas], 'pa
   <div class="alerta alerta-sucesso alerta-topo"><?= icone('check') ?><span><?= e($sucesso) ?></span></div>
 <?php endif; ?>
 
+<?php if ($visiveis < $totalAtivas): ?>
+  <div class="alerta alerta-aviso alerta-topo">
+    <?= icone('relogio') ?>
+    <span><strong><?= $totalAtivas ?> vagas estão ativas, mas só <?= $visiveis ?> aparecem para o público.</strong>
+    As outras <?= $totalAtivas - $visiveis ?> foram criadas há mais de <?= \App\Services\VagaService::DIAS_VALIDADE ?> dias e saem do site sozinhas (a vaga costuma já estar preenchida). Importe vagas novas para repor.</span>
+  </div>
+<?php endif; ?>
+
 <nav class="abas-status">
   <?php foreach ($abas as $valorAba => [$rotulo, $contagem]): ?>
     <a class="<?= $statusAtual === $valorAba ? 'ativo' : '' ?>" href="/admin/vagas<?= $valorAba !== '' ? '?status=' . $valorAba : '' ?>">

@@ -171,6 +171,7 @@ final class AdminVagaController
             'usuario' => $this->autenticacao->usuarioAtual(),
             'vagas' => $this->vagas->listar($ativa),
             'porFonte' => $this->vagas->contarPorFonte(),
+            'visiveis' => $this->vagas->contarVisiveisAoPublico(),
             'statusAtual' => $status,
             'valores' => $valores,
             'erros' => $erros,

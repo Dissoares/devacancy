@@ -21,7 +21,8 @@ use App\Interfaces\VagaRepositoryInterface;
 final class VagaService
 {
     /** Só entram no match vagas cadastradas nos últimos N dias. */
-    private const DIAS_VALIDADE = 30;
+    /** Vagas criadas há mais dias que isto saem do site (a vaga provavelmente já foi preenchida). */
+    public const DIAS_VALIDADE = 30;
 
     public function __construct(private readonly VagaRepositoryInterface $vagas)
     {
@@ -194,6 +195,12 @@ final class VagaService
     {
         $limite = time() - 86400;
         return count(array_filter($this->recentes($noBrasil, 2000), fn (Vaga $vaga) => strtotime($vaga->criadoEm) >= $limite));
+    }
+
+    /** Vagas ativas que o público enxerga (dentro do prazo de validade), em qualquer região. */
+    public function contarVisiveisAoPublico(): int
+    {
+        return count($this->vagas->listarAtivas(self::DIAS_VALIDADE));
     }
 
     /** Total de vagas ativas (fora do Brasil, só as internacionais), para o selo da landing. */
