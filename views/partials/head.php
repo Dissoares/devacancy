@@ -32,6 +32,7 @@ $imagemAlt ??= $titulo ?? 'Devacancy';
 <?php endif; ?>
 <meta property="og:locale" content="<?= \App\Core\Idioma::atual() === 'pt' ? 'pt_BR' : 'en_US' ?>">
 <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
 <?php if ($dadosEstruturados): ?>
 <script type="application/ld+json"><?= json_encode($dadosEstruturados, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) ?></script>
 <?php endif; ?>
