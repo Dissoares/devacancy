@@ -665,6 +665,7 @@ return [
     'compartilhar.imagem_padrao_texto' => 'Daily job applications for developers, sent by us',
     'vaga.aplicar_esta' => 'Apply to this job',
     'vaga_publica.aberta' => 'Open job',
+    'landing.confianca_garantia' => 'Refund within 7 days',
     'vaga_publica.empresa_oculta' => 'Confidential company',
     'landing.og_alt' => 'Devacancy: you code, we apply',
     'vaga_publica.empresa_nota' => 'Company unlocked for subscribers',

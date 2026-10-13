@@ -665,6 +665,7 @@ return [
     'compartilhar.imagem_padrao_texto' => 'Candidaturas diárias para devs, enviadas por nós',
     'vaga.aplicar_esta' => 'Aplicar a esta vaga',
     'vaga_publica.aberta' => 'Vaga aberta',
+    'landing.confianca_garantia' => 'Reembolso em até 7 dias',
     'vaga_publica.empresa_oculta' => 'Empresa confidencial',
     'landing.og_alt' => 'Devacancy: você programa, a gente te candidata',
     'vaga_publica.empresa_nota' => 'Empresa liberada para assinantes',

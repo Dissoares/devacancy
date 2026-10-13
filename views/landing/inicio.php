@@ -58,6 +58,7 @@ $perguntas = array_map(fn (int $n) => [t("landing.faq_{$n}_p"), t("landing.faq_{
         <li><?= icone('check', 'icone icone-sm') ?> <?= e(t('landing.confianca_1')) ?></li>
         <li><?= icone('check', 'icone icone-sm') ?> <?= e(t('landing.confianca_tempo')) ?></li>
         <li><?= icone('check', 'icone icone-sm') ?> <?= e(t('landing.confianca_2')) ?></li>
+        <li><?= icone('check', 'icone icone-sm') ?> <?= e(t('landing.confianca_garantia')) ?></li>
       </ul>
     </div>
 
@@ -182,7 +183,7 @@ $perguntas = array_map(fn (int $n) => [t("landing.faq_{$n}_p"), t("landing.faq_{
 </section>
 
 <!-- ============================== VOCÊ × A DEVACANCY ============================== -->
-<section class="secao secao-compacta">
+<section class="secao secao-compacta somente-desktop">
   <div class="container">
     <div class="secao-cabecalho revelar">
       <span class="sobretitulo"><?= e(t('landing.divisao_sobretitulo')) ?></span>

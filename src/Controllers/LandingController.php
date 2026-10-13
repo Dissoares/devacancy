@@ -26,6 +26,7 @@ final class LandingController
         return Resposta::html(Visao::renderizar('landing/inicio', [
             'titulo' => t('landing.titulo_pagina'),
             'descricao' => t('landing.descricao_pagina'),
+            'classeCorpo' => 'pagina-landing',
             'urlCanonica' => url('/'),
             'imagemAlt' => t('landing.og_alt'),
             'dadosEstruturados' => [
