@@ -45,7 +45,10 @@ final class ImportadorVagasExternas
     /** @var array<string, FonteDeVagas> */
     private array $fontes;
 
-    public function __construct(ClienteHttp $http, private readonly VagaRepositoryInterface $vagas)
+    /** @var int[] vagas criadas nesta rodada, para avisar os buscadores */
+    private array $novas = [];
+
+    public function __construct(ClienteHttp $http, private readonly VagaRepositoryInterface $vagas, private readonly IndexNowService $indexNow)
     {
         $lista = fn (string $chave): array => array_values(array_filter(array_map('trim', explode(',', (string) configuracao($chave)))));
 
@@ -83,6 +86,7 @@ final class ImportadorVagasExternas
     public function importar(?array $chaves = null): array
     {
         $resultado = ['fontes' => [], 'erros' => []];
+        $this->novas = [];
 
         foreach ($chaves ?? $this->ativas() as $chave) {
             $fonte = $this->fontes[$chave] ?? null;
@@ -102,6 +106,11 @@ final class ImportadorVagasExternas
                 $resultado['erros'][] = "{$fonte->rotulo()}: {$erro->getMessage()}";
             }
             $resultado['fontes'][$chave] = $contagem;
+        }
+
+        // Bing, Yandex e parceiros ficam sabendo na hora, sem esperar o robô passar.
+        if ($this->novas !== []) {
+            $this->indexNow->enviar([url('/vagas'), ...array_map(fn (int $id) => url('/vaga/' . $id), $this->novas)]);
         }
 
         return $resultado;
@@ -137,7 +146,7 @@ final class ImportadorVagasExternas
             return;
         }
 
-        $this->vagas->criar($vaga, date('Y-m-d H:i:s', (int) $item['publicadoEm']));
+        $this->novas[] = $this->vagas->criar($vaga, date('Y-m-d H:i:s', (int) $item['publicadoEm']));
         $contagem['importadas']++;
     }
 
