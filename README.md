@@ -77,7 +77,9 @@ Preencha a chave e o token do webhook da ExPay no painel e configure no painel d
 
 ## Vagas reais (importação automática)
 
-`php database/importar-vagas.php` importa vagas reais de duas fontes gratuitas, sempre pulando repetidas e anúncios com mais de 45 dias:
+`php database/importar-vagas.php` importa vagas reais de várias fontes gratuitas, sempre pulando repetidas e anúncios com mais de 45 dias. Vagas fora de tecnologia são descartadas. Em **Admin → Configurações → Importação de vagas** você liga e desliga as fontes e edita as empresas dos painéis Greenhouse e Lever.
+
+- **APIs públicas, sem chave** (`src/Services/Vagas/`): **Gupy** (vagas do Brasil, a maior fonte), Arbeitnow, Jobicy, Remote OK e Himalayas (vagas remotas do mundo) e os painéis de empresas no Greenhouse e no Lever. Cada vaga mostra "Fonte da vaga" na página pública, e a empresa continua oculta para quem não assina. Antes de divulgar em escala, confira os termos de cada site (alguns exigem citar a origem e limitam a frequência das consultas; rode a importação no máximo uma vez por dia). Para somar outra fonte, crie uma classe que implemente `FonteDeVagas` e registre em `ImportadorVagasExternas`.
 
 - **GitHub**: vagas abertas dos repositórios de vagas da comunidade (lista em `config/app.php`, chave `github`), interpretando o título e a descrição da issue. Vagas restritas a moradores dos EUA/Canadá são puladas. Sem `GITHUB_TOKEN` no `.env`, o limite da API é 60 consultas por hora (sobe para 5.000 com o token).
 - **Adzuna**: agregador de vagas com API gratuita. Crie uma conta em [developer.adzuna.com/signup](https://developer.adzuna.com/signup) e preencha o App ID e a App Key em Admin → Configurações → Importação de vagas; sem essas chaves, esse importador é pulado e só o do GitHub roda. Já vem filtrado para vagas no Brasil (`config/app.php`, chave `adzuna`).
@@ -97,6 +99,6 @@ O que precisa estar certo antes de divulgar. Depois de subir os arquivos, abra *
 5. **Pagamentos**: configure ao menos uma forma para o Brasil (Asaas, ou PIX manual enquanto isso) e uma para o exterior (Stripe ou PayPal). Cadastre os webhooks nos provedores, usando os endereços mostrados nos cartões.
 6. **E-mail**: SMTP em Configurações → E-mail e envie o teste.
 7. **Administrador**: promova a sua conta em Administradores e exclua o administrador padrão.
-8. **Vagas**: importe em Operação → Vagas e agende a importação (`php database/importar-vagas.php` no cron) ou clique em "Importar do GitHub agora" de vez em quando.
+8. **Vagas**: importe em Operação → Vagas e agende a importação (`php database/importar-vagas.php` no cron) ou clique em "Importar de todas as fontes" de vez em quando.
 9. **Cloudflare (opcional)**: o site já reconhece o IP e o país reais atrás dela. Deixe o SSL em "Full".
 10. **Legal**: `/privacidade` e `/termos` já estão publicadas. Peça a revisão de um advogado e preencha razão social e CNPJ quando tiver.
