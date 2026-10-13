@@ -6,7 +6,7 @@ Plataforma de candidaturas para desenvolvedores. PHP 8.3 puro + MySQL + HTMX, se
 
 ```bash
 composer dump-autoload -o
-cp .env.exemplo .env          # ajuste banco e URL
+cp .env.exemplo .env          # ajuste só o banco; o resto é no painel
 php database/instalar.php seu@email.com "SenhaForte123"   # cria banco, tabelas e o admin
 ```
 
@@ -38,7 +38,7 @@ storage/         currículos enviados (privados) e logs
 
 ## Login social
 
-Crie os apps OAuth e preencha as chaves no `.env`. URLs de retorno:
+Crie os apps OAuth e preencha as chaves em Admin → Configurações → Login social. URLs de retorno:
 
 | Provedor | Onde criar | URL de retorno |
 |---|---|---|
@@ -69,11 +69,11 @@ Português para navegadores em português, inglês para os demais (`?lang=pt|en`
 
 ## Pagamentos (PayPal)
 
-Preencha `PAYPAL_CLIENT_ID` e `PAYPAL_SECRET`, rode `php database/paypal-planos.php` para criar os planos (semanal, mensal e trimestral em BRL e USD) e cole os IDs no `.env`. Webhook no painel do PayPal: `{APP_URL}/webhooks/paypal?token={PAYPAL_WEBHOOK_TOKEN}` (eventos `PAYMENT.SALE.COMPLETED` e `BILLING.SUBSCRIPTION.*`). Cada ciclo cobrado vira um pagamento e estende a assinatura; reprocessar o mesmo evento não duplica. Sem credenciais, em ambiente local, aparece um botão de simulação.
+Preencha o Client ID e o Secret do PayPal no painel, rode `php database/paypal-planos.php` para criar os planos (semanal, mensal e trimestral em BRL e USD) e cole os IDs em Admin → Configurações → Formas de pagamento. Webhook no painel do PayPal: `{APP_URL}/webhooks/paypal?token={PAYPAL_WEBHOOK_TOKEN}` (eventos `PAYMENT.SALE.COMPLETED` e `BILLING.SUBSCRIPTION.*`). Cada ciclo cobrado vira um pagamento e estende a assinatura; reprocessar o mesmo evento não duplica. Sem credenciais, em ambiente local, aparece um botão de simulação.
 
 ## Pagamentos (ExPay)
 
-Preencha `EXPAY_API_KEY` e `EXPAY_WEBHOOK_TOKEN` no `.env` e configure no painel da ExPay o webhook `{APP_URL}/webhooks/expay?token={EXPAY_WEBHOOK_TOKEN}`. O webhook só dispara a conferência: o status é sempre consultado na API, e a página do PIX também consulta a cada 5 segundos. Sem chave, em `APP_AMBIENTE=local` **com o `APP_URL` apontando para a sua máquina** (`.test`, `localhost`), o checkout roda em modo simulação com um botão para aprovar o pagamento. No servidor use sempre `APP_AMBIENTE=producao`. Planos e preços ficam em `config/app.php` (`planos`).
+Preencha a chave e o token do webhook da ExPay no painel e configure no painel da ExPay o webhook `{APP_URL}/webhooks/expay?token={EXPAY_WEBHOOK_TOKEN}`. O webhook só dispara a conferência: o status é sempre consultado na API, e a página do PIX também consulta a cada 5 segundos. Sem chave, com o ambiente em Local **e o endereço apontando para a sua máquina** (`.test`, `localhost`), o checkout roda em modo simulação com um botão para aprovar o pagamento. No servidor use sempre Produção. Planos e preços ficam em `config/app.php` (`planos`).
 
 ## Vagas reais (importação automática)
 
@@ -91,7 +91,7 @@ As duas fontes usam o mesmo classificador (`App\Core\ClassificadorVaga`) para ad
 O que precisa estar certo antes de divulgar. Depois de subir os arquivos, abra **Admin → Sistema → Saúde do sistema**: a página confere quase tudo abaixo sozinha.
 
 1. **Arquivos**: suba o projeto inteiro (inclusive `vendor/`, `storage/fontes/` e `public/assets/js/vendor/pdfjs/`). Não suba o `.env` do seu computador nem a pasta `storage/logs/`.
-2. **`.env` mínimo no servidor**: `APP_URL`, `APP_AMBIENTE=producao` e a conexão com o banco (`DB_*`). Todo o resto (pagamentos, e-mail, login social, vagas) é configurado em **Admin → Configurações**, e o que for salvo lá vale no lugar do `.env`.
+2. **`.env` no servidor**: só a conexão com o banco (`DB_*`) — é o único dado que não pode ficar no próprio banco. Endereço do site, ambiente, pagamentos, planos, e-mail, login social e vagas ficam em **Admin → Configurações**. O endereço é guardado automaticamente na primeira visita de um administrador (confira se está com `https://`) e o ambiente é Produção por padrão. Se precisar rodar as migrações sem acesso ao painel, ponha `MIGRACOES_TOKEN` (16+ caracteres) no `.env`, abra `/install` e apague a linha depois.
 3. **Banco**: rode as migrações em **Admin → Banco de dados**. Sem acesso ao admin ainda, use `/install` com `MIGRACOES_TOKEN` no `.env` (e remova o token depois).
 4. **Site**: em Configurações → Site, endereço `https://seudominio` e ambiente **Produção**.
 5. **Pagamentos**: configure ao menos uma forma para o Brasil (Asaas, ou PIX manual enquanto isso) e uma para o exterior (Stripe ou PayPal). Cadastre os webhooks nos provedores, usando os endereços mostrados nos cartões.
