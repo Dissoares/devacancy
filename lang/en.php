@@ -256,6 +256,7 @@ return [
     'funil.conclusao_local' => 'For you in :local, nearby and remote.',
     'funil.conclusao_local_remotas' => 'All remote: you work from :local.',
     'funil.remota_de' => 'Remote · work from :local',
+    'funil.conclusao_texto_logado' => 'Pick the jobs in your dashboard. We send every application for you, and you just follow the results.',
     'funil.conclusao_texto' => 'Create your free account and pick the jobs. We send every application for you, and you just follow the results in your dashboard.',
     'funil.conclusao_vazia_titulo' => 'We haven\'t found a perfect match yet',
     'funil.conclusao_vazia_texto' => 'New jobs come in every day. Create your free account and we\'ll let you know as soon as one matches your profile.',

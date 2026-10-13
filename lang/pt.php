@@ -256,6 +256,7 @@ return [
     'funil.conclusao_local' => 'Para quem está em :local, na sua região e remotas.',
     'funil.conclusao_local_remotas' => 'Todas remotas: você trabalha de :local.',
     'funil.remota_de' => 'Remota · trabalhe de :local',
+    'funil.conclusao_texto_logado' => 'Escolha as vagas no painel. A gente envia cada candidatura por você, e você só acompanha o resultado.',
     'funil.conclusao_texto' => 'Crie sua conta grátis e escolha as vagas. A gente envia cada candidatura por você, e você só acompanha o resultado no painel.',
     'funil.conclusao_vazia_titulo' => 'Ainda não encontramos uma vaga 100% compatível',
     'funil.conclusao_vazia_texto' => 'Novas vagas entram todos os dias. Crie sua conta grátis e avisamos assim que aparecer uma para o seu perfil.',

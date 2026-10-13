@@ -130,7 +130,7 @@ $textoBotao = $usuario
         <?= e(t($todasRemotas ? 'funil.conclusao_local_remotas' : 'funil.conclusao_local', ['local' => $lugar])) ?>
         <?php if ($panorama['salarioMaximo']): ?><?= e(t('funil.conclusao_salario', ['valor' => moeda($panorama['salarioMaximo'], $panorama['moeda'], 0)])) ?><?php endif; ?>
         <?php if ($restantes > 0): ?><?= e($plural($restantes, 'funil.mais_vagas')) ?>.<?php endif; ?>
-        <?= e(t('funil.conclusao_texto')) ?>
+        <?= e(t($usuario ? 'funil.conclusao_texto_logado' : 'funil.conclusao_texto')) ?>
       </p>
     <?php else: ?>
       <h2><?= e(t('funil.conclusao_vazia_titulo')) ?></h2>
@@ -139,7 +139,7 @@ $textoBotao = $usuario
 
     <a class="botao botao-primario botao-grande botao-bloco" href="<?= e($destino) ?>"><?= icone('raio', 'icone icone-sm') ?> <?= e($textoBotao) ?> <?= icone('seta', 'icone icone-seta') ?></a>
     <ul class="busca-garantias">
-      <li><?= icone('check', 'icone icone-sm') ?> <?= e(t('funil.garantia_gratis')) ?></li>
+      <li><?= icone('check', 'icone icone-sm') ?> <?= e(t($usuario ? 'landing.final_garantia_fidelidade' : 'funil.garantia_gratis')) ?></li>
       <li><?= icone('check', 'icone icone-sm') ?> <?= e(t('funil.garantia_candidaturas')) ?></li>
       <li><?= icone('check', 'icone icone-sm') ?> <?= e(t('landing.confianca_2')) ?></li>
     </ul>
