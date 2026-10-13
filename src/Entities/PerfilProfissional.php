@@ -34,6 +34,11 @@ final class PerfilProfissional
         public readonly array $idiomas = [],
         public readonly ?int $ultimaRemuneracao = null,
         public readonly ?NivelIngles $nivelIngles = null,
+        /** @var array<int, array{cargo: string, empresa: string, inicio: ?string, fim: ?string, atual: bool, descricao: ?string}> */
+        public readonly array $experiencias = [],
+        /** @var array<int, array{curso: string, instituicao: string, ano: ?string}> */
+        public readonly array $formacao = [],
+        public readonly ?string $importadoEm = null,
     ) {
     }
 
@@ -60,7 +65,33 @@ final class PerfilProfissional
             idiomas: json_decode($linha['idiomas'] ?? '[]', true) ?: [],
             ultimaRemuneracao: isset($linha['ultima_remuneracao']) ? (int) $linha['ultima_remuneracao'] : null,
             nivelIngles: isset($linha['nivel_ingles']) ? NivelIngles::tryFrom($linha['nivel_ingles']) : null,
+            experiencias: json_decode($linha['experiencias'] ?? '[]', true) ?: [],
+            formacao: json_decode($linha['formacao'] ?? '[]', true) ?: [],
+            importadoEm: $linha['importado_em'] ?? null,
         );
+    }
+
+    /** O perfil no formato dos campos do formulário de edição. @return array<string, mixed> */
+    public function comoFormulario(): array
+    {
+        return [
+            'area' => $this->area->value,
+            'senioridade' => $this->senioridade->value,
+            'cargo_desejado' => $this->cargoDesejado,
+            'anos_experiencia' => $this->anosExperiencia,
+            'stack' => implode(', ', $this->stack),
+            'modelo_trabalho' => $this->modeloTrabalho->value,
+            'cidade' => $this->cidade,
+            'pretensao_salarial' => $this->pretensaoSalarial,
+            'linkedin_url' => $this->linkedinUrl,
+            'github_url' => $this->githubUrl,
+            'portfolio_url' => $this->portfolioUrl,
+            'resumo' => $this->resumo,
+            'regiao_vagas' => $this->regiaoVagas->value,
+            'moeda_pretensao' => $this->moedaPretensao,
+            'idiomas' => $this->idiomas,
+            'nivel_ingles' => $this->nivelIngles?->value,
+        ];
     }
 
     public function possuiCurriculo(): bool
@@ -70,29 +101,32 @@ final class PerfilProfissional
 
     /**
      * Quanto o perfil está pronto para candidaturas, e o que falta para chegar a 100%.
-     * @return array{percentual: int, pendencias: string[]}
+     * "importavel": o importador de currículo preenche esse item sozinho.
+     * @return array{percentual: int, pendencias: array<int, array{rotulo: string, importavel: bool}>}
      */
     public function forca(): array
     {
         $itens = [
-            'Currículo em PDF' => [30, $this->possuiCurriculo()],
-            'Stack com 3 ou mais tecnologias' => [20, count($this->stack) >= 3],
-            'LinkedIn' => [15, $this->linkedinUrl !== null],
-            'GitHub ou portfólio' => [15, $this->githubUrl !== null || $this->portfolioUrl !== null],
-            'Resumo profissional' => [10, $this->resumo !== null],
-            'Pretensão salarial' => [10, $this->pretensaoSalarial !== null],
+            'Currículo em PDF' => [20, $this->possuiCurriculo(), true],
+            'Stack com 3 ou mais tecnologias' => [15, count($this->stack) >= 3, true],
+            'Experiências profissionais' => [15, $this->experiencias !== [], true],
+            'Resumo profissional' => [10, $this->resumo !== null, true],
+            'LinkedIn' => [10, $this->linkedinUrl !== null, true],
+            'GitHub ou portfólio' => [10, $this->githubUrl !== null || $this->portfolioUrl !== null, true],
+            'Pretensão salarial' => [10, $this->pretensaoSalarial !== null, false],
+            'Formação' => [5, $this->formacao !== [], true],
+            'Idiomas' => [5, $this->idiomas !== [], true],
         ];
 
         $percentual = 0;
         $pendencias = [];
-        foreach ($itens as $rotulo => [$peso, $feito]) {
+        foreach ($itens as $rotulo => [$peso, $feito, $importavel]) {
             if ($feito) {
                 $percentual += $peso;
             } else {
-                $pendencias[] = $rotulo;
+                $pendencias[] = ['rotulo' => $rotulo, 'importavel' => $importavel];
             }
         }
-
         return ['percentual' => $percentual, 'pendencias' => $pendencias];
     }
 }
