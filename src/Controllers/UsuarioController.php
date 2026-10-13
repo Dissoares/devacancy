@@ -164,24 +164,7 @@ final class UsuarioController
         $valores = ['telefone' => $usuario->telefone, ...Sessao::obter('sugestoes_perfil', [])];
 
         if ($perfil instanceof PerfilProfissional) {
-            return [
-                ...$valores,
-                'area' => $perfil->area->value,
-                'senioridade' => $perfil->senioridade->value,
-                'cargo_desejado' => $perfil->cargoDesejado,
-                'anos_experiencia' => $perfil->anosExperiencia,
-                'stack' => implode(', ', $perfil->stack),
-                'modelo_trabalho' => $perfil->modeloTrabalho->value,
-                'cidade' => $perfil->cidade,
-                'pretensao_salarial' => $perfil->pretensaoSalarial,
-                'linkedin_url' => $perfil->linkedinUrl,
-                'github_url' => $perfil->githubUrl,
-                'portfolio_url' => $perfil->portfolioUrl,
-                'resumo' => $perfil->resumo,
-                'regiao_vagas' => $perfil->regiaoVagas->value,
-                'moeda_pretensao' => $perfil->moedaPretensao,
-                'idiomas' => $perfil->idiomas,
-            ];
+            return [...$valores, ...$perfil->comoFormulario()];
         }
 
         if ($perfil instanceof PerfilEmpresa) {
