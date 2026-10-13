@@ -7,6 +7,7 @@ use App\Core\Conexao;
 use App\Interfaces\AssinaturaRepositoryInterface;
 use App\Interfaces\CandidaturaRepositoryInterface;
 use App\Interfaces\ComissaoRepositoryInterface;
+use App\Interfaces\ConfiguracaoRepositoryInterface;
 use App\Interfaces\MetodoPagamentoRepositoryInterface;
 use App\Interfaces\PagamentoRepositoryInterface;
 use App\Interfaces\PerfilEmpresaRepositoryInterface;
@@ -17,6 +18,7 @@ use App\Interfaces\VagaRepositoryInterface;
 use App\Repositories\AssinaturaRepository;
 use App\Repositories\CandidaturaRepository;
 use App\Repositories\ComissaoRepository;
+use App\Repositories\ConfiguracaoRepository;
 use App\Repositories\MetodoPagamentoRepository;
 use App\Repositories\PagamentoRepository;
 use App\Repositories\PerfilEmpresaRepository;
@@ -67,6 +69,14 @@ return [
         'url' => Ambiente::obter('EXPAY_URL', 'https://api.expay.com.br/v1'),
         'chave' => Ambiente::obter('EXPAY_API_KEY', ''),
         'token_webhook' => Ambiente::obter('EXPAY_WEBHOOK_TOKEN', ''),
+    ],
+
+    // Asaas: checkout com PIX e cartão para quem está no Brasil (configurado no painel admin).
+    'asaas' => [
+        'chave' => Ambiente::obter('ASAAS_API_KEY', ''),
+        'modo' => Ambiente::obter('ASAAS_MODO', 'producao'),
+        'token_webhook' => Ambiente::obter('ASAAS_WEBHOOK_TOKEN', ''),
+        'url' => Ambiente::obter('ASAAS_URL', ''),
     ],
 
     // PIX sem gateway: o "PIX copia e cola" estático da sua conta (do app do banco). O site refaz o código com o valor de cada plano.
@@ -155,5 +165,6 @@ return [
         ComissaoRepositoryInterface::class => ComissaoRepository::class,
         MetodoPagamentoRepositoryInterface::class => MetodoPagamentoRepository::class,
         RedefinicaoSenhaRepositoryInterface::class => RedefinicaoSenhaRepository::class,
+        ConfiguracaoRepositoryInterface::class => ConfiguracaoRepository::class,
     ],
 ];
