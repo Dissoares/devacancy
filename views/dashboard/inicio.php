@@ -25,7 +25,7 @@ $statusCandidaturas ??= [];
     <h1><?= e(t('painel.ola', ['nome' => $usuario->primeiroNome()])) ?></h1>
     <p><?= e(t($usuario->ehEmpresa() ? 'painel.texto_empresa' : ($assinaturaAte ? 'painel.texto_assinante' : 'painel.texto_profissional'))) ?></p>
   </div>
-  <a class="botao botao-secundario" href="/completar-perfil"><?= icone('ajustes', 'icone icone-sm') ?> <?= e(t('painel.editar_perfil')) ?></a>
+  <a class="botao botao-secundario" href="<?= $usuario->ehProfissional() ? '/perfil' : '/completar-perfil' ?>"><?= icone('usuario', 'icone icone-sm') ?> <?= e(t($usuario->ehProfissional() ? 'perfilpg.meu_perfil' : 'painel.editar_perfil')) ?></a>
 </section>
 
 <?php if ($usuario->ehProfissional()): ?>
@@ -89,14 +89,14 @@ $statusCandidaturas ??= [];
         <div class="forca-perfil-topo"><span><?= e(t('painel.forca')) ?></span><strong><?= $forca['percentual'] ?>%</strong></div>
         <div class="forca-perfil-barra"><span></span></div>
         <?php if ($forca['pendencias']): ?>
-          <small><?= e(t('painel.forca_pendencias')) ?> <a class="link" href="/completar-perfil"><?= e(t('painel.completar')) ?></a></small>
+          <small><?= e(t('painel.forca_pendencias')) ?> <a class="link" href="/perfil"><?= e(t('painel.completar')) ?></a></small>
         <?php endif; ?>
       </div>
       <dl class="lista-dados">
         <div><dt><?= e(t('painel.cargo')) ?></dt><dd><?= e($perfil->cargoDesejado) ?></dd></div>
         <div><dt><?= e(t('painel.nivel')) ?></dt><dd><?= e($perfil->senioridade->rotulo()) ?> · <?= e($perfil->area->rotulo()) ?></dd></div>
         <div><dt><?= e(t('painel.modelo')) ?></dt><dd><?= e($perfil->modeloTrabalho->rotulo()) ?><?= $perfil->cidade ? ' · ' . e($perfil->cidade) : '' ?></dd></div>
-        <div><dt><?= e(t('painel.curriculo')) ?></dt><dd><?= $perfil->possuiCurriculo() ? '<span class="selo selo-sucesso">' . e(t('painel.enviado')) . '</span>' : '<a class="link" href="/completar-perfil">' . e(t('painel.enviar_curriculo')) . '</a>' ?></dd></div>
+        <div><dt><?= e(t('painel.curriculo')) ?></dt><dd><?= $perfil->possuiCurriculo() ? '<span class="selo selo-sucesso">' . e(t('painel.enviado')) . '</span>' : '<a class="link" href="/perfil#importar">' . e(t('painel.enviar_curriculo')) . '</a>' ?></dd></div>
       </dl>
       <div class="lista-etiquetas">
         <?php foreach ($perfil->stack as $tecnologia): ?><span class="etiqueta"><?= e($tecnologia) ?></span><?php endforeach; ?>

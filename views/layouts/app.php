@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="<?= Idioma::html() ?>">
 <head>
-  <?= parcial('partials/head', ['titulo' => $titulo ?? null, 'estilos' => ['paginas/painel.css', 'paginas/assinatura.css']]) ?>
+  <?= parcial('partials/head', ['titulo' => $titulo ?? null, 'estilos' => ['paginas/painel.css', 'paginas/assinatura.css', 'paginas/perfil.css']]) ?>
   <?php if ($usuario->ehAdmin()): ?>
     <script src="<?= asset('js/componentes/formularios.js') ?>" defer></script>
     <script src="<?= asset('js/paginas/admin.js') ?>" defer></script>
@@ -16,6 +16,13 @@
   <header class="barra-app">
     <div class="container-app barra-app-interno">
       <?= parcial('partials/marca') ?>
+
+      <?php if ($usuario->ehProfissional()): ?>
+        <nav class="barra-app-navegacao" aria-label="Principal">
+          <a class="<?= ativo('/painel') ?>" href="/painel"><?= icone('maleta', 'icone icone-sm') ?> <?= e(t('nav.vagas')) ?></a>
+          <a class="<?= ativo('/perfil') ?>" href="/perfil"><?= icone('usuario', 'icone icone-sm') ?> <?= e(t('perfilpg.meu_perfil')) ?></a>
+        </nav>
+      <?php endif; ?>
 
       <?php if ($usuario->ehAdmin()): ?>
         <a class="botao botao-secundario botao-pequeno" href="/admin"><?= icone('ajustes', 'icone icone-sm') ?> Painel admin</a>
