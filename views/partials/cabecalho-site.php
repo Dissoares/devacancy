@@ -13,7 +13,7 @@
         <?php if ($logado): ?>
           <a class="botao botao-primario botao-bloco" href="<?= $logado['tipo'] === 'admin' ? '/admin' : '/painel' ?>"><?= e(t('nav.meu_painel')) ?></a>
         <?php else: ?>
-          <a class="botao botao-secundario botao-bloco" href="/entrar"><?= e(t('auth.entrar')) ?></a>
+          <a class="botao botao-secundario botao-bloco" href="/entrar"><?= icone("usuario", "icone icone-sm") ?> <?= e(t("auth.entrar")) ?></a>
           <a class="botao botao-primario botao-bloco" href="/comecar"><?= e(t('landing.cta_curto')) ?></a>
         <?php endif; ?>
       </div>
@@ -24,7 +24,7 @@
       <?php if ($logado): ?>
         <a class="botao botao-primario botao-pequeno" href="<?= $logado['tipo'] === 'admin' ? '/admin' : '/painel' ?>"><?= e(t('nav.meu_painel')) ?> <?= icone('seta', 'icone icone-seta') ?></a>
       <?php else: ?>
-        <a class="botao botao-fantasma botao-pequeno" href="/entrar"><?= e(t('auth.entrar')) ?></a>
+        <a class="botao botao-fantasma botao-pequeno" href="/entrar"><?= icone("usuario", "icone icone-sm") ?> <?= e(t("auth.entrar")) ?></a>
         <a class="botao botao-primario botao-pequeno" href="/comecar"><?= e(t('landing.cta_curto')) ?> <?= icone('seta', 'icone icone-seta') ?></a>
       <?php endif; ?>
     </div>
