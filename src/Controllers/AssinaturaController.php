@@ -146,7 +146,7 @@ final class AssinaturaController
             'titulo' => t('pagamento.titulo_pagina'),
             'usuario' => $usuario,
             'pagamento' => $pagamento,
-            'simulacao' => $this->assinaturas->simulacaoPix(),
+            'simulacao' => $pagamento->metodo === 'pix' && $this->assinaturas->simulacaoPix(),
             'pixManual' => $pagamento->metodo === 'pix_manual' && $pagamento->estaPendente(),
             'paypalEmail' => $pagamento->metodo === 'paypal_email' && $pagamento->estaPendente()
                 ? $this->assinaturas->formularioPaypalEmail($pagamento)
@@ -307,7 +307,7 @@ final class AssinaturaController
 
         return Resposta::html(Visao::parcial('assinatura/partials/status-pagamento', [
             'pagamento' => $pagamento,
-            'simulacao' => $this->assinaturas->simulacaoPix(),
+            'simulacao' => $pagamento->metodo === 'pix' && $this->assinaturas->simulacaoPix(),
         ]));
     }
 
