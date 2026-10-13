@@ -62,6 +62,17 @@ final class PagamentoRepository implements PagamentoRepositoryInterface
         )->execute([$gatewayId, $copiaCola, $qrBase64, $expiraEm, $id]);
     }
 
+    public function recentes(int $limite): array
+    {
+        $consulta = $this->pdo->prepare(
+            'SELECT p.id, p.plano, p.valor, p.moeda, p.metodo, p.status, p.criado_em, p.pago_em, u.nome, u.email
+               FROM pagamentos p JOIN usuarios u ON u.id = p.usuario_id
+              ORDER BY p.criado_em DESC LIMIT ' . max(1, $limite)
+        );
+        $consulta->execute();
+        return $consulta->fetchAll();
+    }
+
     public function listarPendentesDoMetodo(string $metodo): array
     {
         $consulta = $this->pdo->prepare(

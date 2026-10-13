@@ -22,6 +22,9 @@ interface PagamentoRepositoryInterface
 
     public function registrarCobranca(int $id, string $gatewayId, ?string $copiaCola, ?string $qrBase64, ?string $expiraEm): void;
 
+    /** Últimos pagamentos de qualquer forma, com o usuário. @return array<int, array> */
+    public function recentes(int $limite): array;
+
     /** Pagamentos ainda pendentes de um método, com o usuário, para a confirmação manual do admin. @return array<int, array> */
     public function listarPendentesDoMetodo(string $metodo): array;
 

@@ -25,16 +25,6 @@ use RuntimeException;
  */
 final class AssinaturaService
 {
-    /** Catálogo fixo (nome, região, moedas) de cada forma de pagamento, pra tela admin. O "ativo" vem do banco. */
-    private const CATALOGO = [
-        'asaas' => ['nome' => 'Asaas (PIX e cartão)', 'regiao' => 'Brasil', 'moedas' => ['BRL']],
-        'pix' => ['nome' => 'PIX (ExPay)', 'regiao' => 'Brasil', 'moedas' => ['BRL']],
-        'stripe' => ['nome' => 'Stripe (cartão, assinatura)', 'regiao' => 'Brasil e internacional', 'moedas' => ['BRL', 'USD']],
-        'paypal' => ['nome' => 'PayPal (assinatura, conta Business)', 'regiao' => 'Brasil e internacional', 'moedas' => ['BRL', 'USD']],
-        'pix_manual' => ['nome' => 'PIX manual (copia e cola, confirmado pelo admin)', 'regiao' => 'Brasil', 'moedas' => ['BRL']],
-        'paypal_email' => ['nome' => 'PayPal (só e-mail, pagamento avulso)', 'regiao' => 'Brasil e internacional', 'moedas' => ['BRL', 'USD']],
-    ];
-
     public function __construct(
         private readonly AssinaturaRepositoryInterface $assinaturas,
         private readonly PagamentoRepositoryInterface $pagamentos,
@@ -88,34 +78,6 @@ final class AssinaturaService
             $metodos[] = 'paypal_email';
         }
         return $metodos;
-    }
-
-    /** Pra tela admin: cada forma de pagamento com nome, região, moedas, se tem chave no .env e se está ligada. */
-    public function catalogoDeMetodos(): array
-    {
-        $ativos = $this->metodosPagamento->ativos();
-        $configurado = [
-            'asaas' => $this->asaas->configurado(),
-            'pix' => $this->expay->configurado(),
-            'pix_manual' => $this->pixManual->configurado(),
-            'stripe' => $this->stripe->configurado(),
-            'paypal' => $this->paypal->configurado(),
-            'paypal_email' => $this->paypal->pagamentoPorEmailConfigurado(),
-        ];
-
-        $catalogo = [];
-        foreach (self::CATALOGO as $chave => $info) {
-            $catalogo[] = [...$info, 'chave' => $chave, 'ativo' => $ativos[$chave] ?? true, 'configurado' => $configurado[$chave]];
-        }
-
-        return $catalogo;
-    }
-
-    public function alternarMetodo(string $chave): void
-    {
-        if (isset(self::CATALOGO[$chave])) {
-            $this->metodosPagamento->alternar($chave);
-        }
     }
 
     public function vigenteAte(Usuario $usuario): ?string
@@ -693,6 +655,12 @@ final class AssinaturaService
                 . e(url('/admin/pagamentos')) . '">Admin → Pagamentos</a> para liberar o plano.</p>',
         );
         return true;
+    }
+
+    /** @return array<int, array> últimos pagamentos de qualquer forma, para o admin acompanhar */
+    public function ultimosPagamentos(int $limite = 30): array
+    {
+        return $this->pagamentos->recentes($limite);
     }
 
     /** @return array<int, array> pagamentos manuais (PIX e PayPal por e-mail) ainda sem confirmação */
