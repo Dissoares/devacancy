@@ -1,0 +1,260 @@
+/* Listagens públicas de vagas (/vagas, /vagas/react...) */
+.vagas-lista {
+  padding: 104px 0 88px;
+}
+
+.vagas-lista-interno {
+  max-width: 1080px;
+}
+
+.vagas-migalhas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  color: var(--texto-suave);
+  font-size: .86rem;
+}
+
+.vagas-migalhas a {
+  color: var(--texto-2);
+}
+
+.vagas-migalhas a:hover {
+  color: var(--primaria);
+  text-decoration: underline;
+}
+
+.vagas-migalhas strong {
+  color: var(--texto);
+  font-weight: 600;
+}
+
+.vagas-lista-topo h1 {
+  font-size: clamp(1.8rem, 4.4vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -.03em;
+}
+
+.vagas-lista-contagem {
+  display: inline-flex;
+  margin-top: 12px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: var(--sucesso-suave);
+  color: var(--sucesso);
+  font-size: .86rem;
+  font-weight: 700;
+}
+
+.vagas-lista-intro {
+  max-width: 720px;
+  margin-top: 14px;
+  color: var(--texto-2);
+  font-size: 1.04rem;
+  line-height: 1.65;
+}
+
+.vagas-lista-corpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  align-items: start;
+  gap: 32px;
+  margin-top: 32px;
+}
+
+.vagas-lista-itens {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+}
+
+.vagas-lista-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-lg);
+  background: var(--superficie);
+  box-shadow: var(--sombra);
+  transition: border-color var(--transicao), transform var(--transicao);
+}
+
+.vagas-lista-item:hover {
+  border-color: rgba(37, 99, 235, .45);
+  transform: translateY(-1px);
+}
+
+.vagas-lista-icones {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.vagas-lista-texto {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 2px;
+}
+
+.vagas-lista-texto strong {
+  font-size: 1.02rem;
+  line-height: 1.3;
+}
+
+.vagas-lista-texto small {
+  color: var(--texto-suave);
+  font-size: .84rem;
+}
+
+.vagas-lista-stack {
+  font-family: var(--fonte-mono);
+  font-size: .76rem !important;
+}
+
+.vagas-lista-tempo {
+  flex-shrink: 0;
+  color: var(--texto-suave);
+  font-size: .8rem;
+}
+
+.vagas-paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+  color: var(--texto-suave);
+  font-size: .9rem;
+}
+
+.vagas-paginacao a {
+  padding: 8px 14px;
+  border: 1px solid var(--borda-forte);
+  border-radius: var(--raio);
+  color: var(--primaria-forte);
+  font-weight: 600;
+}
+
+.vagas-lista-vazio {
+  padding: 28px;
+  border: 1px dashed var(--borda-forte);
+  border-radius: var(--raio-lg);
+  color: var(--texto-2);
+}
+
+.vagas-lista-cta {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  margin-top: 28px;
+  padding: 24px;
+  border-radius: var(--raio-xl);
+  background: linear-gradient(160deg, #0c1d4d, #12266b);
+  color: #fff;
+}
+
+.vagas-lista-cta h2 {
+  font-size: 1.3rem;
+  letter-spacing: -.02em;
+}
+
+.vagas-lista-cta p {
+  max-width: 560px;
+  color: rgba(255, 255, 255, .8);
+}
+
+.vagas-lista-filtros {
+  position: sticky;
+  top: 88px;
+  display: grid;
+  gap: 4px;
+  padding: 18px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-lg);
+  background: var(--superficie);
+}
+
+.vagas-lista-filtros h3 {
+  margin: 12px 0 4px;
+  color: var(--texto-suave);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.vagas-lista-filtros ul {
+  display: grid;
+  gap: 2px;
+  list-style: none;
+}
+
+.vagas-lista-filtros a {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border-radius: 8px;
+  color: var(--texto-2);
+  font-size: .92rem;
+}
+
+.vagas-lista-filtros a:hover,
+.vagas-lista-filtros a[aria-current] {
+  background: var(--primaria-suave);
+  color: var(--primaria-forte);
+}
+
+.vagas-lista-filtros a span {
+  color: var(--texto-suave);
+  font-size: .8rem;
+}
+
+.vagas-lista-todas {
+  font-weight: 700;
+  color: var(--primaria-forte) !important;
+}
+
+@media (max-width: 900px) {
+  .vagas-lista {
+    padding-top: 88px;
+  }
+
+  .vagas-lista-corpo {
+    grid-template-columns: 1fr;
+  }
+
+  .vagas-lista-filtros {
+    position: static;
+    order: -1;
+  }
+
+  /* No celular as categorias viram uma faixa que rola de lado, em vez de uma coluna enorme. */
+  .vagas-lista-filtros ul {
+    display: flex;
+    gap: 6px;
+    padding-bottom: 4px;
+    overflow-x: auto;
+  }
+
+  .vagas-lista-filtros li {
+    flex-shrink: 0;
+  }
+
+  .vagas-lista-filtros li a {
+    gap: 6px;
+    border: 1px solid var(--borda);
+  }
+
+  .vagas-lista-tempo {
+    display: none;
+  }
+
+  .vagas-lista-icones {
+    display: none;
+  }
+}
