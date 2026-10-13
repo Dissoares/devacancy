@@ -54,7 +54,7 @@ final class AssinaturaService
         return $noBrasil ? 'BRL' : 'USD';
     }
 
-    /** Meios de pagamento oferecidos: PIX só para quem está no Brasil, e só os ligados pelo admin. @return string[] */
+    /** Meios de pagamento oferecidos: os em reais (PIX, Asaas) só para quem paga em reais, e só os ligados pelo admin. @return string[] */
     public function metodosPara(bool $noBrasil): array
     {
         $ativos = $this->metodosPagamento->ativos();
@@ -561,13 +561,13 @@ final class AssinaturaService
      * Cria o pagamento e a página de checkout da Asaas; devolve o endereço para onde mandar o cliente.
      * @throws ValidacaoException
      */
-    public function iniciarCheckoutAsaas(Usuario $usuario, array $dados): string
+    public function iniciarCheckoutAsaas(Usuario $usuario, array $dados, bool $emReais): string
     {
         $plano = $this->planos()[$dados['plano'] ?? ''] ?? null;
         if ($plano === null) {
             throw new ValidacaoException(['plano' => t('pagamento.escolha_plano')]);
         }
-        if (!in_array('asaas', $this->metodosPara(true), true)) {
+        if (!in_array('asaas', $this->metodosPara($emReais), true)) {
             throw new ValidacaoException(['geral' => t('pagamento.indisponivel')]);
         }
 
@@ -630,13 +630,13 @@ final class AssinaturaService
      * Gera o pagamento e o código PIX copia e cola com o valor do plano. Sem CPF: quem confirma é o admin.
      * @throws ValidacaoException
      */
-    public function iniciarPixManual(Usuario $usuario, array $dados): Pagamento
+    public function iniciarPixManual(Usuario $usuario, array $dados, bool $emReais): Pagamento
     {
         $plano = $this->planos()[$dados['plano'] ?? ''] ?? null;
         if ($plano === null) {
             throw new ValidacaoException(['plano' => t('pagamento.escolha_plano')]);
         }
-        if (!in_array('pix_manual', $this->metodosPara(true), true)) {
+        if (!in_array('pix_manual', $this->metodosPara($emReais), true)) {
             throw new ValidacaoException(['geral' => t('pagamento.indisponivel')]);
         }
 

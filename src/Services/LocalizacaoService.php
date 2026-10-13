@@ -53,6 +53,16 @@ final class LocalizacaoService
         return $this->detectar($requisicao)['pais'] ?? (Idioma::atual() === 'pt' ? 'BR' : 'US');
     }
 
+    /**
+     * Se a pessoa paga em reais: está no Brasil E usa o site em português. Só nesse caso aparecem os preços em R$ e as
+     * formas que só aceitam real (PIX manual, PIX automático e Asaas). Quem usa o site em inglês vê dólar, com Stripe e PayPal.
+     * As vagas mostradas continuam seguindo só o país (noBrasil).
+     */
+    public function pagaEmReais(Requisicao $requisicao): bool
+    {
+        return $this->noBrasil($requisicao) && Idioma::atual() === 'pt';
+    }
+
     public function noBrasil(Requisicao $requisicao): bool
     {
         return $this->pais($requisicao) === 'BR';

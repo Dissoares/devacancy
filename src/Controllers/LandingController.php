@@ -40,7 +40,7 @@ final class LandingController
             'vagasNovas' => $this->vagas->contarNovas($noBrasil),
             'vagasRecentes' => $this->vagas->recentes($noBrasil, 8),
             'planos' => configuracao('planos'),
-            'moeda' => $noBrasil ? 'BRL' : 'USD',
+            'moeda' => $this->localizacao->pagaEmReais($requisicao) ? 'BRL' : 'USD',
         ], 'site'));
     }
 

@@ -60,7 +60,7 @@ final class AssinaturaController
         $dados = $requisicao->todos();
 
         try {
-            $pagamento = $this->assinaturas->iniciarPagamento($usuario, $dados, $this->localizacao->noBrasil($requisicao));
+            $pagamento = $this->assinaturas->iniciarPagamento($usuario, $dados, $this->localizacao->pagaEmReais($requisicao));
         } catch (ValidacaoException $erro) {
             return Resposta::html(Visao::parcial('assinatura/partials/formulario-pix', [
                 ...$this->dadosDoCheckout($requisicao, $usuario),
@@ -76,7 +76,7 @@ final class AssinaturaController
     public function assinarAsaas(Requisicao $requisicao): Resposta
     {
         try {
-            $destino = $this->assinaturas->iniciarCheckoutAsaas($this->autenticacao->usuarioAtual(), $requisicao->todos());
+            $destino = $this->assinaturas->iniciarCheckoutAsaas($this->autenticacao->usuarioAtual(), $requisicao->todos(), $this->localizacao->pagaEmReais($requisicao));
         } catch (ValidacaoException $erro) {
             return Resposta::html(Visao::parcial('assinatura/partials/formulario-asaas', ['erros' => $erro->erros()]));
         }
@@ -101,7 +101,7 @@ final class AssinaturaController
         $usuario = $this->autenticacao->usuarioAtual();
 
         try {
-            $pagamento = $this->assinaturas->iniciarPixManual($usuario, $requisicao->todos());
+            $pagamento = $this->assinaturas->iniciarPixManual($usuario, $requisicao->todos(), $this->localizacao->pagaEmReais($requisicao));
         } catch (ValidacaoException $erro) {
             return Resposta::html(Visao::parcial('assinatura/partials/formulario-pix-manual', ['erros' => $erro->erros()]));
         }
@@ -125,7 +125,7 @@ final class AssinaturaController
         $dados = $requisicao->todos();
 
         try {
-            $pagamento = $this->assinaturas->iniciarPagamentoPaypalEmail($usuario, $dados, $this->localizacao->noBrasil($requisicao));
+            $pagamento = $this->assinaturas->iniciarPagamentoPaypalEmail($usuario, $dados, $this->localizacao->pagaEmReais($requisicao));
         } catch (ValidacaoException $erro) {
             return Resposta::html(Visao::parcial('assinatura/partials/formulario-paypal-email', [
                 'erros' => $erro->erros(),
@@ -216,7 +216,7 @@ final class AssinaturaController
     public function simularPaypal(Requisicao $requisicao): Resposta
     {
         $usuario = $this->autenticacao->usuarioAtual();
-        $moeda = $this->assinaturas->moedaPara($this->localizacao->noBrasil($requisicao));
+        $moeda = $this->assinaturas->moedaPara($this->localizacao->pagaEmReais($requisicao));
         $this->assinaturas->simularPaypal($usuario, (string) $requisicao->entrada('plano', ''), $moeda);
 
         Sessao::flash('sucesso', t('pagamento.confirmado'));
@@ -230,7 +230,7 @@ final class AssinaturaController
 
         try {
             $destino = $this->assinaturas->iniciarCheckoutStripe(
-                $usuario, $requisicao->todos(), $this->localizacao->noBrasil($requisicao), Idioma::atual(),
+                $usuario, $requisicao->todos(), $this->localizacao->pagaEmReais($requisicao), Idioma::atual(),
             );
         } catch (ValidacaoException $erro) {
             return Resposta::html(Visao::parcial('assinatura/partials/formulario-stripe', [
@@ -255,7 +255,7 @@ final class AssinaturaController
     public function simularStripe(Requisicao $requisicao): Resposta
     {
         $usuario = $this->autenticacao->usuarioAtual();
-        $moeda = $this->assinaturas->moedaPara($this->localizacao->noBrasil($requisicao));
+        $moeda = $this->assinaturas->moedaPara($this->localizacao->pagaEmReais($requisicao));
         $this->assinaturas->simularStripe($usuario, (string) $requisicao->entrada('plano', ''), $moeda);
 
         Sessao::flash('sucesso', t('pagamento.confirmado'));
@@ -313,8 +313,8 @@ final class AssinaturaController
 
     private function dadosDoCheckout(Requisicao $requisicao, Usuario $usuario): array
     {
-        $noBrasil = $this->localizacao->noBrasil($requisicao);
-        $moeda = $this->assinaturas->moedaPara($noBrasil);
+        $emReais = $this->localizacao->pagaEmReais($requisicao);
+        $moeda = $this->assinaturas->moedaPara($emReais);
         $perfil = $this->usuarios->perfilDe($usuario);
         $reservadas = count(array_filter(
             $this->candidaturas->statusPorVaga($usuario),
@@ -330,7 +330,7 @@ final class AssinaturaController
             'usuario' => $usuario,
             'planos' => $this->assinaturas->planos(),
             'moeda' => $moeda,
-            'metodos' => $this->assinaturas->metodosPara($noBrasil),
+            'metodos' => $this->assinaturas->metodosPara($emReais),
             'totalCompativeis' => $perfil instanceof PerfilProfissional ? count($this->vagas->compativeis($perfil)) : 0,
             'reservadas' => $reservadas,
             'vigenteAte' => $this->assinaturas->vigenteAte($usuario),

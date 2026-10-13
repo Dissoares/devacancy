@@ -225,7 +225,7 @@ final class FunilController
             'valores' => $valores,
             'erros' => $erros,
             'noBrasil' => $noBrasil,
-            'moeda' => $noBrasil ? 'BRL' : 'USD',
+            'moeda' => $this->localizacao->pagaEmReais($requisicao) ? 'BRL' : 'USD',
             'radar' => $this->dadosDoRadar($valores, $noBrasil, $this->localizacao->descricao($requisicao)),
             'passoInicial' => $passoInicial,
         ], 'funil'), $erros ? 422 : 200);
