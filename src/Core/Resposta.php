@@ -99,6 +99,10 @@ final class Resposta
             header("{$nome}: {$valor}");
         }
 
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'HEAD') {
+            return;
+        }
+
         if ($this->arquivo !== null) {
             readfile($this->arquivo);
             return;

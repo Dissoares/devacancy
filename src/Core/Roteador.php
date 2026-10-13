@@ -28,8 +28,10 @@ final class Roteador
 
     public function despachar(Requisicao $requisicao): Resposta
     {
+        // HEAD (usado por alguns robôs de pré-visualização) responde como GET, sem o corpo.
+        $metodo = $requisicao->metodo() === 'HEAD' ? 'GET' : $requisicao->metodo();
         foreach ($this->rotas as $rota) {
-            if ($rota['metodo'] !== $requisicao->metodo()) {
+            if ($rota['metodo'] !== $metodo) {
                 continue;
             }
             if (!preg_match($rota['regex'], $requisicao->caminho(), $correspondencias)) {
