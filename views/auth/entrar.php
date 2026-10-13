@@ -16,8 +16,6 @@
 
   <?= parcial('partials/botoes-sociais', ['origem' => 'entrar', 'tipo' => 'profissional']) ?>
 
-  <div class="divisor"><?= e(t('auth.ou_email')) ?></div>
-
   <?= parcial('auth/formulario-entrar', ['erro' => null, 'email' => $email]) ?>
 
   <p class="auth-rodape"><?= e(t('auth.sem_conta')) ?> <a href="/comecar"><?= e(t('landing.cta_curto')) ?></a></p>

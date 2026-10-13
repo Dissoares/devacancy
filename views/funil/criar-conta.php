@@ -24,8 +24,6 @@
 
   <?= parcial('partials/botoes-sociais', ['origem' => 'funil', 'tipo' => 'profissional']) ?>
 
-  <div class="divisor"><?= e(t('auth.ou_email')) ?></div>
-
   <?= parcial('funil/formulario-conta', ['valores' => $valores, 'erros' => $erros]) ?>
 
   <p class="auth-rodape"><?= e(t('auth.ja_tem_conta')) ?> <a href="/entrar"><?= e(t('auth.entrar')) ?></a></p>

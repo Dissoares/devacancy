@@ -8,8 +8,6 @@
 
   <?= parcial('partials/botoes-sociais', ['origem' => 'cadastro', 'tipo' => 'empresa']) ?>
 
-  <div class="divisor"><?= e(t('auth.ou_email')) ?></div>
-
   <div class="<?= classe_campo($erros, 'nome') ?>">
     <label class="campo-rotulo" for="nome"><?= e(t('cadastro.nome_responsavel')) ?></label>
     <input class="entrada" id="nome" name="nome" type="text" autocomplete="name" maxlength="120"
