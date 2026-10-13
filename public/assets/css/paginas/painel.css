@@ -849,3 +849,84 @@
   font-size: .82rem;
   text-align: center;
 }
+
+/* Paginação da lista de vagas do painel (9 por página). */
+.paginacao-vagas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 14px;
+  margin-top: 26px;
+}
+
+.paginacao-numeros {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.paginacao-numeros a,
+.paginacao-seta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--borda-forte);
+  border-radius: var(--raio);
+  background: var(--superficie);
+  color: var(--texto-2);
+  font-size: .92rem;
+  font-weight: 650;
+  transition: border-color var(--transicao), background var(--transicao), color var(--transicao);
+}
+
+.paginacao-numeros a {
+  padding: 0;
+}
+
+.paginacao-numeros a:hover,
+a.paginacao-seta:hover {
+  border-color: var(--primaria);
+  background: var(--primaria-suave);
+  color: var(--primaria-forte);
+}
+
+.paginacao-numeros a.ativa {
+  border-color: var(--primaria-forte);
+  background: var(--primaria-forte);
+  color: #fff;
+}
+
+.paginacao-seta.desativada {
+  opacity: .4;
+}
+
+.paginacao-reticencias {
+  color: var(--texto-suave);
+}
+
+.paginacao-resumo {
+  margin-top: 10px;
+  font-size: .84rem;
+  text-align: center;
+}
+
+@media (max-width: 520px) {
+  .paginacao-vagas {
+    gap: 10px;
+  }
+
+  .paginacao-seta {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .paginacao-numeros {
+    order: -1;
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -163,6 +163,7 @@ final class UsuarioController
             'recentes' => $this->vagas->contarRecentes($compativeis),
             'assinaturaAte' => $usuario->ehProfissional() ? $this->assinaturas->vigenteAte($usuario) : null,
             'statusCandidaturas' => $usuario->ehProfissional() ? $this->candidaturas->statusPorVaga($usuario) : [],
+            'paginaVagas' => max(1, (int) $requisicao->consulta('pagina', 1)),
             'restantesHoje' => $usuario->ehProfissional() ? $this->candidaturas->restantesHoje($usuario) : 0,
             'limiteDiario' => $this->candidaturas->limiteDiario(),
             'linkIndicacao' => $codigoIndicacao ? $this->comissoes->linkDeIndicacao($codigoIndicacao) : null,

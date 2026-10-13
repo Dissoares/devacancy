@@ -88,6 +88,8 @@ return [
     'perfilpg.assinatura_sem' => 'Você ainda não tem uma assinatura ativa. Assine para a nossa equipe enviar as candidaturas por você.',
     'perfilpg.assinatura_assinar' => 'Ver planos',
     'perfilpg.assinatura_venceu' => 'Sua assinatura venceu. Renove para voltar a enviar candidaturas.',
+    'painel.paginas_vagas' => 'Páginas de vagas',
+    'painel.vagas_mostrando' => 'Mostrando :de a :ate de :total vagas',
     'candidatura.adicionadas' => 'Pronto! Essas vagas estão com a nossa equipe. A gente envia as candidaturas e o status aparece aqui.',
     'plano.semanal' => 'Semanal',
     'plano.mensal' => 'Mensal',

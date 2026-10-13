@@ -88,6 +88,8 @@ return [
     'perfilpg.assinatura_sem' => 'You do not have an active subscription yet. Subscribe so our team sends the applications for you.',
     'perfilpg.assinatura_assinar' => 'See plans',
     'perfilpg.assinatura_venceu' => 'Your subscription has expired. Renew to start sending applications again.',
+    'painel.paginas_vagas' => 'Job pages',
+    'painel.vagas_mostrando' => 'Showing :de to :ate of :total jobs',
     'candidatura.adicionadas' => 'Done! These jobs are with our team. We send the applications and the status shows up here.',
     'plano.semanal' => 'Weekly',
     'plano.mensal' => 'Monthly',

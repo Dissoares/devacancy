@@ -37,6 +37,7 @@ $statusCandidaturas ??= [];
       'recentes' => $recentes,
       'assinaturaAte' => $assinaturaAte,
       'statusCandidaturas' => $statusCandidaturas,
+      'paginaVagas' => $paginaVagas ?? 1,
       'restantesHoje' => $restantesHoje ?? 0,
       'limiteDiario' => $limiteDiario ?? 2,
   ]) ?>
