@@ -7,12 +7,13 @@ RewriteRule ^(\.env|\.git|composer\.(json|lock)|vendor|src|views|config|routes|d
 RewriteCond %{REQUEST_URI} !^/public/
 RewriteRule ^(.*)$ public/$1 [L]
 
-# O bloco do cPanel abaixo só vale no servidor (onde o PHP não é módulo do Apache). No Laragon ele faria o Apache mostrar o código-fonte.
-<IfModule !php_module>
+# O bloco do cPanel abaixo só vale em servidor cPanel (a pasta /opt/cpanel só existe lá). Em computador local (Laragon, XAMPP...)
+# ele faria o Apache entregar o código PHP para download em vez de executá-lo.
+<IfFile "/opt/cpanel">
 # php -- BEGIN cPanel-generated handler, do not edit
 # Set the “ea-php85” package as the default “PHP” programming language.
 <IfModule mime_module>
   AddHandler application/x-httpd-ea-php85 .php .php8 .phtml
 </IfModule>
 # php -- END cPanel-generated handler, do not edit
-</IfModule>
+</IfFile>
