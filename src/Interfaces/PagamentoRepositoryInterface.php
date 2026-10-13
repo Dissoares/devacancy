@@ -33,4 +33,10 @@ interface PagamentoRepositoryInterface
 
     /** Sai de "pendente" para o novo status. Retorna false se outro processo já mudou o status. */
     public function concluir(int $id, StatusPagamento $status): bool;
+
+    /** Apaga um pagamento que não foi concluído (pendente, falho, expirado ou cancelado). Pagos e estornados ficam. */
+    public function excluirNaoConcluido(int $id): bool;
+
+    /** Limpeza em lote: expirados, falhos e cancelados, e pendentes com mais de 7 dias. Devolve quantos foram apagados. */
+    public function excluirNaoConcluidosAntigos(): int;
 }

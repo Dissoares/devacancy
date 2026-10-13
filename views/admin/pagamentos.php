@@ -1,6 +1,5 @@
 <?php
 /** @var array $pendentes @var array $ultimos @var ?string $sucesso @var ?string $pixProblema */
-$formas = ['pix_manual' => 'PIX manual', 'paypal_email' => 'PayPal (e-mail)', 'asaas' => 'Asaas', 'pix' => 'PIX (ExPay)', 'paypal' => 'PayPal', 'stripe' => 'Cartão (Stripe)'];
 $classes = ['pago' => 'selo-sucesso', 'pendente' => 'selo-alerta'];
 ?>
 <section class="cabecalho-pagina">
@@ -31,7 +30,7 @@ $classes = ['pago' => 'selo-sucesso', 'pendente' => 'selo-alerta'];
             <?php foreach ($pendentes as $pagamento): ?>
               <tr>
                 <td><strong class="texto-celula"><?= e($pagamento['nome']) ?></strong><small><?= e($pagamento['email']) ?></small></td>
-                <td><span class="selo selo-neutro"><?= e($formas[$pagamento['metodo']] ?? $pagamento['metodo']) ?></span></td>
+                <td><span class="selo selo-neutro"><?= e(forma_pagamento($pagamento['metodo'])) ?></span></td>
                 <td><?= e(t('plano.' . $pagamento['plano'])) ?></td>
                 <td><?= e(moeda((float) $pagamento['valor'], $pagamento['moeda'])) ?></td>
                 <td class="texto-suave"><?= data_br($pagamento['criado_em'], true) ?></td>
@@ -59,21 +58,36 @@ $classes = ['pago' => 'selo-sucesso', 'pendente' => 'selo-alerta'];
 
 <section class="admin-secao">
   <h2>Últimos pagamentos</h2>
+  <p class="texto-suave">Pagamentos pagos ficam registrados e não podem ser excluídos. Os não concluídos (pendentes, expirados, cancelados ou que falharam) podem ser apagados um a um ou de uma vez.</p>
+  <form method="post" action="/admin/pagamentos/limpar" class="acoes-cabecalho"
+        onsubmit="return confirm('Excluir todos os pagamentos expirados, cancelados ou que falharam, e os pendentes com mais de 7 dias? Pagamentos pagos não são tocados.')">
+    <?= csrf_campo() ?>
+    <button class="botao botao-secundario botao-pequeno" type="submit">Limpar não concluídos</button>
+  </form>
 
   <?php if ($ultimos): ?>
     <div class="cartao tabela-cartao">
       <div class="tabela-rolagem">
         <table class="tabela">
-          <thead><tr><th>Cliente</th><th>Forma</th><th>Plano</th><th>Valor</th><th>Situação</th><th>Data</th></tr></thead>
+          <thead><tr><th>Cliente</th><th>Forma</th><th>Plano</th><th>Valor</th><th>Situação</th><th>Data</th><th></th></tr></thead>
           <tbody>
             <?php foreach ($ultimos as $pagamento): ?>
               <tr>
                 <td><strong class="texto-celula"><?= e($pagamento['nome']) ?></strong><small><?= e($pagamento['email']) ?></small></td>
-                <td><span class="selo selo-neutro"><?= e($formas[$pagamento['metodo']] ?? $pagamento['metodo']) ?></span></td>
+                <td><span class="selo selo-neutro"><?= e(forma_pagamento($pagamento['metodo'])) ?></span></td>
                 <td><?= e(t('plano.' . $pagamento['plano'])) ?></td>
                 <td><?= e(moeda((float) $pagamento['valor'], $pagamento['moeda'])) ?></td>
                 <td><span class="selo <?= $classes[$pagamento['status']] ?? 'selo-neutro' ?>"><?= e(\App\Enums\StatusPagamento::from($pagamento['status'])->rotulo()) ?></span></td>
                 <td class="texto-suave"><?= data_br($pagamento['pago_em'] ?? $pagamento['criado_em'], true) ?></td>
+                <td>
+                  <?php if (in_array($pagamento['status'], ['pendente', 'falhou', 'expirado', 'cancelado'], true)): ?>
+                    <form method="post" action="/admin/pagamentos/<?= (int) $pagamento['id'] ?>/excluir"
+                          onsubmit="return confirm('Excluir este pagamento não concluído? Isso não pode ser desfeito.')">
+                      <?= csrf_campo() ?>
+                      <button class="botao botao-fantasma botao-pequeno" type="submit">Excluir</button>
+                    </form>
+                  <?php endif; ?>
+                </td>
               </tr>
             <?php endforeach; ?>
           </tbody>

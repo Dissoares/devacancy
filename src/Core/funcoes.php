@@ -211,6 +211,15 @@ function erro_campo(array $erros, string $campo): string
         : '';
 }
 
+/** Nome da forma de pagamento para o admin ("PIX manual", "Cartão (Stripe)"...). */
+function forma_pagamento(?string $metodo): string
+{
+    return match ($metodo) {
+        'pix_manual' => 'PIX manual', 'paypal_email' => 'PayPal (e-mail)', 'asaas' => 'Asaas (PIX ou cartão)',
+        'pix' => 'PIX (ExPay)', 'paypal' => 'PayPal', 'stripe' => 'Cartão (Stripe)', null, '' => '—', default => $metodo,
+    };
+}
+
 /** Endereço público e compartilhável de uma vaga (o final com o título só ajuda a leitura do link). */
 function url_vaga(\App\Entities\Vaga $vaga): string
 {

@@ -683,6 +683,19 @@ final class AssinaturaService
         $this->aplicarStatus($pagamento, StatusPagamento::Pago);
     }
 
+    /** @throws ValidacaoException pagamento já concluído (pago ou estornado) ou que não existe */
+    public function excluirPagamentoNaoConcluido(int $id): void
+    {
+        if (!$this->pagamentos->excluirNaoConcluido($id)) {
+            throw new ValidacaoException(['pagamento' => 'Só dá para excluir pagamentos não concluídos.']);
+        }
+    }
+
+    public function limparPagamentosNaoConcluidos(): int
+    {
+        return $this->pagamentos->excluirNaoConcluidosAntigos();
+    }
+
     public function pixManualProblema(): ?string
     {
         return $this->pixManual->problema();

@@ -92,11 +92,31 @@ $link = fn (?string $url, string $rotulo): string => $url
   </section>
 <?php endif; ?>
 
+<?php if (!empty($pagamentos)): ?>
+  <section class="gaveta-secao">
+    <h3>Pagamentos</h3>
+    <ul class="gaveta-lista">
+      <?php foreach ($pagamentos as $pg): ?>
+        <li>
+          <strong><?= e(forma_pagamento($pg['metodo'])) ?></strong>
+          · <?= e(t('plano.' . $pg['plano'])) ?> · <?= e(moeda((float) $pg['valor'], $pg['moeda'])) ?>
+          · <span class="selo <?= $pg['status'] === 'pago' ? 'selo-sucesso' : 'selo-neutro' ?>"><?= e(\App\Enums\StatusPagamento::from($pg['status'])->rotulo()) ?></span>
+          <small class="texto-suave"><?= data_br($pg['pago_em'] ?? $pg['criado_em'], true) ?></small>
+        </li>
+      <?php endforeach; ?>
+    </ul>
+  </section>
+<?php endif; ?>
+
+<?php if (empty($podeExcluir)): ?>
+  <p class="gaveta-nota texto-suave"><?= icone('cadeado', 'icone icone-sm') ?> Este cadastro tem pagamento ou assinatura ativa e por isso não pode ser excluído.</p>
+<?php else: ?>
 <form class="gaveta-perigo" method="post" action="/admin/usuarios/<?= $usuario->id ?>/excluir"
       onsubmit="return confirm('Excluir o cadastro de <?= e(addslashes($usuario->nome)) ?> e tudo o que depende dele (perfil, candidaturas, assinaturas)? Isso não pode ser desfeito.')">
   <?= csrf_campo() ?>
   <button class="botao botao-fantasma botao-pequeno" type="submit">Excluir cadastro</button>
 </form>
+<?php endif; ?>
 
 <footer class="gaveta-rodape">
   Cadastrado em <?= data_br($usuario->criadoEm, true) ?><?= $usuario->ultimoAcessoEm ? ' · Último acesso em ' . data_br($usuario->ultimoAcessoEm, true) : '' ?>

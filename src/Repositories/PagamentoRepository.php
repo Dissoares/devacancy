@@ -95,6 +95,21 @@ final class PagamentoRepository implements PagamentoRepositoryInterface
         return $consulta->fetchAll();
     }
 
+    public function excluirNaoConcluido(int $id): bool
+    {
+        $consulta = $this->pdo->prepare("DELETE FROM pagamentos WHERE id = ? AND status IN ('pendente', 'falhou', 'expirado', 'cancelado')");
+        $consulta->execute([$id]);
+        return $consulta->rowCount() === 1;
+    }
+
+    public function excluirNaoConcluidosAntigos(): int
+    {
+        return (int) $this->pdo->exec(
+            "DELETE FROM pagamentos WHERE status IN ('falhou', 'expirado', 'cancelado')
+                OR (status = 'pendente' AND criado_em < NOW() - INTERVAL 7 DAY)"
+        );
+    }
+
     public function concluir(int $id, StatusPagamento $status): bool
     {
         $consulta = $this->pdo->prepare(

@@ -141,6 +141,10 @@ final class UsuarioService
     {
         $usuario = $this->buscarPorId($id);
 
+        if (!$this->podeExcluir($usuario)) {
+            throw new ValidacaoException(['usuario' => 'Este cadastro tem pagamento ou assinatura ativa e não pode ser excluído.']);
+        }
+
         if ($usuario->id === $quemExclui) {
             throw new ValidacaoException(['usuario' => 'Você não pode excluir a própria conta enquanto está logado nela.']);
         }
@@ -153,6 +157,18 @@ final class UsuarioService
         if ($perfil instanceof PerfilProfissional) {
             $this->curriculos->remover($perfil->curriculoArquivo);
         }
+    }
+
+    /** @return array<int, array> últimos pagamentos da pessoa, para a gaveta do admin */
+    public function pagamentosDe(Usuario $usuario): array
+    {
+        return $this->usuarios->pagamentosDe($usuario->id);
+    }
+
+    /** Só cadastros sem pagamento e sem assinatura ativa podem ser apagados (o resto é histórico financeiro). */
+    public function podeExcluir(Usuario $usuario): bool
+    {
+        return !$this->usuarios->temPagamentoOuAssinatura($usuario->id);
     }
 
     public function perfilDe(Usuario $usuario): PerfilProfissional|PerfilEmpresa|null

@@ -32,6 +32,24 @@ final class AdminPagamentoController
         ], 'admin'));
     }
 
+    public function excluir(Requisicao $requisicao): Resposta
+    {
+        try {
+            $this->assinaturas->excluirPagamentoNaoConcluido((int) $requisicao->parametro('id'));
+            Sessao::flash('sucesso', 'Pagamento excluído.');
+        } catch (\App\Exceptions\ValidacaoException $erro) {
+            Sessao::flash('sucesso', $erro->erros()['pagamento'] ?? 'Não foi possível excluir.');
+        }
+        return Resposta::redirecionar('/admin/pagamentos');
+    }
+
+    public function limparNaoConcluidos(): Resposta
+    {
+        $n = $this->assinaturas->limparPagamentosNaoConcluidos();
+        Sessao::flash('sucesso', $n === 1 ? '1 pagamento não concluído foi excluído.' : "{$n} pagamentos não concluídos foram excluídos.");
+        return Resposta::redirecionar('/admin/pagamentos');
+    }
+
     /** O admin conferiu no app do banco ou do PayPal que o dinheiro chegou e libera o plano. */
     public function confirmar(Requisicao $requisicao): Resposta
     {

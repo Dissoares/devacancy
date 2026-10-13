@@ -58,6 +58,8 @@ final class AdminController
         return Resposta::html(Visao::parcial('admin/partials/detalhe', [
             'usuario' => $usuario,
             'perfil' => $this->usuarios->perfilDe($usuario),
+            'podeExcluir' => $this->usuarios->podeExcluir($usuario),
+            'pagamentos' => $this->usuarios->pagamentosDe($usuario),
         ]));
     }
 

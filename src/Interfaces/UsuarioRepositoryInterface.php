@@ -41,7 +41,13 @@ interface UsuarioRepositoryInterface
 
     public function excluir(int $usuarioId): void;
 
+    /** Já pagou alguma vez (pago ou estornado) ou tem assinatura valendo: o cadastro guarda histórico financeiro. */
+    public function temPagamentoOuAssinatura(int $usuarioId): bool;
+
     public function contarAdmins(): int;
+
+    /** Últimos pagamentos da pessoa, do mais recente ao mais antigo. */
+    public function pagamentosDe(int $usuarioId, int $limite = 5): array;
 
     /** @return Usuario[] */
     public function listarAdmins(): array;

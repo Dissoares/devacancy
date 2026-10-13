@@ -71,7 +71,7 @@ $fim = min($total, $filtro->deslocamento() + FiltroUsuariosDTO::POR_PAGINA);
               <td>
                 <?php if ($linha['plano_assinatura']): ?>
                   <span class="selo selo-sucesso selo-ponto"><?= e(t('plano.' . $linha['plano_assinatura'])) ?></span>
-                  <small class="texto-suave">até <?= data_br($linha['assinatura_expira_em']) ?></small>
+                  <small class="texto-suave">até <?= data_br($linha['assinatura_expira_em']) ?><?php if ($linha['metodo_pagamento']): ?> · <?= e(forma_pagamento($linha['metodo_pagamento'])) ?><?php endif; ?></small>
                 <?php else: ?>
                   <span class="selo selo-neutro">Não assinante</span>
                 <?php endif; ?>

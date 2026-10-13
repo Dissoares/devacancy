@@ -18,7 +18,8 @@ final class UsuarioRepository implements UsuarioRepositoryInterface
         pp.area, pp.senioridade, pp.cargo_desejado, pp.anos_experiencia, pp.stack, pp.modelo_trabalho, pp.cidade,
         pp.pretensao_salarial, pp.linkedin_url, pp.github_url, pp.portfolio_url, pp.curriculo_arquivo,
         pe.nome_empresa, pe.site, pe.tamanho, pe.cargo_contato, pe.stacks_contratacao, pe.vagas_abertas,
-        a.plano AS plano_assinatura, a.expira_em AS assinatura_expira_em';
+        a.plano AS plano_assinatura, a.expira_em AS assinatura_expira_em,
+        (SELECT pg.metodo FROM pagamentos pg WHERE pg.usuario_id = u.id AND pg.status = \'pago\' ORDER BY pg.pago_em DESC, pg.id DESC LIMIT 1) AS metodo_pagamento';
 
     private const JUNCAO_ASSINATURA = 'LEFT JOIN assinaturas a ON a.usuario_id = u.id AND a.expira_em > NOW()';
 
@@ -150,9 +151,28 @@ final class UsuarioRepository implements UsuarioRepositoryInterface
         $this->pdo->prepare("UPDATE usuarios SET tipo = 'admin', cadastro_completo = 1 WHERE id = ?")->execute([$usuarioId]);
     }
 
+    public function temPagamentoOuAssinatura(int $usuarioId): bool
+    {
+        $consulta = $this->pdo->prepare(
+            "SELECT EXISTS(SELECT 1 FROM pagamentos WHERE usuario_id = :a AND status IN ('pago', 'estornado'))
+                 OR EXISTS(SELECT 1 FROM assinaturas WHERE usuario_id = :b AND expira_em > NOW())"
+        );
+        $consulta->execute(['a' => $usuarioId, 'b' => $usuarioId]);
+        return (bool) $consulta->fetchColumn();
+    }
+
     public function excluir(int $usuarioId): void
     {
         $this->pdo->prepare('DELETE FROM usuarios WHERE id = ?')->execute([$usuarioId]);
+    }
+
+    public function pagamentosDe(int $usuarioId, int $limite = 5): array
+    {
+        $consulta = $this->pdo->prepare(
+            'SELECT plano, valor, moeda, metodo, status, criado_em, pago_em FROM pagamentos WHERE usuario_id = ? ORDER BY criado_em DESC, id DESC LIMIT ' . max(1, $limite)
+        );
+        $consulta->execute([$usuarioId]);
+        return $consulta->fetchAll();
     }
 
     public function contarAdmins(): int
