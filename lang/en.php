@@ -222,7 +222,7 @@ return [
     'funil.leva_1_minuto' => 'Takes less than a minute',
     'funil.quase_la' => 'Almost there!',
     'funil.radar_regiao_um_br' => ':n job open now in Brazil and abroad',
-    'funil.radar_regiao_varios_br' => ':n jobs open now in Brazil and abroad',
+    'funil.radar_regiao_varios_br' => ':n jobs open now: :br in Brazil and :ext abroad',
     'funil.radar_regiao_um_fora' => ':n international job open now',
     'funil.radar_regiao_varios_fora' => ':n international jobs open now',
     'funil.radar_area_um' => ':n :filtro job open now',

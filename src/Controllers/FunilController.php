@@ -181,7 +181,7 @@ final class FunilController
     /**
      * Número do radar e o que ele está contando: sem resposta nenhuma, todas as vagas abertas na região; com a área,
      * as vagas da área; com mais respostas, as que combinam com o resumo (área · nível · tecnologias).
-     * @return array{total: int, noBrasil: bool, resumo: string, filtrado: bool}
+     * @return array{total: int, noBrasil: bool, resumo: string, filtrado: bool, porArea: bool, brasil: int, exterior: int}
      */
     private function dadosDoRadar(array $valores, bool $noBrasil): array
     {
@@ -194,6 +194,7 @@ final class FunilController
             $partes[] = $nivel->rotulo();
         }
         $tecnologias = array_slice(\App\Core\ListaDeTags::normalizar((string) ($valores['stack'] ?? '')), 0, 2);
+        $porRegiao = $this->vagas->contarPorRegiao($noBrasil);
         $extras = $nivel !== null || $tecnologias !== [] || !empty($valores['modelos']) || !empty($valores['regiao_vagas']);
 
         return [
@@ -202,6 +203,8 @@ final class FunilController
             'resumo' => implode(' · ', [...$partes, ...$tecnologias]),
             'filtrado' => $extras,
             'porArea' => $area !== null,
+            'brasil' => $porRegiao['brasil'] ?? 0,
+            'exterior' => $porRegiao['internacional'] ?? 0,
         ];
     }
 

@@ -209,8 +209,8 @@ final class VagaService
         return array_sum($this->contarPorRegiao($noBrasil));
     }
 
-    /** @return array<string, int> */
-    private function contarPorRegiao(bool $noBrasil): array
+    /** @return array<string, int> vagas visíveis por região ('brasil', 'internacional'); quem está fora do Brasil só conta as internacionais */
+    public function contarPorRegiao(bool $noBrasil): array
     {
         $contagem = [];
         foreach ($this->vagas->listarAtivas(self::DIAS_VALIDADE) as $vaga) {

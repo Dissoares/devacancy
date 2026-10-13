@@ -222,7 +222,7 @@ return [
     'funil.leva_1_minuto' => 'Leva menos de 1 minuto',
     'funil.quase_la' => 'Quase lá!',
     'funil.radar_regiao_um_br' => ':n vaga aberta agora no Brasil e no exterior',
-    'funil.radar_regiao_varios_br' => ':n vagas abertas agora no Brasil e no exterior',
+    'funil.radar_regiao_varios_br' => ':n vagas abertas agora: :br no Brasil e :ext no exterior',
     'funil.radar_regiao_um_fora' => ':n vaga internacional aberta agora',
     'funil.radar_regiao_varios_fora' => ':n vagas internacionais abertas agora',
     'funil.radar_area_um' => ':n vaga de :filtro aberta agora',
