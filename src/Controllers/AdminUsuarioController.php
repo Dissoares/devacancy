@@ -65,6 +65,6 @@ final class AdminUsuarioController
             'erro' => $erro ?? Sessao::obterFlash('erro'),
             'sucesso' => $sucesso ?? Sessao::obterFlash('sucesso'),
             'email' => $email,
-        ], 'app'), $status);
+        ], 'admin'), $status);
     }
 }

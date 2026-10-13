@@ -36,7 +36,7 @@ final class AdminMigracaoController
             'usuario' => $this->autenticacao->usuarioAtual(),
             'estado' => $this->servico()->estado(),
             'resultado' => Sessao::retirar('resultado_migracoes'),
-        ], 'app'));
+        ], 'admin'));
     }
 
     public function executar(): Resposta

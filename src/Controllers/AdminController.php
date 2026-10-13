@@ -37,7 +37,7 @@ final class AdminController
             'resultado' => $this->usuarios->listar($filtro),
             'sucesso' => Sessao::obterFlash('sucesso'),
             'erro' => Sessao::obterFlash('erro'),
-        ], 'app'));
+        ], 'admin'));
     }
 
     /** Tabela atualizada pelo HTMX ao buscar, filtrar ou paginar. */

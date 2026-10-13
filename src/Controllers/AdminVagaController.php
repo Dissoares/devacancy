@@ -106,7 +106,7 @@ final class AdminVagaController
             'titulo' => 'Importar vagas — Devacancy',
             'usuario' => $this->autenticacao->usuarioAtual(),
             ...$dados,
-        ], 'app'));
+        ], 'admin'));
     }
 
     public function importarAdzuna(Requisicao $requisicao): Resposta
@@ -175,7 +175,7 @@ final class AdminVagaController
             'valores' => $valores,
             'erros' => $erros,
             'sucesso' => $sucesso,
-        ], 'app'), $erros ? 422 : 200);
+        ], 'admin'), $erros ? 422 : 200);
     }
 
     /** Volta pra mesma aba (todas/ativas/pausadas) de onde a ação foi disparada. */

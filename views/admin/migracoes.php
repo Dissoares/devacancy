@@ -9,8 +9,6 @@ $pendentes = count(array_filter($estado, fn (array $migracao) => $migracao['exec
   </div>
 </section>
 
-<?= parcial('admin/partials/sistema') ?>
-
 <?php if ($resultado): ?>
   <?php if ($resultado['erro']): ?>
     <div class="alerta alerta-erro" role="alert">

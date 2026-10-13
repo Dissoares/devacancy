@@ -29,6 +29,6 @@ final class AdminAnalyticsController
             'porModelo' => $this->analytics->conversaoPorColuna('modelo_trabalho'),
             'porRegiao' => $this->analytics->conversaoPorColuna('regiao_vagas'),
             'porStack' => $this->analytics->conversaoPorStack(),
-        ], 'app'));
+        ], 'admin'));
     }
 }

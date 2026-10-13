@@ -27,7 +27,7 @@ final class AdminComissaoController
             'usuario' => $this->autenticacao->usuarioAtual(),
             'comissoes' => $this->comissoes->listarParaAdmin(),
             'sucesso' => Sessao::obterFlash('sucesso'),
-        ], 'app'));
+        ], 'admin'));
     }
 
     public function marcarComoPaga(Requisicao $requisicao): Resposta

@@ -78,7 +78,7 @@ final class CandidaturaController
             'contagem' => $this->candidaturas->contarPorStatus(),
             'statusAtual' => $status,
             'todas' => $todas,
-        ], 'app'));
+        ], 'admin'));
     }
 
     public function atualizar(Requisicao $requisicao): Resposta
