@@ -46,6 +46,17 @@ final class ClassificadorVaga
         };
     }
 
+    /** A senioridade dita no texto, ou null se o texto não diz nada (sem assumir Pleno). */
+    public static function senioridadeOuNulo(string $texto): ?Senioridade
+    {
+        foreach (self::MAPA_SENIORIDADE as $nivel => $padrao) {
+            if (preg_match($padrao, $texto)) {
+                return Senioridade::from($nivel);
+            }
+        }
+        return null;
+    }
+
     /** $textoFallback só é consultado se nada bater em $texto (ex: título falha, aí tenta nos rótulos). */
     public static function senioridade(string $texto, ?string $textoFallback = null): Senioridade
     {
